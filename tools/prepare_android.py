@@ -10,6 +10,7 @@ project=project.replace('config/name="Alderwick — Medieval Town"','config/name
 project=project.replace('"process/size_limit": 1024','"process/size_limit": 512')
 project=project.replace('window/size/viewport_width=1440','window/size/viewport_width=1280').replace('window/size/viewport_height=900','window/size/viewport_height=720')
 project=project.replace('[display]','[display]\nwindow/stretch/mode="canvas_items"\nwindow/handheld/orientation=0')
+project=project.replace('[rendering]', '[rendering]\ntextures/vram_compression/import_etc2_astc=true')
 project+='\n[input_devices]\npointing/emulate_touch_from_mouse=false\npointing/emulate_mouse_from_touch=true\n'
 (target/'project.godot').write_text(project,encoding='utf-8')
 presets='''[preset.0]
