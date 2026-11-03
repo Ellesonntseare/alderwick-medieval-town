@@ -19,6 +19,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Android SDK
         run: sdkmanager 'platform-tools' 'build-tools;35.0.0' 'platforms;android-35'
       - name: Godot 4.7.2 and matching Android templates
