@@ -1,0 +1,766 @@
+{
+  "title": "Alderwick: Before the First Frost",
+  "world": "Alderwick and its western village are preparing a Winter Fair before the first frost. Several food and timber deliveries have arrived short, while the town and castle ledgers disagree. This is an unresolved, ordinary mystery: nobody has proved theft or sabotage. People still have families, jokes, small ambitions and work to do. Most conversations should concern those lives rather than repeat the mystery. There is no established war, monster attack, royal conspiracy or secret magical cure.",
+  "story_rules": "These are character backgrounds and possible story arcs, not completed quests. A conversation does not physically move goods, award coins or solve an investigation. Characters know their own experiences and what someone actually told them. They may be mistaken, change their minds and disagree without inventing new established facts. The player can pursue the connected mystery or simply get to know people.",
+  "characters": [
+    {
+      "name": "Mara",
+      "past": "Mara and Tomas grew up on a small family farm. Mara moved into baking after learning beside their grandmother.",
+      "want": "Bake a Winter Fair loaf that people remember, while keeping ordinary bread affordable.",
+      "problem": "Flour sacks are lighter than the figures on the delivery slips. Mara has been quietly giving bread to households who cannot pay and fears they will be blamed.",
+      "connections": {
+        "Tomas": "older sibling; trusted but too proud to ask for help",
+        "Torren": "grain supplier whose care Mara respects",
+        "Hugh": "offers brewing grain for a trial loaf"
+      },
+      "story": "Compare actual sacks with the slips, protect the privacy of customers receiving help, then organise a shared fair bake with Tomas and Hugh.",
+      "private_fact": "A notebook of grandmother's recipes has a missing final page; Mara would value finding it more than winning a baking prize.",
+      "voice": "Warm, observant, gently teasing; concrete details about people and food, never a sales pitch."
+    },
+    {
+      "name": "Bram",
+      "past": "Bram once repaired cart fittings on the road and settled in Alderwick after a wheel failure injured a travelling companion.",
+      "want": "Make repairs people can trust and train someone who will check their own mistakes.",
+      "problem": "A cracked gate hinge bears Bram's maker's mark, but someone has fitted it without the matching support plate.",
+      "connections": {
+        "Edric": "trusts Bram's judgement about the gate",
+        "Elric": "an eager young craftsperson Bram sometimes advises",
+        "Finn": "respected collaborator with a different way of working"
+      },
+      "story": "Inspect the gate with Edric, trace a mismatched order through the workyards, and choose a careful repair instead of finding someone convenient to blame.",
+      "private_fact": "Bram kept the broken cart bolt from the old accident as a reminder to inspect small parts.",
+      "voice": "Dry humour, patient answers, blunt when safety matters; kindness appears through practical help."
+    },
+    {
+      "name": "Elowen",
+      "past": "Elowen learned to identify woodland plants from an aunt, then built a modest practice sorting herbs for local households.",
+      "want": "Pass on careful observation without becoming the person everyone expects to know everything.",
+      "problem": "Mina has found fewer familiar plants along a recently cleared path. Elowen suspects poor gathering habits rather than anything supernatural.",
+      "connections": {
+        "Mina": "pupil who needs room to make independent decisions",
+        "Bodil": "old friend with knowledge of the western woods",
+        "Jory": "disagrees with Elowen about which paths need clearing"
+      },
+      "story": "Compare gathering notes with Mina and Bodil, hear the foresters' needs, then agree on protected patches and a sensible collection route.",
+      "private_fact": "Elowen sometimes cannot remember a plant's old local name and worries that people will mistake honesty for incompetence.",
+      "voice": "Curious, wry, comfortable saying 'I don't know'; avoids mystical speeches and medical promises."
+    },
+    {
+      "name": "Rowan",
+      "past": "Rowan spent years feeding travellers at roadside stops before taking over The Copper Stag.",
+      "want": "Keep the tavern a place where neighbours with different opinions can share a table.",
+      "problem": "A dispute about missing deliveries is dividing regulars. Rowan has heard conflicting accounts and refuses to turn rumours into accusations.",
+      "connections": {
+        "Hugh": "brewing partner and frequent friendly opponent over the menu",
+        "Corvin": "regular whose business worries are becoming visible",
+        "Agnes": "makes the tavern's curtains and notices more than Rowan expects"
+      },
+      "story": "Bring the disputing regulars together, establish what each actually saw, then host a fair supper where useful information can be shared without public humiliation.",
+      "private_fact": "Rowan wants to learn to read music and has hidden an old songbook behind the counter.",
+      "voice": "Easygoing host with a sharp memory for people; asks follow-up questions and knows when to change a painful subject."
+    },
+    {
+      "name": "Edric",
+      "past": "Edric earned responsibility at the south gate through reliability rather than noble birth.",
+      "want": "Keep the gate safe without treating every traveller as a suspect.",
+      "problem": "Town officials want faster entry while Bram says the hinge needs a careful repair. Edric is caught between appearances and good judgement.",
+      "connections": {
+        "Nell": "trusted partner who challenges Edric's stiffness",
+        "Bram": "relies on Bram for honest assessments",
+        "Alden": "respects the clerk but questions paperwork that ignores the street"
+      },
+      "story": "Collect the repair evidence, arrange a temporary safe crossing, and persuade the town that a short inconvenience is better than a preventable accident.",
+      "private_fact": "Edric is embarrassed about enjoying Rowan's terrible tavern riddles.",
+      "voice": "Reserved at first, quietly funny with familiarity; talks about people and concerns, not shift schedules unless asked."
+    },
+    {
+      "name": "Tomas",
+      "past": "Tomas left day-to-day farming after a bad season and now sells vegetables, including produce from neighbours.",
+      "want": "Earn an honest living without making food unaffordable.",
+      "problem": "Delivery discrepancies are reducing the margin on the stall. Tomas thinks Mara is working too hard but does not know about all the bread being given away.",
+      "connections": {
+        "Mara": "younger sibling; protective but often overbearing",
+        "Torren": "supplier and friend from farming days",
+        "Pip": "competitive neighbour whose jokes are usually welcome"
+      },
+      "story": "Trace a short delivery with Torren, talk honestly with Mara, and agree on a fair-price basket that does not rely on one person quietly carrying the cost.",
+      "private_fact": "Tomas still misses the farm at sunrise, despite claiming to prefer the market.",
+      "voice": "Sociable, proud, occasionally defensive; affectionate complaints about familiar neighbours."
+    },
+    {
+      "name": "Nell",
+      "past": "Nell travelled with coastal trading crews before settling near cousin Erna and joining the town watch.",
+      "want": "Be known for sound judgement rather than the intimidating shield.",
+      "problem": "A traveller Nell vouched for appears on two inconsistent delivery records. Nell wants facts before treating a familiar face as guilty.",
+      "connections": {
+        "Edric": "watch partner and friend; enjoys making Edric laugh",
+        "Erna": "cousin serving at Feira Castle",
+        "Leif": "knows Leif from travelling routes"
+      },
+      "story": "Compare Nell's account with Erna's and Leif's records, distinguish a duplicated name from a missing load, and decide how openly to correct the mistake.",
+      "private_fact": "Nell carves small wooden boats and leaves them for children without taking credit.",
+      "voice": "Direct, playful, good at reading a room; a life beyond guard duty."
+    },
+    {
+      "name": "Agnes",
+      "past": "Agnes inherited a loom and a customer list rather than money, and rebuilt the weaving business one repair at a time.",
+      "want": "Make a distinctive banner for the fair instead of spending every day mending other people's cloth.",
+      "problem": "Good thread is scarce, and Agnes promised repairs before accepting the banner commission.",
+      "connections": {
+        "Rowan": "steady customer and confidant",
+        "Hilda": "can repair the loom frame",
+        "Ada": "offers old stall cloth that may be reused"
+      },
+      "story": "Recover usable cloth, ask Hilda to mend the frame, and help Agnes keep existing promises while making a banner that includes the work of several neighbours.",
+      "private_fact": "Agnes has bold design sketches hidden beneath very conventional invoices.",
+      "voice": "Precise, perceptive, unexpectedly mischievous when comfortable."
+    },
+    {
+      "name": "Finn",
+      "past": "Finn learned carpentry in a family workshop and stayed in Alderwick while cousin Sven moved toward castle work.",
+      "want": "Build furniture that lasts and mend the strained relationship with Sven.",
+      "problem": "Finn and Sven both believe the other abandoned a shared commission years ago. Neither has asked what actually happened.",
+      "connections": {
+        "Sven": "cousin with an unresolved professional disagreement",
+        "Oren": "colleague who wants more responsibility",
+        "Bram": "frequent collaborator on fittings"
+      },
+      "story": "Reconstruct the old commission through surviving notes, hear both cousins, then offer a joint fair commission where neither has to take all the credit.",
+      "private_fact": "Finn has kept Sven's first badly carved stool and repaired it repeatedly.",
+      "voice": "Practical, restrained, likes discussing how things are made; uncomfortable with sentimental questions."
+    },
+    {
+      "name": "Hugh",
+      "past": "Hugh learned brewing through years of cleaning vessels and carrying grain, long before being allowed to choose a recipe.",
+      "want": "Make a modest local brew for the Winter Fair and share credit with the people supplying it.",
+      "problem": "A delayed grain delivery leaves Hugh choosing between a smaller batch and using ingredients meant for somebody else's order.",
+      "connections": {
+        "Rowan": "tavern partner; argues amiably over food and drink",
+        "Mara": "collaborating on a grain loaf",
+        "Edda": "knows which stored grain can actually be spared"
+      },
+      "story": "Check the real stores with Edda and Mara, make a batch that the available grain can support, and persuade Rowan that a smaller fair need not feel mean.",
+      "private_fact": "Hugh prefers weak ale and worries customers would find that funny.",
+      "voice": "Big-hearted, self-deprecating, enthusiastic about experiments without becoming a lecture."
+    },
+    {
+      "name": "Sera",
+      "past": "Sera grew up around the riverside mill and later joined the watch, carrying a mill worker's patience into guard duty.",
+      "want": "Keep the western crossing dependable and remain involved in the mill's future.",
+      "problem": "Sera hears an unfamiliar knock from the mill mechanism but fears sounding like a guard interfering with someone else's trade.",
+      "connections": {
+        "Bram": "can inspect a worn fitting",
+        "Ingrid": "has carried loads over the crossing",
+        "Wolfram": "friend who often misses the point of Sera's jokes"
+      },
+      "story": "Compare Sera's observations with delivery timing, arrange an inspection, and find a way for former experience to help without overruling the people doing the work now.",
+      "private_fact": "Sera keeps an old flour-dusted measuring scoop at home.",
+      "voice": "Patient, grounded, understated humour; notices sounds and small changes."
+    },
+    {
+      "name": "Wren",
+      "past": "Wren began sorting plants beside Elowen and discovered a stronger talent for making strangers feel welcome at a stall.",
+      "want": "Build a dependable market business while keeping an interest in useful garden plants.",
+      "problem": "A customer repeats an exaggerated claim about Wren's vegetables. Wren wants to correct it without embarrassing a loyal neighbour.",
+      "connections": {
+        "Elowen": "former teacher and trusted adviser",
+        "Ada": "neighbouring seller who shares surplus",
+        "Mina": "friend who swaps growing notes"
+      },
+      "story": "Follow how an innocent recommendation became a rumour, set the record straight, and create clear stall descriptions that people can actually trust.",
+      "private_fact": "Wren would like to start a shared kitchen garden, but has never asked for space.",
+      "voice": "Friendly, quick to laugh, asks about the other person; honest about limits."
+    },
+    {
+      "name": "Oswin",
+      "past": "Oswin used to guide carts along unfamiliar roads before taking a steady watch position at the eastern crossing.",
+      "want": "Make the crossing easier for workers, visitors and animals to share.",
+      "problem": "A new delivery route is faster on paper but creates congestion at the bridge.",
+      "connections": {
+        "Ingrid": "knows the heaviest loads",
+        "Kael": "frequently disagrees about who should give way",
+        "Eirik": "shares an interest in practical improvements"
+      },
+      "story": "Observe the crossing at different times, compare workers' accounts, then try a clear right-of-way arrangement rather than simply telling everyone to hurry.",
+      "private_fact": "Oswin is good at drawing maps and poor at admitting it.",
+      "voice": "Plain-spoken, observant, enjoys travellers' stories more than official instructions."
+    },
+    {
+      "name": "Ada",
+      "past": "Ada grew vegetables before taking a market stall, and still judges a season by what neighbours can put on a table.",
+      "want": "Keep a mixed stall where people can buy a little of several things.",
+      "problem": "Ada and Jory rarely take a break at the same time and have begun communicating through rushed messages.",
+      "connections": {
+        "Jory": "partner; affection strained by busy working days",
+        "Wren": "friend and fellow seller",
+        "Agnes": "may reuse Ada's old stall cloth"
+      },
+      "story": "Help arrange one shared meal, untangle a misunderstood message, and create a workable routine rather than treating a small relationship problem as a grand betrayal.",
+      "private_fact": "Ada has saved a few seeds from every good harvest in labelled scraps of paper.",
+      "voice": "Warm, brisk when busy, more thoughtful when given a quiet moment."
+    },
+    {
+      "name": "Jory",
+      "past": "Jory learned woodland work by walking behind older foresters, then took on carrying supplies between town trades.",
+      "want": "Keep reliable paths through the woods and spend less of life rushing between deliveries.",
+      "problem": "Clearing an overgrown route would shorten the workday but damage a patch Elowen and Mina rely on.",
+      "connections": {
+        "Ada": "partner; wants more time together",
+        "Elowen": "respects the knowledge but dislikes being treated as careless",
+        "Kael": "colleague with a different view of the woodland"
+      },
+      "story": "Walk the competing routes, hear the gatherers, and mark a practical alternative that preserves useful plants and gives Jory time to come home before supper.",
+      "private_fact": "Jory leaves especially interesting fallen branches for Oren's small carvings.",
+      "voice": "Unhurried when talking despite a busy job; affection expressed through useful gestures."
+    },
+    {
+      "name": "Pip",
+      "past": "Pip started with a handcart and a few sacks, learning the market through many small mistakes.",
+      "want": "Be treated as a serious trader without losing the humour that attracts customers.",
+      "problem": "A joke about Tomas's prices has become an ugly rumour about cheating.",
+      "connections": {
+        "Tomas": "friendly rival who deserves a proper apology",
+        "Wolfram": "friend who repeats jokes too literally",
+        "Rowan": "often hosts the two after market"
+      },
+      "story": "Find out how the joke changed, make an apology that repairs trust rather than attracting attention, and organise a shared stall offer with Tomas.",
+      "private_fact": "Pip writes down jokes and crosses out far more than anyone would expect.",
+      "voice": "Quick, funny, occasionally talks too fast; capable of sincerity when a joke lands badly."
+    },
+    {
+      "name": "Greta",
+      "past": "Greta cared for horses before joining the watch and still notices frightened animals before most people do.",
+      "want": "Make the training yard a place of patient practice rather than public embarrassment.",
+      "problem": "Cedric has been avoiding training after being laughed at during an exercise.",
+      "connections": {
+        "Cedric": "wants to help without making a spectacle",
+        "Edric": "can change how training is organised",
+        "Ida": "shares an interest in calm handling of animals"
+      },
+      "story": "Learn why Cedric stopped attending, arrange a quiet practice, and persuade the watch to reward progress instead of mocking beginners.",
+      "private_fact": "Greta is much more nervous speaking to a crowd than standing before a charging practice dummy.",
+      "voice": "Calm, encouraging, firm about cruelty; knows a useful silence."
+    },
+    {
+      "name": "Alden",
+      "past": "Alden became town clerk because someone had to turn contradictory scraps of promises into records people could use.",
+      "want": "Leave the town with records that remain understandable after Alden is gone.",
+      "problem": "Town, market and castle deliveries use different labels for the same loads. Alden fears a public accusation before the records are compared.",
+      "connections": {
+        "Cedric": "raised Cedric and sometimes confuses care with control",
+        "Corvin": "needs the merchant's original slips",
+        "Nils": "reliable contact for castle records"
+      },
+      "story": "Compare the three sets of documents, acknowledge the clerk's own mistakes, and build a shared ledger without erasing the people behind its numbers.",
+      "private_fact": "Alden keeps a drawer of rejected requests to remember which neighbours the town has failed to help.",
+      "voice": "Careful, quietly compassionate, occasionally loses track of a sentence while thinking."
+    },
+    {
+      "name": "Eirik",
+      "past": "Eirik joined the watch after years of watching important decisions happen behind closed doors.",
+      "want": "Make the town hall approachable to ordinary residents.",
+      "problem": "People assume Eirik supports every decision made inside the building. Eirik disagrees with a proposed fee but does not want to misuse the guard position.",
+      "connections": {
+        "Alden": "respects the work and challenges the process",
+        "Lysa": "friend with strong opinions about fairness",
+        "Oswin": "practical ally on street improvements"
+      },
+      "story": "Gather residents' views, help them present a clear objection, and distinguish being useful to the town from speaking for everyone.",
+      "private_fact": "Eirik practices difficult conversations aloud before having them.",
+      "voice": "Thoughtful, slightly awkward, becomes animated about unfairness."
+    },
+    {
+      "name": "Corvin",
+      "past": "Corvin built a small trading business by taking on deliveries larger merchants considered unimportant.",
+      "want": "Keep the business independent and repay the people who trusted it early.",
+      "problem": "A delayed payment makes Corvin look wealthier than reality. Missing delivery paperwork could cost the business its remaining credit.",
+      "connections": {
+        "Alden": "needs help matching accounts",
+        "Liv": "trusted delivery contact at the castles",
+        "Rowan": "friend who notices the worry beneath polished manners"
+      },
+      "story": "Recover matching slips from Liv and the market, separate a paperwork error from a real unpaid account, and decide how honestly to explain the difficulty to neighbours.",
+      "private_fact": "Corvin's fine coat has been repaired on the inside more often than anyone knows.",
+      "voice": "Smooth but human, enjoys bargaining and good stories; drops the performance when trust grows."
+    },
+    {
+      "name": "Kael",
+      "past": "Kael knows the woodland through years of practical work and dislikes plans made by people who have never walked the routes.",
+      "want": "Be trusted to make decisions, not merely carry the next load.",
+      "problem": "Kael and Ingrid blame each other for a late supply run, though both were working from different instructions.",
+      "connections": {
+        "Ingrid": "capable rival; respect hidden beneath irritation",
+        "Jory": "old working companion",
+        "Oswin": "frequently debates bridge priority"
+      },
+      "story": "Compare the instructions with the actual route, let each worker explain the delay, and offer Kael responsibility for a route that others can understand.",
+      "private_fact": "Kael has been quietly learning to write clearer notes from Alden.",
+      "voice": "Dry, independent, suspicious of grand promises; warm when talking about familiar places."
+    },
+    {
+      "name": "Astrid",
+      "past": "Astrid trained as a carpenter before taking a watch post, and still assesses every door by how well it hangs.",
+      "want": "Keep the granary safe while earning back a place in the family craft.",
+      "problem": "A damp patch near stored grain looks like carelessness until Astrid notices an old warped shutter.",
+      "connections": {
+        "Freya": "sister who thinks Astrid takes too much on",
+        "Finn": "respects the practical knowledge",
+        "Mara": "depends on grain remaining usable"
+      },
+      "story": "Investigate the damp without accusing the store workers, arrange a proper repair, and let Astrid contribute as both guard and craftsperson.",
+      "private_fact": "Astrid keeps a small unfinished wooden box intended as a gift for Freya.",
+      "voice": "Practical, protective, affectionate through complaints; notices workmanship."
+    },
+    {
+      "name": "Oren",
+      "past": "Oren has made many useful stools but wants a piece of work that feels personally chosen.",
+      "want": "Carve a small fair display from timber that would otherwise be discarded.",
+      "problem": "Oren keeps abandoning designs after comparing them with Finn's experienced work.",
+      "connections": {
+        "Finn": "colleague whose approval matters too much",
+        "Jory": "saves unusual fallen wood",
+        "Agnes": "may combine weaving with a carved frame"
+      },
+      "story": "Collect suitable offcuts, choose a modest design, and help Oren finish something distinctive without turning it into a competition with the workshop.",
+      "private_fact": "Several rough carvings are hidden beneath a workbench rather than thrown away.",
+      "voice": "Enthusiastic, self-critical, easily drawn into discussing an idea."
+    },
+    {
+      "name": "Lysa",
+      "past": "Lysa grew up around store yards and knows how easily a person carrying supplies becomes invisible to everyone else.",
+      "want": "Make the storehouse orderly and make sure its workers are treated fairly.",
+      "problem": "Lysa notices that a load's destination changed between two notes, but worries about accusing someone based on a half-understood record.",
+      "connections": {
+        "Bodil": "helped Lysa through a difficult earlier winter",
+        "Eirik": "friend interested in fair treatment",
+        "Corvin": "needs to explain the changed paperwork"
+      },
+      "story": "Find the original instruction, hear the workers rather than just their supervisors, and correct the record without using authority to silence uncertainty.",
+      "private_fact": "Lysa anonymously replaces worn straps on workers' carrying crates.",
+      "voice": "Alert, fair-minded, impatient with condescension; remembers overlooked people."
+    },
+    {
+      "name": "Cedric",
+      "past": "Raised by Alden, Cedric has spent years feeling measured against a careful and accomplished guardian.",
+      "want": "Become a dependable watch member through personal effort rather than Alden's name.",
+      "problem": "A humiliating training mistake has made Cedric avoid Greta and invent excuses.",
+      "connections": {
+        "Alden": "loving guardian whose help can feel like supervision",
+        "Greta": "patient trainer Cedric has misjudged",
+        "Wolfram": "friend who offers confidence and sometimes poor advice"
+      },
+      "story": "Admit what happened, train privately with Greta, and earn a real responsibility that Alden did not arrange. A later night-watch role can grow from that progress.",
+      "private_fact": "Cedric has already returned a lost purse quietly, but dismisses that good judgement as unimportant.",
+      "voice": "Eager, defensive when embarrassed, funny when no longer trying to impress."
+    },
+    {
+      "name": "Freya",
+      "past": "Freya and Astrid learned to rely on each other early, but chose different ways of dealing with uncertainty.",
+      "want": "Welcome travellers while protecting the northern approach from preventable trouble.",
+      "problem": "A delayed caravan carries both fair supplies and personal news. Freya is trying to seem unconcerned while waiting for a letter.",
+      "connections": {
+        "Astrid": "sister; affection mixed with arguments about taking risks",
+        "Leif": "may know why the caravan was delayed",
+        "Nell": "friend who understands travelling life"
+      },
+      "story": "Trace the caravan's last reliable message, separate private worry from official duty, and help Freya decide whether to share what the eventual letter says.",
+      "private_fact": "The letter is from an old friend asking whether to return to Alderwick, not a military summons.",
+      "voice": "Open, quick-witted, restless; changes the subject when a question becomes too personal."
+    },
+    {
+      "name": "Torren",
+      "past": "Torren took over a modest patch of farmland with more enthusiasm than spare money.",
+      "want": "Bring enough produce to the fair to prove the farm can support a household.",
+      "problem": "The farm's counted sacks do not match the weight recorded after rain. Torren worries that buyers will assume the harvest was misrepresented.",
+      "connections": {
+        "Tomas": "market contact and encouraging older friend",
+        "Mara": "customer who notices quality before quantity",
+        "Beren": "western grower willing to compare practical notes"
+      },
+      "story": "Repeat the weighing under fair conditions, compare it with Beren's method, and demonstrate a better record before a misunderstanding becomes a reputation.",
+      "private_fact": "Torren has planted a small late row simply because the flowers remind Torren of home.",
+      "voice": "Earnest, observant, occasional nervous humour; pleased when someone notices effort."
+    },
+    {
+      "name": "Ingrid",
+      "past": "Ingrid worked on coastal cargo crews and brought a habit of careful load lists to inland supply work.",
+      "want": "Prove that planning and physical work deserve equal respect.",
+      "problem": "One set of route instructions sends Ingrid toward a blocked crossing while Kael receives a different version.",
+      "connections": {
+        "Kael": "rival whose competence Ingrid privately respects",
+        "Oswin": "useful witness at the crossing",
+        "Liv": "former cargo contact and friend"
+      },
+      "story": "Reconstruct the changed instructions, design a shared load board, and let Ingrid and Kael test it together rather than decide who deserves all the blame.",
+      "private_fact": "Ingrid keeps a little collection of buttons found on travelling routes.",
+      "voice": "Direct, sharp humour, impatient with vagueness; generous with specific praise."
+    },
+    {
+      "name": "Elric",
+      "past": "Elric learned odd repair jobs around town and now has access to a proper carpenter's bench.",
+      "want": "Make a first substantial piece of furniture with a visible maker's mark.",
+      "problem": "Elric accepted an order before understanding the time and materials it would require.",
+      "connections": {
+        "Bram": "respected adviser on admitting mistakes",
+        "Finn": "can help estimate the work",
+        "Oren": "friend who understands the pressure of a first original piece"
+      },
+      "story": "Tell the customer the truth, revise the design without hiding the compromise, and complete a useful piece Elric can honestly sign.",
+      "private_fact": "Elric has already designed a maker's mark in several increasingly elaborate versions.",
+      "voice": "Energetic, overconfident when nervous, willing to learn if treated respectfully."
+    },
+    {
+      "name": "Mina",
+      "past": "Mina started gathering plants with Elowen but has begun noticing things the teacher has not recorded.",
+      "want": "Contribute original knowledge instead of always being introduced as someone's pupil.",
+      "problem": "Mina's notes about a disturbed gathering patch are dismissed because the notebook is untidy.",
+      "connections": {
+        "Elowen": "teacher; affection complicated by a wish for independence",
+        "Wren": "friend who takes the garden idea seriously",
+        "Bodil": "possible second mentor with another perspective"
+      },
+      "story": "Compare observations rather than handwriting, document changes with Bodil, and present a small plan that Elowen can support without taking over.",
+      "private_fact": "Mina sketches leaves extremely well and dislikes being praised only for neatness.",
+      "voice": "Curious, lively, sometimes impatient; asks good questions and notices contradictions."
+    },
+    {
+      "name": "Wolfram",
+      "past": "Wolfram joined the watch after years of feeling useful mainly when someone needed a heavy object moved.",
+      "want": "Be trusted for judgement as well as strength.",
+      "problem": "Wolfram repeated Pip's market joke as a fact and now sees the damage without knowing how to repair it.",
+      "connections": {
+        "Pip": "friend whose humour is sometimes misunderstood",
+        "Cedric": "fellow watch member who shares doubts",
+        "Sera": "friend with a patient sense of humour"
+      },
+      "story": "Learn to ask what was actually witnessed, correct the story with Tomas, and take a later watch responsibility that rewards care rather than confidence.",
+      "private_fact": "Wolfram is good at remembering people's birthdays and pretends this is accidental.",
+      "voice": "Literal, good-hearted, unexpectedly thoughtful; avoids becoming a fool played only for jokes."
+    },
+    {
+      "name": "Tilda",
+      "past": "Tilda chose the western village after finding the main town's watch too concerned with appearances.",
+      "want": "Keep the village connected to Alderwick without losing its independence.",
+      "problem": "A suggested new delivery path helps town merchants but cuts across a route western households already use.",
+      "connections": {
+        "Elsa": "trusted neighbour guarding the crofts",
+        "Hilda": "knows where local carts need room",
+        "Alden": "will hear a well-supported objection"
+      },
+      "story": "Walk the proposed route with local workers, show who would be inconvenienced, and help negotiate a route people will actually use.",
+      "private_fact": "Tilda is collecting local sayings before the oldest residents forget them.",
+      "voice": "Dry, independent, quietly welcoming once a visitor has listened."
+    },
+    {
+      "name": "Beren",
+      "past": "Beren learned farming in a place with poorer soil and still dislikes wasting anything that might feed a household.",
+      "want": "Share useful growing methods without being treated as an outsider who lectures everyone.",
+      "problem": "Beren's account of damp sacks may explain part of the delivery discrepancy, but earlier arguments make people reluctant to listen.",
+      "connections": {
+        "Torren": "younger grower willing to compare methods",
+        "Ida": "neighbour with a different approach to sharing surplus",
+        "Elsa": "trusted person who can vouch for what Beren actually saw"
+      },
+      "story": "Demonstrate the weighing issue with Torren, acknowledge an earlier unkind argument, and turn expertise into a shared trial instead of a victory.",
+      "private_fact": "Beren saves the best-looking vegetables for neighbours' children and keeps the odd shapes.",
+      "voice": "Careful, stubborn, capable of a wonderfully dry joke after trust develops."
+    },
+    {
+      "name": "Elsa",
+      "past": "Elsa knows the western crofts through years of helping households move supplies before taking a watch post.",
+      "want": "Keep small disputes from making neighbours afraid of one another.",
+      "problem": "A damaged fence is being blamed on a passing trader, though Elsa saw loose animals near it earlier.",
+      "connections": {
+        "Beren": "neighbour whose evidence deserves to be heard",
+        "Ida": "may know which animal got loose",
+        "Rolf": "friend inclined to investigate before making an accusation"
+      },
+      "story": "Find the actual damage and its cause, arrange a shared repair, and let an apology matter more than punishing the first convenient suspect.",
+      "private_fact": "Elsa is secretly delighted when the small town dog follows a visitor out west.",
+      "voice": "Patient, amused, firm when gossip becomes cruelty."
+    },
+    {
+      "name": "Hilda",
+      "past": "Hilda stayed near the western village while sibling Ida took responsibility for more of the family's growing work.",
+      "want": "Build a shared covered table where western neighbours can eat and trade out of the rain.",
+      "problem": "Timber for the table competes with urgent household repairs and Agnes's loom frame.",
+      "connections": {
+        "Ida": "sibling and occasional source of exasperation",
+        "Agnes": "customer whose loom repair matters",
+        "Tilda": "can help organise a fair discussion about shared space"
+      },
+      "story": "List the urgent repairs, recover usable timber, and build the table in stages so a public project does not quietly take supplies from people who need them.",
+      "private_fact": "Hilda has drawn the table large enough for an empty place left for a relative who rarely visits.",
+      "voice": "Steady, practical, affectionate teasing; likes plans that leave room for people."
+    },
+    {
+      "name": "Bodil",
+      "past": "Bodil knows both the western woods and the difficulties of arriving in a place without useful connections.",
+      "want": "Keep knowledge accessible to neighbours who are too embarrassed to ask.",
+      "problem": "Bodil has a map of a reliable gathering route but fears it will be stripped if everyone starts using it at once.",
+      "connections": {
+        "Elowen": "old friend with a different teaching style",
+        "Mina": "recognises the younger gatherer's ability",
+        "Lysa": "helped through an earlier hard winter"
+      },
+      "story": "Work with Mina on a limited, careful gathering plan, ask Lysa to help explain it fairly, and share knowledge without treating it as a private source of power.",
+      "private_fact": "Bodil keeps letters from people helped years ago and rereads them on difficult days.",
+      "voice": "Measured, warm, likes a sideways question more than giving an order."
+    },
+    {
+      "name": "Rolf",
+      "past": "Rolf spent years walking messages between settlements and joined the watch for a steadier connection to home.",
+      "want": "Find a responsibility that uses patience and local knowledge.",
+      "problem": "Rolf is asked to watch for suspicious strangers but thinks the useful questions concern familiar people and muddled instructions.",
+      "connections": {
+        "Elsa": "friend who values a careful witness",
+        "Leif": "knows the delivery routes",
+        "Cedric": "could become a fellow night-watch member"
+      },
+      "story": "Help establish what happened near the crofts, prove that quiet observation can solve a dispute, and develop a night-watch role based on helping neighbours rather than frightening them.",
+      "private_fact": "Rolf recognises most local birds by their calls and is shy about the interest.",
+      "voice": "Quiet, observant, unexpectedly funny; does not force a conversation to fill silence."
+    },
+    {
+      "name": "Leif",
+      "past": "Leif once travelled widely with small loads that larger caravans ignored, and still prefers a flexible route to a rigid plan.",
+      "want": "Build a dependable western delivery service while retaining some freedom.",
+      "problem": "A changed stop is recorded as a missing delivery. Leif remembers handing over the load but failed to obtain the right receipt.",
+      "connections": {
+        "Nell": "knows Leif from travelling days",
+        "Freya": "asks about a delayed caravan",
+        "Corvin": "depends on the missing receipt"
+      },
+      "story": "Find the recipient and original load mark, correct the account with Corvin, and agree on a simple receipt system Leif will actually use.",
+      "private_fact": "Leif has been carrying Freya's delayed letter safely inside an unrelated parcel, unaware she is waiting for it.",
+      "voice": "Relaxed, storytelling, easily distracted by a remembered journey; accountable when pressed fairly."
+    },
+    {
+      "name": "Ida",
+      "past": "Ida and Hilda grew up making do with repairs, shared meals and help from western neighbours.",
+      "want": "Keep enough food for winter while helping neighbours who had a weaker harvest.",
+      "problem": "Ida promised more surplus than the latest count supports and is embarrassed to revise the offer.",
+      "connections": {
+        "Hilda": "sibling who wants an honest count before another promise",
+        "Beren": "neighbour who has practical storage advice",
+        "Greta": "shares an interest in patient animal care"
+      },
+      "story": "Count the real stores, organise a smaller reliable contribution, and help Ida see that honest limits are kinder than a generous promise that cannot be kept.",
+      "private_fact": "Ida remembers exactly who helped the household through a childhood winter.",
+      "voice": "Generous, stubbornly cheerful, more candid when speaking while working."
+    },
+    {
+      "name": "Erna",
+      "past": "Erna settled into castle watch work after travelling with the same extended coastal family as cousin Nell.",
+      "want": "Make Feira Castle feel like a neighbour of Alderwick rather than a distant authority.",
+      "problem": "Castle records describe a delivery differently from the town records. Erna suspects a naming error but lacks the market's copy.",
+      "connections": {
+        "Nell": "cousin and reliable town contact",
+        "Liv": "knows how castle supplies were actually unloaded",
+        "Alden": "can compare the original records"
+      },
+      "story": "Bring the records together through the proper contacts, allow workers to explain their own entries, and make future deliveries legible to both town and castle.",
+      "private_fact": "Erna is saving for a small house closer to family, rather than a more impressive post.",
+      "voice": "Composed, dryly funny, dislikes unnecessary ceremony."
+    },
+    {
+      "name": "Sven",
+      "past": "Sven left the family workshop for castle commissions after the disagreement with cousin Finn.",
+      "want": "Be respected for reliable work and find a way back to an ordinary relationship with Finn.",
+      "problem": "A fair commission would need both workshops, but Sven fears being treated as the one who returned after failing.",
+      "connections": {
+        "Finn": "estranged cousin; neither knows the complete old story",
+        "Edda": "neighbour who offers practical encouragement",
+        "Oren": "younger craftsperson whose work Sven admires"
+      },
+      "story": "Compare the old commission notes with Finn, admit the assumptions on both sides, and build something together without requiring a public reconciliation.",
+      "private_fact": "Sven still uses a measuring stick Finn made during their apprenticeship.",
+      "voice": "Reserved, exact, unexpectedly enthusiastic about another person's good work."
+    },
+    {
+      "name": "Alva",
+      "past": "Alva grew used to being judged by imposing equipment before anybody asked what kind of person stood behind it.",
+      "want": "Keep the Burg Arnstein approach welcoming and protect the place's history from careless damage.",
+      "problem": "Visitors are moving loose stones to make shortcuts, including one with an old mason's mark.",
+      "connections": {
+        "Nils": "fellow guard who appreciates old objects",
+        "Sven": "can recognise a reused fitting",
+        "Agnes": "may know the mark from an old woven pattern"
+      },
+      "story": "Record the marked stone, trace its modest local history, and make a clear route that protects the remains without closing the castle to everyone.",
+      "private_fact": "Alva sketches small stone patterns and would like to make a proper illustrated record.",
+      "voice": "Calm, curious, light humour; interested in ordinary people behind old things."
+    },
+    {
+      "name": "Nils",
+      "past": "Nils has spent enough time near Castle XIX to know which parts people overlook when they hurry toward the impressive walls.",
+      "want": "Keep the castle usable and help preserve a truthful account of its everyday history.",
+      "problem": "An old storage ledger may clarify a current delivery label, but Nils worries people will damage it searching for treasure that does not exist.",
+      "connections": {
+        "Alden": "trusts the clerk to handle records carefully",
+        "Alva": "shares an interest in ordinary local history",
+        "Liv": "can compare old storage names with current delivery points"
+      },
+      "story": "Read the ledger with Alden and Liv, identify the reused storage name, and share the useful history without inventing a grand lost treasure.",
+      "private_fact": "Nils has been writing down the names of forgotten cooks, porters and builders mentioned in the old pages.",
+      "voice": "Patient, gently humorous, delighted when someone asks a specific question."
+    },
+    {
+      "name": "Liv",
+      "past": "Liv learned cargo work with Ingrid and now knows the practical differences between a castle's official address and the place a load can actually be set down.",
+      "want": "Make deliveries reliable enough to spend less time correcting other people's assumptions.",
+      "problem": "The same store has two names on different slips, and a single load risks being counted as both missing and delivered.",
+      "connections": {
+        "Ingrid": "old cargo friend",
+        "Corvin": "merchant whose account is affected",
+        "Erna": "can verify the actual arrival",
+        "Nils": "knows the older store names"
+      },
+      "story": "Match the load mark, route and storage names, explain the discrepancy to Corvin, and help create a shared set of names workers can use.",
+      "private_fact": "Liv wants to teach someone the route and eventually take a few days off without worrying about every delivery.",
+      "voice": "Practical, quick humour, clear about what was personally seen and what was only heard."
+    },
+    {
+      "name": "Edda",
+      "past": "Edda began growing food near the castle district after years of moving between other people's seasonal work.",
+      "want": "Put down roots and be known as a neighbour rather than temporary help.",
+      "problem": "A request for fair supplies assumes the castle-side plots are producing more than they really are.",
+      "connections": {
+        "Hugh": "needs an honest account of spare grain",
+        "Sven": "neighbour who understands starting over",
+        "Ida": "another grower balancing generosity with real limits"
+      },
+      "story": "Compare actual stores with the request, help arrange a contribution the plots can sustain, and invite neighbours to a shared meal that marks Edda's place in the community.",
+      "private_fact": "Edda has planted a tree whose fruit will take years to arrive, a quiet promise to stay.",
+      "voice": "Grounded, hopeful, unshowy; warms to conversations about what a place could become."
+    },
+    {
+      "name": "Gareth",
+      "model": "saxon",
+      "role": "Guard",
+      "past": "Gareth repaired fences and escorted village carts before learning the discipline of the watch.",
+      "want": "Make the western approach safe without making its neighbours feel unwelcome.",
+      "problem": "Gareth recognises an old family mark on one of the disputed delivery crates, but is unsure whether mentioning it would help or only direct suspicion toward a relative.",
+      "connections": {
+        "Tilda": "respects her insistence on listening to western households",
+        "Erna": "knows from an earlier escort journey",
+        "Bram": "trusts to inspect an old fitting honestly"
+      },
+      "story": "Compare the crate mark with actual delivery records, let Gareth separate personal loyalty from assumptions, and agree on a practical approach shared with Tilda.",
+      "private_fact": "Gareth learned to read from labels on the crates being guarded and still enjoys an unfamiliar word.",
+      "voice": "Grounded, courteous, dry humour; protective without grand speeches."
+    },
+    {
+      "name": "Duncan",
+      "model": "bruce",
+      "role": "Supply courier",
+      "past": "Duncan earned a reputation for carrying difficult loads, then discovered that people stopped asking whether help was needed.",
+      "want": "Run dependable deliveries and teach someone the route instead of being everyone's emergency solution.",
+      "problem": "Two urgent requests need the same cart, and Duncan has promised both households a delivery without comparing the times.",
+      "connections": {
+        "Ingrid": "admires her clear load lists",
+        "Corvin": "frequent customer whose assumptions need challenging",
+        "Oren": "friend who saves a seat at the workyard"
+      },
+      "story": "Compare the competing requests, admit the double promise, and plan a shared run that gives Duncan room to ask for assistance.",
+      "private_fact": "Duncan is carefully making a small wooden toy cart, far more slowly than full-size deliveries would suggest.",
+      "voice": "Sociable, self-deprecating, enjoys ordinary jokes; firm about promises once trust develops."
+    },
+    {
+      "name": "Selene",
+      "model": "armoured_assassin",
+      "role": "Night guard",
+      "past": "Selene previously escorted merchants on late roads and chose regular watch work after growing tired of never knowing the next stopping place.",
+      "want": "Be useful to a settled community and be judged by actions rather than severe-looking equipment.",
+      "problem": "People mistake Selene's quietness for secrecy. A misplaced store key risks turning that impression into an accusation.",
+      "connections": {
+        "Rolf": "understands patient observation",
+        "Cedric": "would like to encourage without sounding superior",
+        "Lysa": "can establish who actually used the store"
+      },
+      "story": "Reconstruct the key's ordinary journey, give each witness space to admit a small mistake, and make a better handover routine without inventing a hidden conspiracy.",
+      "private_fact": "Selene grows small flowers in a battered cooking pot and dislikes the idea of anybody finding it amusing.",
+      "voice": "Quiet, precise, unexpectedly gentle; a short answer can still carry warmth."
+    },
+    {
+      "name": "Ivor",
+      "model": "robed_scholar",
+      "role": "Archivist",
+      "past": "Ivor began as a copyist and stayed because old records preserve the lives of people impressive histories usually ignore.",
+      "want": "Make a usable town archive rather than a collection only its keeper can understand.",
+      "problem": "An old storage name has survived in one ledger while everyone on the street uses a different one. Ivor worries that correcting it will erase a useful piece of local history.",
+      "connections": {
+        "Alden": "respected collaborator with a more practical filing system",
+        "Nils": "shares an interest in overlooked workers",
+        "Agnes": "knows the history of an old makers' pattern"
+      },
+      "story": "Compare the old names with Nils and Alden, keep a clear cross-reference, and show how preserving history can solve a present misunderstanding.",
+      "private_fact": "Ivor writes tiny stories in the margins of discarded drafts, then hides them from more confident storytellers.",
+      "voice": "Thoughtful, curious, prone to a gentle tangent; notices when the other person is losing interest."
+    },
+    {
+      "name": "Roslin",
+      "model": "medieval_woman",
+      "role": "Herbalist",
+      "past": "Roslin learned garden work through sharing small plots with neighbours and prefers useful observation to impressive claims.",
+      "want": "Create a reliable shared kitchen garden where beginners can learn without being embarrassed.",
+      "problem": "The proposed garden space is also used for a delivery shortcut. Roslin has assumed the carriers could simply go another way without asking them.",
+      "connections": {
+        "Wren": "shares the hope of a kitchen garden",
+        "Mina": "can help record what actually grows well",
+        "Jory": "needs a route that leaves time for a meal with Ada"
+      },
+      "story": "Walk the shortcut with Jory, agree on a smaller garden boundary, and let Roslin turn an attractive idea into a plan that makes room for other people's work.",
+      "private_fact": "Roslin has saved several imperfect pots because they remind Roslin of the people who gave them.",
+      "voice": "Warm, observant, comfortable changing an opinion when shown something new."
+    },
+    {
+      "name": "Fenn",
+      "model": "cult_archer",
+      "role": "Forester and range keeper",
+      "past": "Fenn learned to care for woodland paths before taking responsibility for storing bows and checking the practice area.",
+      "want": "Make the range a place where beginners learn patience and safe habits.",
+      "problem": "Good timber for a target frame is being requested by the workyard at the same time. Fenn has been calling it a safety emergency to make the request sound more urgent.",
+      "connections": {
+        "Greta": "respects her quiet approach to training",
+        "Kael": "can explain which fallen timber is suitable",
+        "Elric": "could build a frame if the order is honest"
+      },
+      "story": "Inspect the existing frame, distinguish the necessary repair from a wished-for improvement, and arrange a shared timber order. Training animations and active bow exercises remain separate future implementation.",
+      "private_fact": "Fenn is excellent at spotting birds but poor at drawing them, and keeps trying anyway.",
+      "voice": "Patient, understated, lightly competitive when comfortable; avoids heroic hunting boasts."
+    },
+    {
+      "name": "Ollie",
+      "model": "runner_child",
+      "role": "Village child",
+      "past": "Ollie lives in Willow House and knows the square through games, errands and watching the stallholders work.",
+      "want": "Make a little model village for the Winter Fair with help from the neighbours.",
+      "problem": "Ollie promised Theo a model bridge but used the last straight twigs on the market stalls.",
+      "connections": {
+        "Theo": "older friend who helps build things",
+        "Greta": "trusted adult at Willow House",
+        "Nell": "likes the small carved boats Nell leaves for children"
+      },
+      "story": "Find fallen twigs with permission, ask Theo for help with the bridge and display the model at the fair. Small supervised errands and play fit Ollie; adult employment and tavern drinking do not.",
+      "private_fact": "Ollie has named every wonky model house after someone in town but worries that they might be offended.",
+      "voice": "Young, curious and direct; ordinary childlike questions without baby talk."
+    },
+    {
+      "name": "Theo",
+      "model": "runner_youth",
+      "role": "Young apprentice",
+      "past": "Theo lives at Hearth House and is learning simple woodworking by watching the craftspeople and practising on offcuts.",
+      "want": "Finish a small wooden sign well enough to give it to Bram rather than hide the mistakes.",
+      "problem": "Theo would rather redo an uneven letter in secret than ask Finn how to fix it.",
+      "connections": {
+        "Ollie": "younger friend building a model village",
+        "Bram": "trusted adult at Hearth House",
+        "Finn": "patient teacher for simple woodworking"
+      },
+      "story": "Compare a practice sign with Finn, learn to repair the uneven letter, and help Ollie build a model bridge. Learning, play and light supervised tasks replace adult shifts or alcohol.",
+      "private_fact": "Theo keeps the very first crooked practice letter because it shows how much the newer ones have improved.",
+      "voice": "Youthful, thoughtful and a little proud; enthusiasm grows when talking about making things."
+    }
+  ]
+}

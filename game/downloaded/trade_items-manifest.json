@@ -1,0 +1,377 @@
+{
+  "source": "C:\\Users\\elles\\Downloads\\get_out_-_asset_set.glb",
+  "id": "trade_items",
+  "original_triangles": 8200,
+  "parts": [
+    {
+      "file": "trade_items/00.glb",
+      "name": "Object_10",
+      "dimensions": [
+        0.772,
+        1.0,
+        2.267
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/01.glb",
+      "name": "Object_12",
+      "dimensions": [
+        1.0,
+        0.599,
+        1.381
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/02.glb",
+      "name": "Object_14",
+      "dimensions": [
+        1.0,
+        0.613,
+        1.413
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/03.glb",
+      "name": "Object_16",
+      "dimensions": [
+        0.468,
+        1.0,
+        2.27
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/04.glb",
+      "name": "Object_18",
+      "dimensions": [
+        1.0,
+        0.271,
+        0.289
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/05.glb",
+      "name": "Object_20",
+      "dimensions": [
+        0.179,
+        1.0,
+        0.073
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/06.glb",
+      "name": "Object_22",
+      "dimensions": [
+        0.643,
+        1.0,
+        0.673
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/07.glb",
+      "name": "Object_24",
+      "dimensions": [
+        0.247,
+        1.0,
+        1.72
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/08.glb",
+      "name": "Object_26",
+      "dimensions": [
+        0.332,
+        1.0,
+        2.014
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/09.glb",
+      "name": "Object_28",
+      "dimensions": [
+        1.0,
+        0.954,
+        0.798
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/10.glb",
+      "name": "Object_30",
+      "dimensions": [
+        1.0,
+        1.0,
+        4.366
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/11.glb",
+      "name": "Object_32",
+      "dimensions": [
+        1.0,
+        0.858,
+        0.76
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/12.glb",
+      "name": "Object_34",
+      "dimensions": [
+        1.0,
+        0.341,
+        0.769
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/13.glb",
+      "name": "Object_36",
+      "dimensions": [
+        1.0,
+        0.172,
+        0.172
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/14.glb",
+      "name": "Object_38",
+      "dimensions": [
+        0.277,
+        1.0,
+        2.519
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/15.glb",
+      "name": "Object_4",
+      "dimensions": [
+        1.0,
+        1.0,
+        0.256
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/16.glb",
+      "name": "Object_40",
+      "dimensions": [
+        0.364,
+        1.0,
+        2.699
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/17.glb",
+      "name": "Object_42",
+      "dimensions": [
+        0.304,
+        1.0,
+        1.083
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/18.glb",
+      "name": "Object_44",
+      "dimensions": [
+        0.197,
+        1.0,
+        0.695
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/19.glb",
+      "name": "Object_46",
+      "dimensions": [
+        1.0,
+        1.0,
+        2.393
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/20.glb",
+      "name": "Object_48",
+      "dimensions": [
+        0.531,
+        1.0,
+        0.531
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/21.glb",
+      "name": "Object_50",
+      "dimensions": [
+        0.969,
+        1.0,
+        3.666
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/22.glb",
+      "name": "Object_52",
+      "dimensions": [
+        1.0,
+        0.998,
+        0.792
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/23.glb",
+      "name": "Object_54",
+      "dimensions": [
+        0.2,
+        1.0,
+        0.854
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/24.glb",
+      "name": "Object_56",
+      "dimensions": [
+        1.0,
+        0.902,
+        1.615
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/25.glb",
+      "name": "Object_58",
+      "dimensions": [
+        0.157,
+        1.0,
+        6.662
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/26.glb",
+      "name": "Object_6",
+      "dimensions": [
+        0.3,
+        1.0,
+        0.3
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/27.glb",
+      "name": "Object_60",
+      "dimensions": [
+        0.222,
+        1.0,
+        0.978
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/28.glb",
+      "name": "Object_62",
+      "dimensions": [
+        0.268,
+        1.0,
+        14.823
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/29.glb",
+      "name": "Object_64",
+      "dimensions": [
+        0.173,
+        1.0,
+        1.862
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/30.glb",
+      "name": "Object_66",
+      "dimensions": [
+        0.975,
+        1.0,
+        0.061
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/31.glb",
+      "name": "Object_68",
+      "dimensions": [
+        1.0,
+        0.344,
+        0.219
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/32.glb",
+      "name": "Object_70",
+      "dimensions": [
+        0.636,
+        1.0,
+        0.637
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/33.glb",
+      "name": "Object_72",
+      "dimensions": [
+        0.622,
+        1.0,
+        0.321
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/34.glb",
+      "name": "Object_74",
+      "dimensions": [
+        0.446,
+        1.0,
+        1.795
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/35.glb",
+      "name": "Object_76",
+      "dimensions": [
+        0.423,
+        1.0,
+        0.275
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "trade_items/36.glb",
+      "name": "Object_8",
+      "dimensions": [
+        1.0,
+        1.0,
+        0.015
+      ],
+      "future_trade_item": true
+    }
+  ]
+}

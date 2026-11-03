@@ -1,0 +1,28 @@
+{
+ "households": [
+  {"id":"willow","title":"The Willow family","members":{"Mara":"parent","Finn":"parent","Ollie":"child"}},
+  {"id":"hearth","title":"The Hearth family","members":{"Bram":"parent","Selene":"parent; night watch","Theo":"young apprentice and child"}},
+  {"id":"clerk","title":"The Alden household","members":{"Alden":"parent","Cedric":"adult child","Ivor":"Alden's sibling"}},
+  {"id":"weaver","title":"The Weaver sisters","members":{"Agnes":"sister","Elsa":"sister"}},
+  {"id":"stag","title":"The Stag household","members":{"Rowan":"partner","Lysa":"partner"}},
+  {"id":"brewer","title":"The Brewer family","members":{"Hugh":"sibling","Tilda":"sibling"}},
+  {"id":"market","title":"The Market household","members":{"Ada":"partner","Jory":"partner"}},
+  {"id":"garden","title":"The Garden family","members":{"Elowen":"aunt","Roslin":"niece","Wren":"niece"}},
+  {"id":"watch","title":"The Watch household","members":{"Edric":"partner","Greta":"partner"}},
+  {"id":"farm","title":"The Farm family","members":{"Tomas":"sibling","Nell":"sibling"}},
+  {"id":"mill","title":"The Mill household","members":{"Sera":"partner","Oswin":"partner"}},
+  {"id":"pip","title":"The Pip cousins","members":{"Pip":"cousin","Wolfram":"cousin"}},
+  {"id":"eirik","title":"The Eirik family","members":{"Eirik":"sibling","Astrid":"sibling"}},
+  {"id":"traders","title":"The Traders family","members":{"Corvin":"cousin","Duncan":"cousin"}},
+  {"id":"woods","title":"The Woodland family","members":{"Kael":"sibling","Fenn":"sibling"}},
+  {"id":"craft","title":"The Craft family","members":{"Oren":"parent","Beren":"adult child"}},
+  {"id":"freya","title":"The Freya household","members":{"Freya":"partner","Torren":"partner"}},
+  {"id":"ingrid","title":"The Ingrid family","members":{"Ingrid":"sibling","Elric":"sibling"}},
+  {"id":"mina","title":"The Mina family","members":{"Mina":"niece","Ida":"aunt"}},
+  {"id":"hilda","title":"The Hilda sisters","members":{"Hilda":"sister","Erna":"sister"}},
+  {"id":"westgate","title":"The Western Gate household","members":{"Bodil":"partner","Gareth":"partner"}},
+  {"id":"rolf","title":"The Rolf family","members":{"Rolf":"parent","Leif":"adult child"}},
+  {"id":"sven","title":"The Sven household","members":{"Sven":"partner","Alva":"partner"}},
+  {"id":"castle","title":"The Castle family","preferred_home":"Feira Castle","members":{"Nils":"parent","Liv":"adult child","Edda":"Nils's sibling"}}
+ ]
+}

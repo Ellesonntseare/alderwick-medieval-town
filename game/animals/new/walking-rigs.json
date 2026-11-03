@@ -1,0 +1,20 @@
+[
+  {
+    "file": "sheep-test_non-commercial.glb",
+    "walking_bones": [
+      "Front.RUpper",
+      "Front.RLower",
+      "Front.LUpper",
+      "Front.LLower",
+      "Back.RUpper",
+      "Back.RLower",
+      "Back.LUpper",
+      "Back.LLower"
+    ],
+    "following_foot_controls": 0,
+    "clips": [
+      "Idle",
+      "Walk"
+    ]
+  }
+]

@@ -1,0 +1,36 @@
+config_version=5
+
+[application]
+config/name="Alderwick — Medieval Town"
+run/main_scene="res://town_boot.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+
+[autoload]
+Mobile="*res://mobile_runtime.gd"
+
+[audio]
+driver/enable_input=true
+
+[display]
+window/size/viewport_width=1440
+window/size/viewport_height=900
+window/size/window_width_override=1280
+window/size/window_height_override=800
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+environment/defaults/default_clear_color=Color(0.65,0.77,0.82,1)
+
+[physics]
+common/physics_interpolation=true
+
+[importer_defaults]
+
+texture={
+"compress/mode": 0,
+"process/size_limit": 1024,
+"mipmaps/generate": true,
+"detect_3d/compress_to": 0
+}

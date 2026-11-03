@@ -1,0 +1,177 @@
+{
+  "source": "C:\\Users\\elles\\Downloads\\lowpoly_village_tools_set.glb",
+  "id": "tools",
+  "original_triangles": 5820,
+  "parts": [
+    {
+      "file": "tools/00.glb",
+      "name": "anvil_Material_0",
+      "dimensions": [
+        1.0,
+        0.43,
+        0.652
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/01.glb",
+      "name": "axe_Material_0",
+      "dimensions": [
+        1.0,
+        0.28,
+        3.209
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/02.glb",
+      "name": "bucked_Material_0",
+      "dimensions": [
+        1.0,
+        1.0,
+        1.039
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/03.glb",
+      "name": "claw hammer_Material_0",
+      "dimensions": [
+        1.0,
+        0.364,
+        2.231
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/04.glb",
+      "name": "forceps_Material_0",
+      "dimensions": [
+        1.0,
+        0.304,
+        3.413
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/05.glb",
+      "name": "hammer_Material_0",
+      "dimensions": [
+        1.0,
+        0.469,
+        2.948
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/06.glb",
+      "name": "hoe_Material_0",
+      "dimensions": [
+        1.0,
+        0.469,
+        4.784
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/07.glb",
+      "name": "pickaxe_Material_0",
+      "dimensions": [
+        1.0,
+        0.123,
+        1.409
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/08.glb",
+      "name": "pitchfork_Material_0",
+      "dimensions": [
+        1.0,
+        0.374,
+        7.185
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/09.glb",
+      "name": "poker_Material_0",
+      "dimensions": [
+        1.0,
+        0.119,
+        4.344
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/10.glb",
+      "name": "rake_Material_0",
+      "dimensions": [
+        1.0,
+        0.846,
+        8.185
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/11.glb",
+      "name": "saw_Material_0",
+      "dimensions": [
+        1.0,
+        0.072,
+        0.402
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/12.glb",
+      "name": "scythce_Material_0",
+      "dimensions": [
+        1.0,
+        0.131,
+        2.122
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/13.glb",
+      "name": "shield_Material_0",
+      "dimensions": [
+        1.0,
+        0.18,
+        1.0
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/14.glb",
+      "name": "shovel_Material_0",
+      "dimensions": [
+        1.0,
+        0.329,
+        6.539
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/15.glb",
+      "name": "sword_Material_0",
+      "dimensions": [
+        1.0,
+        0.455,
+        8.096
+      ],
+      "future_trade_item": true
+    },
+    {
+      "file": "tools/16.glb",
+      "name": "watering can_Material_0",
+      "dimensions": [
+        1.0,
+        0.524,
+        0.896
+      ],
+      "future_trade_item": true
+    }
+  ]
+}

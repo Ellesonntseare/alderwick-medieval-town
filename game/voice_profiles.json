@@ -1,0 +1,382 @@
+{
+  "profiles": {
+    "Mara": {
+      "voice": "af_heart",
+      "secondary": "bf_lily",
+      "mix": 0.15,
+      "speed": 1.06,
+      "pitch": 1.02
+    },
+    "Bram": {
+      "voice": "am_puck",
+      "secondary": "bm_daniel",
+      "mix": 0.465,
+      "speed": 1.0,
+      "pitch": 0.96
+    },
+    "Elowen": {
+      "voice": "bf_lily",
+      "secondary": "bf_isabella",
+      "mix": 0.195,
+      "speed": 0.98,
+      "pitch": 0.99
+    },
+    "Rowan": {
+      "voice": "bm_daniel",
+      "secondary": "bm_lewis",
+      "mix": 0.33,
+      "speed": 0.98,
+      "pitch": 0.99
+    },
+    "Edric": {
+      "voice": "bm_george",
+      "secondary": "bm_fable",
+      "mix": 0.195,
+      "speed": 1.04,
+      "pitch": 1.02
+    },
+    "Tomas": {
+      "voice": "bm_george",
+      "secondary": "bm_lewis",
+      "mix": 0.15,
+      "speed": 1.0,
+      "pitch": 0.96
+    },
+    "Nell": {
+      "voice": "bf_emma",
+      "secondary": "af_heart",
+      "mix": 0.285,
+      "speed": 0.94,
+      "pitch": 0.99
+    },
+    "Agnes": {
+      "voice": "af_heart",
+      "secondary": "af_bella",
+      "mix": 0.24,
+      "speed": 1.0,
+      "pitch": 1.0
+    },
+    "Finn": {
+      "voice": "bm_lewis",
+      "secondary": "bm_george",
+      "mix": 0.15,
+      "speed": 1.04,
+      "pitch": 1.02
+    },
+    "Hugh": {
+      "voice": "bm_daniel",
+      "secondary": "am_fenrir",
+      "mix": 0.15,
+      "speed": 0.96,
+      "pitch": 1.0
+    },
+    "Sera": {
+      "voice": "af_nicole",
+      "secondary": "bf_alice",
+      "mix": 0.465,
+      "speed": 1.08,
+      "pitch": 1.0
+    },
+    "Wren": {
+      "voice": "af_heart",
+      "secondary": "af_nicole",
+      "mix": 0.285,
+      "speed": 0.96,
+      "pitch": 1.03
+    },
+    "Oswin": {
+      "voice": "am_puck",
+      "secondary": "am_michael",
+      "mix": 0.24,
+      "speed": 1.06,
+      "pitch": 0.97
+    },
+    "Ada": {
+      "voice": "bf_emma",
+      "secondary": "af_heart",
+      "mix": 0.285,
+      "speed": 0.94,
+      "pitch": 0.98
+    },
+    "Jory": {
+      "voice": "bm_george",
+      "secondary": "bm_lewis",
+      "mix": 0.33,
+      "speed": 1.08,
+      "pitch": 0.96
+    },
+    "Pip": {
+      "voice": "bm_daniel",
+      "secondary": "bm_george",
+      "mix": 0.15,
+      "speed": 0.94,
+      "pitch": 0.98
+    },
+    "Greta": {
+      "voice": "bf_emma",
+      "secondary": "af_heart",
+      "mix": 0.285,
+      "speed": 0.94,
+      "pitch": 1.03
+    },
+    "Alden": {
+      "voice": "bm_lewis",
+      "secondary": "am_michael",
+      "mix": 0.285,
+      "speed": 1.04,
+      "pitch": 0.97
+    },
+    "Eirik": {
+      "voice": "am_michael",
+      "secondary": "am_fenrir",
+      "mix": 0.33,
+      "speed": 1.04,
+      "pitch": 0.99
+    },
+    "Corvin": {
+      "voice": "am_fenrir",
+      "secondary": "bm_lewis",
+      "mix": 0.375,
+      "speed": 1.08,
+      "pitch": 1.0
+    },
+    "Kael": {
+      "voice": "am_fenrir",
+      "secondary": "am_puck",
+      "mix": 0.375,
+      "speed": 0.94,
+      "pitch": 0.96
+    },
+    "Astrid": {
+      "voice": "bf_alice",
+      "secondary": "bf_emma",
+      "mix": 0.42,
+      "speed": 1.0,
+      "pitch": 1.0
+    },
+    "Oren": {
+      "voice": "am_puck",
+      "secondary": "am_fenrir",
+      "mix": 0.375,
+      "speed": 0.94,
+      "pitch": 0.98
+    },
+    "Lysa": {
+      "voice": "bf_alice",
+      "secondary": "bf_lily",
+      "mix": 0.33,
+      "speed": 0.98,
+      "pitch": 0.97
+    },
+    "Cedric": {
+      "voice": "bm_george",
+      "secondary": "am_fenrir",
+      "mix": 0.24,
+      "speed": 0.96,
+      "pitch": 1.04
+    },
+    "Freya": {
+      "voice": "af_nicole",
+      "secondary": "bf_lily",
+      "mix": 0.42,
+      "speed": 1.06,
+      "pitch": 0.96
+    },
+    "Torren": {
+      "voice": "am_puck",
+      "secondary": "bm_lewis",
+      "mix": 0.375,
+      "speed": 0.98,
+      "pitch": 1.02
+    },
+    "Ingrid": {
+      "voice": "af_heart",
+      "secondary": "bf_emma",
+      "mix": 0.24,
+      "speed": 0.98,
+      "pitch": 0.99
+    },
+    "Elric": {
+      "voice": "am_fenrir",
+      "secondary": "am_puck",
+      "mix": 0.285,
+      "speed": 1.0,
+      "pitch": 1.02
+    },
+    "Mina": {
+      "voice": "bf_emma",
+      "secondary": "af_heart",
+      "mix": 0.375,
+      "speed": 0.94,
+      "pitch": 1.01
+    },
+    "Wolfram": {
+      "voice": "am_fenrir",
+      "secondary": "bm_george",
+      "mix": 0.24,
+      "speed": 1.02,
+      "pitch": 1.0
+    },
+    "Tilda": {
+      "voice": "bf_emma",
+      "secondary": "bf_isabella",
+      "mix": 0.24,
+      "speed": 1.08,
+      "pitch": 1.01
+    },
+    "Beren": {
+      "voice": "am_puck",
+      "secondary": "bm_george",
+      "mix": 0.15,
+      "speed": 1.04,
+      "pitch": 0.99
+    },
+    "Elsa": {
+      "voice": "af_heart",
+      "secondary": "af_nicole",
+      "mix": 0.375,
+      "speed": 0.94,
+      "pitch": 1.04
+    },
+    "Hilda": {
+      "voice": "bf_alice",
+      "secondary": "af_heart",
+      "mix": 0.375,
+      "speed": 1.04,
+      "pitch": 1.0
+    },
+    "Bodil": {
+      "voice": "bf_alice",
+      "secondary": "af_nicole",
+      "mix": 0.375,
+      "speed": 0.94,
+      "pitch": 0.96
+    },
+    "Rolf": {
+      "voice": "bm_lewis",
+      "secondary": "bm_george",
+      "mix": 0.15,
+      "speed": 0.98,
+      "pitch": 1.04
+    },
+    "Leif": {
+      "voice": "am_michael",
+      "secondary": "bm_lewis",
+      "mix": 0.375,
+      "speed": 1.04,
+      "pitch": 1.04
+    },
+    "Ida": {
+      "voice": "af_nicole",
+      "secondary": "bf_lily",
+      "mix": 0.15,
+      "speed": 1.06,
+      "pitch": 0.96
+    },
+    "Erna": {
+      "voice": "af_heart",
+      "secondary": "bf_isabella",
+      "mix": 0.375,
+      "speed": 1.06,
+      "pitch": 1.01
+    },
+    "Sven": {
+      "voice": "bm_daniel",
+      "secondary": "bm_george",
+      "mix": 0.42,
+      "speed": 0.94,
+      "pitch": 1.04
+    },
+    "Alva": {
+      "voice": "bf_alice",
+      "secondary": "bf_emma",
+      "mix": 0.33,
+      "speed": 1.02,
+      "pitch": 0.96
+    },
+    "Nils": {
+      "voice": "bm_daniel",
+      "secondary": "bm_george",
+      "mix": 0.15,
+      "speed": 0.94,
+      "pitch": 1.01
+    },
+    "Liv": {
+      "voice": "af_heart",
+      "secondary": "bf_emma",
+      "mix": 0.33,
+      "speed": 0.96,
+      "pitch": 0.96
+    },
+    "Edda": {
+      "voice": "bf_isabella",
+      "secondary": "af_bella",
+      "mix": 0.24,
+      "speed": 0.96,
+      "pitch": 1.0
+    },
+    "Gareth": {
+      "voice": "bm_george",
+      "secondary": "bm_daniel",
+      "mix": 0.25,
+      "speed": 0.98,
+      "pitch": 0.97
+    },
+    "Duncan": {
+      "voice": "bm_lewis",
+      "secondary": "bm_george",
+      "mix": 0.35,
+      "speed": 1.04,
+      "pitch": 1.0
+    },
+    "Selene": {
+      "voice": "bf_isabella",
+      "secondary": "bf_emma",
+      "mix": 0.2,
+      "speed": 0.96,
+      "pitch": 0.98
+    },
+    "Ivor": {
+      "voice": "bm_fable",
+      "secondary": "bm_george",
+      "mix": 0.25,
+      "speed": 0.94,
+      "pitch": 0.98
+    },
+    "Roslin": {
+      "voice": "bf_emma",
+      "secondary": "bf_lily",
+      "mix": 0.3,
+      "speed": 1.0,
+      "pitch": 1.02
+    },
+    "Fenn": {
+      "voice": "bm_daniel",
+      "secondary": "bm_fable",
+      "mix": 0.4,
+      "speed": 0.98,
+      "pitch": 1.01
+    },
+    "Ollie": {
+      "voice": "af_sky",
+      "secondary": "af_heart",
+      "mix": 0.25,
+      "speed": 1.06,
+      "pitch": 1.1
+    },
+    "Theo": {
+      "voice": "am_puck",
+      "secondary": "bm_lewis",
+      "mix": 0.2,
+      "speed": 1.04,
+      "pitch": 1.07
+    },
+    "Ansel": {
+      "voice": "bm_fable",
+      "secondary": "am_michael",
+      "mix": 0.35,
+      "speed": 1.02,
+      "pitch": 0.99
+    }
+  }
+}

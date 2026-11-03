@@ -1,0 +1,13 @@
+{
+  "title": "Your potter's house",
+  "source_filename": "mitterkirchen_-_topferwerkstatt_potters_house.glb",
+  "spawn_inside": true,
+  "interior_pending": false,
+  "interior_source": "the_interior_14_is_spacious.glb",
+  "integration_status": "Implemented and verified: native spawn/floor/stairs/sit/sleep/entry-exit; full-town home reservation, floor spawn and 53-resident retention passed",
+  "interior_layout": "Selected spacious interior preserved at human scale in a linked space",
+  "exterior_position": [-85,0,-80],
+  "interior_spawn": [2.6,-79.9,3.8],
+  "exterior_visible_indoors": false,
+  "reserved_for_player": true
+}

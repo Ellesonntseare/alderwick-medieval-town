@@ -1,0 +1,222 @@
+{
+  "viking_hall": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      12,
+      8,
+      3.3
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      5.3
+    ],
+    "direction": 1,
+    "id": "viking_hall",
+    "removed_faces": 3174,
+    "outside_y": 7.3,
+    "inner_y": 3.5
+  },
+  "viking_house": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      7,
+      8,
+      2.8
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      5.2
+    ],
+    "direction": 1,
+    "id": "viking_house",
+    "removed_faces": 1076,
+    "outside_y": 7.2,
+    "inner_y": 3.5
+  },
+  "medieval_house": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      11,
+      6,
+      2.8
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      3.9
+    ],
+    "direction": 1,
+    "id": "medieval_house",
+    "removed_faces": 75024,
+    "outside_y": 5.9,
+    "inner_y": 2.5
+  },
+  "boathouse": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      13,
+      9,
+      2.8
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      6.2
+    ],
+    "direction": 1,
+    "id": "boathouse",
+    "removed_faces": 20362,
+    "outside_y": 8.2,
+    "inner_y": 4.0
+  },
+  "watchtower": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      2.2,
+      2.2,
+      2.8
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      1.5
+    ],
+    "direction": 1,
+    "id": "watchtower",
+    "removed_faces": 153,
+    "outside_y": 3.5,
+    "inner_y": 0.6000000000000001
+  },
+  "downloaded_forge": {
+    "center": [
+      3.125,
+      -4.75
+    ],
+    "size": [
+      2.8,
+      3.6,
+      3.3
+    ],
+    "floor": 0.0871282,
+    "door": [
+      3.125,
+      -8.0
+    ],
+    "direction": -1,
+    "offset_y": -0.0871282,
+    "open_roof": true,
+    "preserve_original": true,
+    "asset_scale": 2.5,
+    "id": "downloaded_forge",
+    "removed_faces": 0,
+    "outside_y": -10.0,
+    "inner_y": -6.05
+  },
+  "fortress": {
+    "center": [
+      0,
+      0
+    ],
+    "size": [
+      12,
+      12,
+      3.2
+    ],
+    "floor": 0.2,
+    "door": [
+      0,
+      11.7
+    ],
+    "direction": 1,
+    "id": "fortress",
+    "removed_faces": 69795,
+    "outside_y": 13.7,
+    "inner_y": 5.5
+  },
+  "arnstein_castle": {
+    "center": [
+      -2,
+      1
+    ],
+    "size": [
+      4,
+      4,
+      3.0
+    ],
+    "floor": 9.8,
+    "door": [
+      -2,
+      -2.2
+    ],
+    "direction": -1,
+    "offset_y": -9.6,
+    "open_roof": true,
+    "id": "arnstein_castle",
+    "removed_faces": 1491,
+    "outside_y": -10.0,
+    "inner_y": -0.65
+  },
+  "feira_castle": {
+    "center": [
+      -4,
+      4
+    ],
+    "size": [
+      10,
+      10,
+      3.0
+    ],
+    "floor": 7.6,
+    "door": [
+      -4,
+      14
+    ],
+    "direction": 1,
+    "offset_y": -7.4,
+    "open_roof": true,
+    "id": "feira_castle",
+    "removed_faces": 2769,
+    "outside_y": 29.0,
+    "inner_y": 8.0
+  },
+  "castle_xix": {
+    "center": [
+      -3,
+      5
+    ],
+    "size": [
+      7,
+      7,
+      3.0
+    ],
+    "floor": 0.472,
+    "door": [
+      0,
+      -16.5
+    ],
+    "direction": -1,
+    "offset_y": -0.272,
+    "open_roof": true,
+    "id": "castle_xix",
+    "removed_faces": 22483,
+    "outside_y": -24.0,
+    "inner_y": 3.0
+  }
+}

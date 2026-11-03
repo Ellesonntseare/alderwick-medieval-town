@@ -1,0 +1,320 @@
+[
+  {
+    "name": "Mara",
+    "style": "worker",
+    "role": "Baker",
+    "district": "city"
+  },
+  {
+    "name": "Bram",
+    "style": "mercenary",
+    "role": "Blacksmith",
+    "district": "city"
+  },
+  {
+    "name": "Elowen",
+    "style": "female_ranger",
+    "role": "Herbalist",
+    "district": "city"
+  },
+  {
+    "name": "Rowan",
+    "style": "mercenary",
+    "role": "Innkeeper",
+    "district": "city"
+  },
+  {
+    "name": "Edric",
+    "style": "knight",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Tomas",
+    "style": "worker",
+    "role": "Merchant",
+    "district": "city"
+  },
+  {
+    "name": "Nell",
+    "style": "viking",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Agnes",
+    "style": "witch",
+    "role": "Weaver",
+    "district": "city"
+  },
+  {
+    "name": "Finn",
+    "style": "male_peasant",
+    "role": "Carpenter",
+    "district": "city"
+  },
+  {
+    "name": "Hugh",
+    "style": "mercenary",
+    "role": "Brewer",
+    "district": "city"
+  },
+  {
+    "name": "Sera",
+    "style": "viking",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Wren",
+    "style": "female_peasant",
+    "role": "Merchant",
+    "district": "city"
+  },
+  {
+    "name": "Oswin",
+    "style": "knight",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Ada",
+    "style": "worker",
+    "role": "Merchant",
+    "district": "city"
+  },
+  {
+    "name": "Jory",
+    "style": "night_hunter",
+    "role": "Forester",
+    "district": "city"
+  },
+  {
+    "name": "Pip",
+    "style": "worker",
+    "role": "Merchant",
+    "district": "city"
+  },
+  {
+    "name": "Greta",
+    "style": "viking",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Alden",
+    "style": "medieval",
+    "role": "Town clerk",
+    "district": "city"
+  },
+  {
+    "name": "Eirik",
+    "style": "knight",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Corvin",
+    "style": "mercenary",
+    "role": "Merchant",
+    "district": "city"
+  },
+  {
+    "name": "Kael",
+    "style": "male_ranger",
+    "role": "Forester",
+    "district": "city"
+  },
+  {
+    "name": "Astrid",
+    "style": "viking",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Oren",
+    "style": "worker",
+    "role": "Carpenter",
+    "district": "city"
+  },
+  {
+    "name": "Lysa",
+    "style": "knight",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Cedric",
+    "style": "witch",
+    "role": "Night guard",
+    "district": "city"
+  },
+  {
+    "name": "Freya",
+    "style": "viking",
+    "role": "Guard",
+    "district": "city"
+  },
+  {
+    "name": "Torren",
+    "style": "medieval",
+    "role": "Farmer",
+    "district": "city"
+  },
+  {
+    "name": "Ingrid",
+    "style": "mercenary",
+    "role": "Forester",
+    "district": "city"
+  },
+  {
+    "name": "Elric",
+    "style": "adventurer",
+    "role": "Carpenter",
+    "district": "city"
+  },
+  {
+    "name": "Mina",
+    "style": "emlyn",
+    "role": "Herbalist",
+    "district": "city"
+  },
+  {
+    "name": "Wolfram",
+    "style": "worker",
+    "role": "Night guard",
+    "district": "city"
+  },
+  {
+    "name": "Tilda",
+    "style": "knight",
+    "role": "Guard",
+    "district": "west"
+  },
+  {
+    "name": "Beren",
+    "style": "witch",
+    "role": "Farmer",
+    "district": "west"
+  },
+  {
+    "name": "Elsa",
+    "style": "viking",
+    "role": "Guard",
+    "district": "west"
+  },
+  {
+    "name": "Hilda",
+    "style": "medieval",
+    "role": "Carpenter",
+    "district": "west"
+  },
+  {
+    "name": "Bodil",
+    "style": "mercenary",
+    "role": "Merchant",
+    "district": "west"
+  },
+  {
+    "name": "Rolf",
+    "style": "adventurer",
+    "role": "Night guard",
+    "district": "west"
+  },
+  {
+    "name": "Leif",
+    "style": "night_hunter",
+    "role": "Merchant",
+    "district": "west"
+  },
+  {
+    "name": "Ida",
+    "style": "worker",
+    "role": "Farmer",
+    "district": "west"
+  },
+  {
+    "name": "Erna",
+    "style": "knight",
+    "role": "Guard",
+    "district": "castle"
+  },
+  {
+    "name": "Sven",
+    "style": "witch",
+    "role": "Carpenter",
+    "district": "castle"
+  },
+  {
+    "name": "Alva",
+    "style": "viking",
+    "role": "Guard",
+    "district": "castle"
+  },
+  {
+    "name": "Nils",
+    "style": "medieval",
+    "role": "Guard",
+    "district": "castle"
+  },
+  {
+    "name": "Liv",
+    "style": "mercenary",
+    "role": "Merchant",
+    "district": "castle"
+  },
+  {
+    "name": "Edda",
+    "style": "adventurer",
+    "role": "Farmer",
+    "district": "castle"
+  },
+  {
+    "name": "Gareth",
+    "style": "saxon",
+    "role": "Guard",
+    "district": "west"
+  },
+  {
+    "name": "Duncan",
+    "style": "bruce",
+    "role": "Supply courier",
+    "district": "castle"
+  },
+  {
+    "name": "Selene",
+    "style": "armoured_assassin",
+    "role": "Night guard",
+    "district": "city"
+  },
+  {
+    "name": "Ivor",
+    "style": "robed_scholar",
+    "role": "Archivist",
+    "district": "city"
+  },
+  {
+    "name": "Roslin",
+    "style": "medieval_woman",
+    "role": "Herbalist",
+    "district": "city"
+  },
+  {
+    "name": "Fenn",
+    "style": "cult_archer",
+    "role": "Range keeper",
+    "district": "city"
+  },
+  {
+    "name": "Ollie",
+    "style": "runner_child",
+    "role": "Village child",
+    "district": "city"
+  },
+  {
+    "name": "Theo",
+    "style": "runner_youth",
+    "role": "Young apprentice",
+    "district": "city"
+  }
+]

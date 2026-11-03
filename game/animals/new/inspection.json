@@ -1,0 +1,79 @@
+[
+  {
+    "file": "cow_idle.glb",
+    "size": [
+      1.9021157026290894,
+      2.396658420562744,
+      2.3879826068878174
+    ],
+    "meshes": 2,
+    "animations": [
+      "Scene"
+    ],
+    "triangles": 56716
+  },
+  {
+    "file": "horse_basemesh.glb",
+    "size": [
+      6.807697772979736,
+      26.946428298950195,
+      24.53098487854004
+    ],
+    "meshes": 1,
+    "animations": [],
+    "triangles": 13444
+  },
+  {
+    "file": "sheep.glb",
+    "size": [
+      2.367537021636963,
+      7.997031211853027,
+      6.936990737915039
+    ],
+    "meshes": 2,
+    "animations": [
+      "Animation"
+    ],
+    "triangles": 2370
+  },
+  {
+    "file": "sheep-test_non-commercial.glb",
+    "size": [
+      1.9021157026290894,
+      1.9999998807907104,
+      2.0
+    ],
+    "meshes": 5,
+    "animations": [
+      "idle",
+      "jump"
+    ],
+    "triangles": 85270
+  },
+  {
+    "file": "birds.glb",
+    "size": [
+      2.2216789722442627,
+      3.041682481765747,
+      2.0
+    ],
+    "meshes": 15,
+    "animations": [
+      "Scene"
+    ],
+    "triangles": 1210
+  },
+  {
+    "file": "model_110a_-_imperial_woodpecker_flying.glb",
+    "size": [
+      1.9021157026290894,
+      2.3105521202087402,
+      2.769070625305176
+    ],
+    "meshes": 62,
+    "animations": [
+      "Flying"
+    ],
+    "triangles": 160847
+  }
+]

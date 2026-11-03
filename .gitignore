@@ -1,0 +1,51 @@
+# Godot generated data
+**/.godot/
+**/*.import
+# Recreated from embedded GLB image buffers during Godot import
+game/**/*_Image_*.png
+game/**/*_Image_*.jpg
+game/**/*_Image_*.jpeg
+**/android/build/
+**/android/.gradle/
+# Personal data, machine configuration and credentials
+**/state/
+**/cache/
+**/__pycache__/
+**/*.pyc
+**/*.keystore
+**/*.jks
+**/.env*
+**/local.properties
+**/export_credentials.cfg
+tools/phone-pairing.json
+DOWNLOAD-WATCH-STATE.json
+DOWNLOADS-REVIEW.json
+NEW-DOWNLOADS-REVIEW.json
+# Local runtime and model downloads
+tools/engine/
+tools/speech/python/
+tools/speech/python-packages/
+tools/speech/kokoro-packages/
+tools/speech/recognition-packages/
+tools/speech/models/
+tools/speech/native/
+tools/ai/models/
+tools/ai/runtime*/
+source-assets/
+live-preview/
+review/
+builds/
+mobile-build/
+*.log
+*.png
+*.zip
+*.tpz
+*.apk
+*.pck
+*.bin
+!game/**/*.bin
+!game/**/*.png
+*.blend*
+*.download
+*.crdownload
+*.tmp

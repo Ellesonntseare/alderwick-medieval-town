@@ -1,0 +1,11 @@
+[
+  {"id":"medieval","name":"Townsperson","portrait":"Nils","description":"A hooded townsperson in practical travelling clothes.","base":"medieval"},
+  {"id":"worker","name":"Craftsperson","portrait":"Mara","description":"A village worker with a cap and simple work clothes.","base":"worker"},
+  {"id":"witch","name":"Village herbalist","portrait":"Agnes","description":"A broad-brimmed hat and traditional village clothing.","base":"witch"},
+  {"id":"adventurer","name":"Traveller","portrait":"Elric","description":"Light travelling clothes for exploring the town and its surroundings.","base":"adventurer"},
+  {"id":"knight","name":"Knight","portrait":"Edric","description":"An armoured knight with a shield and fitted equipment.","base":"knight"},
+  {"id":"viking","name":"Viking","portrait":"Nell","description":"A northern warrior with a round shield and layered armour.","base":"viking"},
+  {"id":"mercenary","name":"Mercenary","portrait":"Bram","description":"A seasoned fighter wearing practical armour.","base":"mercenary"},
+  {"id":"night_hunter","name":"Hooded ranger","portrait":"Jory","description":"A hooded figure in dark travelling gear.","base":"night_hunter"},
+  {"id":"emlyn","name":"Emlyn","portrait":"Mina","description":"A purple-haired traveller with light armour.","base":"emlyn"}
+]

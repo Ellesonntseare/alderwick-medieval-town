@@ -1,0 +1,15 @@
+{
+  "exterior": {
+    "title": "Mitterkirchen - T\u00f6pferwerkstatt (potter's house)",
+    "author": "Mario_Wallner",
+    "license": "CC-BY-NC-4.0",
+    "source": "https://sketchfab.com/3d-models/mitterkirchen-topferwerkstatt-potters-house-dfbeb7d8c21141bea3fc041d86705884"
+  },
+  "interior": {
+    "title": "The interior (14) is spacious.",
+    "author": "dasy444",
+    "license": "SKETCHFAB Standard",
+    "source": "https://sketchfab.com/3d-models/the-interior-14-is-spacious-79262bfc39d54fd2a0edc9d80fafdb6d"
+  },
+  "changes": "Transforms baked; exterior grounded; interior presentation spheres omitted; textures capped at2048. Original downloads preserved."
+}

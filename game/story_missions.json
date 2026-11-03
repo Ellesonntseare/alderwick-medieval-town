@@ -1,0 +1,21 @@
+{
+ "missions": [
+  {"id":"missing_delivery","title":"The misplaced delivery","giver":"Ada","reward":12,"item_reward":"Market favour","first_lead":"Corvin handled the delivery slip. Ask him to check the destination label.","summary":"Ada's labelled vegetable crate reached the wrong destination. Find out where it went and bring it back before the fair.","steps":[
+   {"kind":"talk","person":"Corvin","text":"Ask Corvin about Ada's delivery labels.","fact":"Confirmed: Ada's actual vegetable crate is currently inside the Fère-en-Tardenois ruins. The crate was delivered there because its destination label was wrong. It has not reached Ada. Alden is not the delivery destination, and theft has not been proved. Tell the visiting player to recover the crate at Fère-en-Tardenois."},
+   {"kind":"collect","item":"Ada's vegetable crate","site":"fere_chateau","offset":[0,0,0],"text":"Recover Ada's labelled crate inside Fère-en-Tardenois."},
+   {"kind":"handin","person":"Ada","item":"Ada's vegetable crate","text":"Bring the recovered crate back to Ada.","fact":"The visitor is returning your labelled crate of greens. The agreed reward is twelve coins from the town's delivery fund. Once they hand it over, you can sell those vegetables at your stall again. Speak as Ada about the delivery and your thanks."}
+  ]},
+  {"id":"wagon_fittings","title":"A wagon before the fair","giver":"Oren","reward":18,"item_reward":"Craftsman's favour","first_lead":"Bram is making the replacement metal fittings. Ask whether they are ready.","summary":"Oren can repair a supply wagon if Bram's replacement fittings arrive. Help finish the work so deliveries can continue.","steps":[
+   {"kind":"talk","person":"Bram","text":"Ask Bram about Oren's replacement wagon fittings.","fact":"You finished Oren's wagon fittings and left the labelled bundle beside the eastern supply store at (42,-43). Tell the visitor where to collect it. No payment is needed."},
+   {"kind":"collect","item":"Wagon fittings","position":[42,0.05,-41.5],"text":"Collect the labelled fittings beside the eastern supply store."},
+   {"kind":"work","item":"Wagon fittings","position":[35,0.05,17.4],"text":"Fit the parts at the carpenter's workbench. Hold E nearby for four seconds."},
+   {"kind":"handin","person":"Oren","item":"Repaired wagon fittings","text":"Tell Oren the fittings are ready and hand them over.","fact":"The visitor fitted the real wagon parts at your workbench. You can complete the supply wagon in the workyard and use it for deliveries. The agreed repair reward is eighteen coins from the town's repair fund."}
+  ]},
+  {"id":"overdue_surveyor","title":"The overdue surveyor","giver":"Greta","reward":15,"item_reward":"Surveyor's map","first_lead":"Rowan served Ansel breakfast before the trip. Ask Rowan where he was going.","summary":"Ansel went to inspect Montfaucon and missed a check-in. Follow the accounts of the people who saw him and make sure he is safe.","steps":[
+   {"kind":"talk","person":"Rowan","text":"Ask Rowan when Ansel last visited the tavern.","fact":"Ansel had breakfast here, then went to compare old masonry at Montfaucon. Nils lent him a survey sketch. You saw no sign of trouble. Share these facts if asked."},
+   {"kind":"talk","person":"Nils","text":"Ask Nils which part of Montfaucon Ansel planned to inspect.","fact":"Ansel planned to work just inside Montfaucon's west entrance. He often forgets the time when sketching, but promised Greta a check-in. Tell the visitor where to look."},
+   {"kind":"talk","person":"Ansel","site":"montfaucon_chateau","text":"Find Ansel inside Montfaucon and speak with him.","fact":"You are safe, tired from surveying and embarrassed that you missed Greta's check-in. Ask the visitor to let Greta know you are well; you will remain here to finish recording the masonry."},
+   {"kind":"handin","person":"Greta","text":"Let Greta know Ansel is safe at Montfaucon.","fact":"The visitor personally found Ansel alive and safe inside Montfaucon. They are bringing his check-in, not rescuing him from an invented attack. Thank them for checking."}
+  ]}
+ ]
+}

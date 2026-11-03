@@ -1,0 +1,64 @@
+name: Build Android
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['game/**', 'tools/prepare_android.py', '.github/workflows/android.yml']
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Android SDK
+        run: sdkmanager 'platform-tools' 'build-tools;35.0.0' 'platforms;android-35'
+      - name: Godot 4.7.2 and matching Android templates
+        shell: bash
+        run: |
+          mkdir -p "$HOME/godot" "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          curl -fL --retry 3 'https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip' -o /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d "$HOME/godot"
+          chmod +x "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64"
+          curl -fL --retry 3 'https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz' -o /tmp/templates.tpz
+          python3 - <<'PY'
+          import zipfile, pathlib
+          out=pathlib.Path.home()/'.local/share/godot/export_templates/4.7.2.stable'
+          with zipfile.ZipFile('/tmp/templates.tpz') as archive:
+              for name in ['android_debug.apk','android_release.apk']:
+                  out.joinpath(name).write_bytes(archive.read('templates/'+name))
+          PY
+      - name: Prepare independent mobile project and signing
+        shell: bash
+        run: |
+          python3 tools/prepare_android.py
+          mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android
+          keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000
+          cat > "$HOME/.config/godot/editor_settings-4.7.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/debug_keystore = "$HOME/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+      - name: Import and export installable ARM64 APK
+        shell: bash
+        run: |
+          "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --editor --path mobile-build/game --import --quit
+          "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --path mobile-build/game --export-debug Android "$GITHUB_WORKSPACE/builds/android/Alderwick-Android.apk"
+          test -s builds/android/Alderwick-Android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alderwick-Android
+          path: builds/android/Alderwick-Android.apk
+          retention-days: 30

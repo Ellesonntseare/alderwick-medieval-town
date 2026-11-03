@@ -1,0 +1,237 @@
+{
+  "source": "C:\\Users\\elles\\Downloads\\free_medieval_paintings_pack.glb",
+  "id": "paintings",
+  "original_triangles": 782,
+  "parts": [
+    {
+      "file": "paintings/00.glb",
+      "name": "cuadro_10_Cuadros_0",
+      "dimensions": [
+        1.523,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/01.glb",
+      "name": "cuadro_11_Cuadros_0",
+      "dimensions": [
+        1.485,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/02.glb",
+      "name": "cuadro_12_Cuadros_0",
+      "dimensions": [
+        1.178,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/03.glb",
+      "name": "cuadro_13_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/04.glb",
+      "name": "cuadro_14_Cuadros_0",
+      "dimensions": [
+        1.461,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/05.glb",
+      "name": "cuadro_15_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/06.glb",
+      "name": "cuadro_16_Cuadros_0",
+      "dimensions": [
+        1.703,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/07.glb",
+      "name": "cuadro_17_Cuadros_0",
+      "dimensions": [
+        2.188,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/08.glb",
+      "name": "cuadro_18_Cuadros_0",
+      "dimensions": [
+        1.619,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/09.glb",
+      "name": "cuadro_19_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/10.glb",
+      "name": "cuadro_1_Cuadros_0",
+      "dimensions": [
+        1.1,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/11.glb",
+      "name": "cuadro_20_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/12.glb",
+      "name": "cuadro_21_Cuadros_0",
+      "dimensions": [
+        2.62,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/13.glb",
+      "name": "cuadro_22_Cuadros_0",
+      "dimensions": [
+        2.176,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/14.glb",
+      "name": "cuadro_23_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/15.glb",
+      "name": "cuadro_2_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/16.glb",
+      "name": "cuadro_3_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/17.glb",
+      "name": "cuadro_4_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/18.glb",
+      "name": "cuadro_5_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/19.glb",
+      "name": "cuadro_6_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/20.glb",
+      "name": "cuadro_7_Cuadros_0",
+      "dimensions": [
+        0.873,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/21.glb",
+      "name": "cuadro_8_Cuadros_0",
+      "dimensions": [
+        1.143,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    },
+    {
+      "file": "paintings/22.glb",
+      "name": "cuadro_9_Cuadros_0",
+      "dimensions": [
+        1.516,
+        0.102,
+        1.1
+      ],
+      "future_trade_item": false
+    }
+  ]
+}

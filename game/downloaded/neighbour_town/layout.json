@@ -1,0 +1,81 @@
+{
+  "scale": 0.85,
+  "ground_source_height": -11.5,
+  "reference_human_door_height": 2.244,
+  "width": 379.09999999999997,
+  "depth": 338.215,
+  "position": [
+    0,
+    0,
+    410
+  ],
+  "entry": [
+    0,
+    0.03,
+    262.1
+  ],
+  "doors": [
+    {
+      "name": "Cargo_container_v1_LD1doorL_1_Cargo_container_v1_0",
+      "height": 2.2777938842773438,
+      "width": 0.9194488525390625
+    },
+    {
+      "name": "Cargo_container_v1_LD1doorL_Cargo_container_v1_0",
+      "height": 2.277793526649475,
+      "width": 0.9194421768188477
+    },
+    {
+      "name": "Cargo_container_v1_LD1doorR_1_Cargo_container_v1_0",
+      "height": 2.277794361114502,
+      "width": 0.98114013671875
+    },
+    {
+      "name": "Cargo_container_v1_LD1doorR_Cargo_container_v1_0",
+      "height": 2.277793526649475,
+      "width": 0.9811410903930664
+    },
+    {
+      "name": "door_Soft_Wood_0",
+      "height": 2.244000406935811,
+      "width": 1.1834716796875
+    },
+    {
+      "name": "Hangar_v2_6_door1_1_Hangar_v2_0",
+      "height": 2.242722053080797,
+      "width": 2.8982372283935547
+    },
+    {
+      "name": "Hangar_v2_6_door1_Hangar_v2_0",
+      "height": 2.2427219599485397,
+      "width": 2.8982372283935547
+    },
+    {
+      "name": "Hangar_v2_7_door1_1_Hangar_v2_0",
+      "height": 2.242722049355507,
+      "width": 2.89825439453125
+    },
+    {
+      "name": "Hangar_v2_7_door1_2_Hangar_v2_0",
+      "height": 2.2427220065146685,
+      "width": 2.8982391357421875
+    },
+    {
+      "name": "Hangar_v2_7_door1_Hangar_v2_0",
+      "height": 2.2427219580858946,
+      "width": 2.8982391357421875
+    }
+  ],
+  "prop_adjustments": [
+    {
+      "name": "Complete hideout house assembly",
+      "human_door_height_m": 2.244,
+      "assembly_scale": 0.35499321493560543
+    },
+    {
+      "name": "Table_2_model_Table_Mt_BaseColor_0",
+      "height_m": 0.82
+    }
+  ],
+  "static_chunks": 597
+}
