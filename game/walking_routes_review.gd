@@ -74,5 +74,16 @@ func run() -> void:
 	check(not recovered.is_empty() and not recovered.has(Vector2i(2,6)),"Repeated obstacle recovery selects a different route")
 	walker.night_schedule=true
 	check(routes.path(start,end,walker,false).size()==direct.size(),"Home access remains available at night")
+	var old_cell := Vector2i(2,7)
+	check(routes.pavement_components.has(old_cell),"Original paved path is present before editing")
+	lane.remove_meta("walking_lane")
+	routes.build(life)
+	check(not routes.paved.has(old_cell) and not routes.pavement_components.has(old_cell),"Removing a path removes its cached pavement connections")
+	check(routes.pavement_grid.is_point_solid(old_cell),"Removed paving is unavailable to pavement walkers")
+	check(routes.detours.is_empty(),"Rebuilding a layout discards detours from the old layout")
+	lane.set_meta("walking_lane",{"a":Vector3(2,0,2),"b":Vector3(2,0,12),"width":2.0})
+	routes.build(life)
+	walker.night_schedule=false
+	check(not routes.path(start,end,walker,false).is_empty(),"Restoring a path restores its connected walking route")
 	print("WALKING_ROUTES_REVIEW_COMPLETE failures=",failures," direct=",direct.size()," road=",road.size()," pavement=",pavement.size())
 	quit(0 if failures.is_empty() else 1)

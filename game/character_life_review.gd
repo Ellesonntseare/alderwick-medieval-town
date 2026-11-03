@@ -24,6 +24,9 @@ class Life extends Node:
 	func cancel_meeting(_person: Node) -> void:pass
 class Home extends Node:
 	var house: Node3D
+class Workforce extends Node3D:
+	var bound := true
+	var workers: Dictionary={}
 
 var failures: Array[String]=[]
 var town: Node3D
@@ -99,6 +102,16 @@ func run() -> void:
 	check(sim.lesson("Finn","Carpentry"),"A trusted expert can start a nearby lesson")
 	sim.update_activity(9)
 	check(sim.state("You").skills.Carpentry==10 and not finn.talking,"The completed lesson grants practice and releases the teacher")
+	town.industrial_workforce=Workforce.new();town.add_child(town.industrial_workforce)
+	town.industrial_workforce.workers[finn]={"phase":"work"}
+	check(not sim.available_between_shifts(finn) and not sim.lesson("Finn","Carpentry"),"An on-shift industrial worker cannot be interrupted for a personal lesson")
+	finn.set_meta("review_home_requested",false)
+	sim.state("Finn").needs.energy=5;sim.state("Finn").next_action=0
+	sim.update_person(finn,1)
+	check(not finn.get_meta("review_home_requested",false),"Need-driven rest cannot interrupt an industrial shift")
+	town.industrial_workforce.workers[finn].phase="home"
+	check(sim.available_between_shifts(finn),"The same resident is available between shifts")
+	sim.state("Finn").needs.energy=85;sim.state("Finn").next_action=0
 	var before: float=sim.state("Finn").skills.Carpentry
 	sim.worked(finn,"crafted")
 	check(sim.state("Finn").skills.Carpentry>before and sim.work_duration(finn,"Carpentry")<1,"Resident experience improves work speed")

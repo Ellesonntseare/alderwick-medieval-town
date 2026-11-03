@@ -30,6 +30,7 @@ func set_weather(value: String) -> void:
 	if value not in ["Clear","Overcast","Rain","Mist"]:return
 	if current==value:return
 	current=value;shelter_cache.clear()
+	if selector and not automatic:selector.select(["Clear","Overcast","Rain","Mist"].find(value))
 	if town.events:town.events.publish("weather_"+str(Time.get_unix_time_from_system()),"The weather turned "+value.to_lower()+".",[],town.player.position)
 	if value!="Rain":
 		for person in town.life.people:
@@ -59,11 +60,20 @@ func _process(delta: float) -> void:
 	rain.emitting=current=="Rain" and camera!=null and not covered(camera.global_position-Vector3.UP*1.7)
 	# Run after the clock so weather and night lighting remain compatible.
 	if town.day_night and town.day_night.environment:
-		town.day_night.apply_time()
 		var env: Environment=town.day_night.environment
 		env.fog_density=lerpf(env.fog_density,.012 if current=="Mist" else .004 if current=="Rain" else .0018,minf(delta,1))
-		if current in ["Rain","Overcast"]:
-			town.day_night.sun.light_energy=minf(town.day_night.sun.light_energy,.36 if current=="Overcast" else .22)
+		# Adjust light without resetting the clock or triggering morning/night
+		# routines a second time when the optional clock is paused.
+		var daylight: float=smoothstep(-.18,.3,-cos(town.day_night.phase*TAU)) if town.day_night.enabled else (0.0 if town.day_night.night else 1.0)
+		var base_energy: float=lerpf(.06,.72,daylight)
+		town.day_night.sun.light_energy=base_energy*(.5 if current=="Overcast" else .31 if current=="Rain" else 1.0)
+		var clouds: float=.8 if current=="Rain" else .55 if current=="Overcast" else .25 if current=="Mist" else 0.0
+		var sky:=env.sky.sky_material as ProceduralSkyMaterial
+		if sky:
+			sky.sky_top_color=Color("080f24").lerp(Color("7198b5"),daylight).lerp(Color("101827").lerp(Color("727f8b"),daylight),clouds)
+			sky.sky_horizon_color=Color("273752").lerp(Color("e7dac0"),daylight).lerp(Color("26334a").lerp(Color("b8c0c6"),daylight),clouds)
+			sky.ground_horizon_color=sky.sky_horizon_color
+		env.fog_light_color=Color("26334e").lerp(Color("cbd4be"),daylight).lerp(Color("26334e").lerp(Color("b1bdc7"),daylight),clouds)
 	if check_clock<6 or not town.life.navigation_ready:return
 	check_clock=0
 	if current!="Rain":return

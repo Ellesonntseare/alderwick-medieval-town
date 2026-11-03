@@ -9,6 +9,9 @@ var pavement_components: Dictionary={}
 
 func build(owner: Node) -> void:
 	life=owner
+	paved.clear()
+	pavement_components.clear()
+	detours.clear()
 	# Read the floor tiles that are actually rendered, including batched tiles.
 	var square: Node3D=life.town.get_node_or_null("CobblestoneSquareAndLanes")
 	if square:

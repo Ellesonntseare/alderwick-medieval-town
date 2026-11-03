@@ -399,10 +399,35 @@ func free_cell(point: Vector3) -> Vector2i:
 				if grid.is_in_boundsv(candidate) and not grid.is_point_solid(candidate) and (street_cells.is_empty() or street_cells.has(candidate)): return candidate
 	return Vector2i(0,10)
 
-func find_route(from: Vector3,to: Vector3,person: Node=null,avoid_people := false) -> PackedVector3Array:
+func find_route(from: Vector3,to: Vector3,person: Node=null,avoid_people := false,physical_person: CharacterBody3D=null) -> PackedVector3Array:
 	var result := PackedVector3Array()
 	var ids: Array[Vector2i]=walking_routes.path(from,to,person,avoid_people) if walking_routes else grid.get_id_path(free_cell(from),free_cell(to),false)
 	for id in ids: result.append(Vector3(id.x*CELL,float(floor_heights.get(id,0))+0.01,id.y*CELL))
+	# A free grid cell may be across the corner of a stool or workbench.
+	# Validate the short connection from the person's actual standing point.
+	var mover: CharacterBody3D=physical_person if physical_person else person as CharacterBody3D
+	if mover and not result.is_empty() and mover.position.distance_to(from)<.2:
+		var mask: int=mover.collision_mask;mover.collision_mask=1
+		var probe: Transform3D=mover.global_transform;probe.origin.y+=.16
+		var join: Vector3=result[0]-from;join.y=0
+		if mover.test_move(probe,join):
+			var alternatives: Array[Vector2i]=[]
+			var centre:=Vector2i(roundi(from.x),roundi(from.z))
+			for dx in range(-2,3):
+				for dz in range(-2,3):
+					var cell:=centre+Vector2i(dx,dz)
+					if grid.is_in_boundsv(cell) and not grid.is_point_solid(cell) and street_cells.has(cell):alternatives.append(cell)
+			alternatives.sort_custom(func(a: Vector2i,b: Vector2i):return Vector2(a.x-from.x,a.y-from.z).length_squared()<Vector2(b.x-from.x,b.y-from.z).length_squared())
+			for cell in alternatives:
+				var point:=Vector3(cell.x,float(floor_heights.get(cell,0))+.01,cell.y)
+				var motion:=point-from;motion.y=0
+				if mover.test_move(probe,motion):continue
+				var alternative: Array[Vector2i]=walking_routes.path(point,to,person,avoid_people) if walking_routes else grid.get_id_path(cell,free_cell(to),false)
+				if alternative.is_empty():continue
+				result=PackedVector3Array([point])
+				for id in alternative:result.append(Vector3(id.x,float(floor_heights.get(id,0))+.01,id.y))
+				break
+		mover.collision_mask=mask
 	return result
 
 func route_to_point(person: CharacterBody3D,target: Vector3,avoid_people := false) -> PackedVector3Array:
@@ -515,7 +540,7 @@ func route_to_door(person: CharacterBody3D,door: Node3D) -> PackedVector3Array:
 	var entrance: Vector3=closed*Vector3(door.width/2,0.04,-1.3)
 	for distance: float in [1.3,2.1,3.0,4.0]:
 		var approach: Vector3=closed*Vector3(door.width/2,0.04,-distance)
-		var route := find_route(person.position,approach)
+		var route := find_route(person.position,approach,null,false,person)
 		if route.is_empty():continue
 		var end: Vector3=route[-1]
 		if Vector2(end.x-approach.x,end.z-approach.z).length()>1.2:continue

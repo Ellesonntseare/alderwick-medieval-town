@@ -44,14 +44,16 @@ func setup() -> void:
 		for person in town.life.people:
 			if person.person_name!=name or person.indoor_house or not person.guard_label.is_empty() or not person.stall_name.is_empty():continue
 			if workers.size()>=6:break
-			var index:=workers.size();var post:=nearest(Vector3(-12+index*5,0,280+(index%3)*10))
+			var index:=workers.size();var post:=nearest(Vector3(-4 if index%2==0 else 4,0,278+(index/2)*10))
 			if post.y<0:continue
 			var route:=route_between(gate,post)
 			if route.is_empty():continue
 			var role: String=["Timber supplier","Tool carrier","Warehouse courier","Workshop carpenter","Goods clerk","Yard supplier"][index]
 			person.occupation=role
+			if town.jobs.has_method("release_bench"):town.jobs.release_bench(person)
+			if person.has_method("set_carry"):person.set_carry("")
 			if person.get("label"):person.label.text=person.person_name+" · "+role
-			person.job={"kind":"industrial","stage":"commuting","district":"industrial"}
+			person.job={"kind":"industrial","stage":"commuting","district":"industrial","target":gate}
 			person.set_meta("industrial_worker",true)
 			person.routine={};person.path=PackedVector3Array();person.path_index=0
 			if person.social_partner:person.end_social()
@@ -155,6 +157,12 @@ func tick(person: CharacterBody3D,delta: float) -> bool:
 	state.stuck=state.stuck+delta if person.position.distance_to(before)<.005 else 0.0
 	if state.stuck>2:
 		var blocked:=Vector2i(roundi(route[state.index].x/2),roundi(route[state.index].z/2))
-		if grid.is_in_boundsv(blocked):grid.set_point_solid(blocked,true)
+		var old_mask: int=person.collision_mask
+		person.collision_mask=1
+		var probe: Transform3D=person.global_transform;probe.origin.y+=.2
+		var static_obstacle: bool=person.test_move(probe,direction.normalized()*.7)
+		person.collision_mask=old_mask
+		# Waiting for another person must not permanently erase the shared road.
+		if static_obstacle and grid.is_in_boundsv(blocked):grid.set_point_solid(blocked,true)
 		plan(person,state,gate if state.phase=="inbound" else state.post)
 	return true

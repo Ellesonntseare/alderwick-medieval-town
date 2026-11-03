@@ -189,6 +189,7 @@ func update_person(person: CharacterBody3D,step: float) -> void:
 		elif person.occupation=="Blacksmith":gain_skill(name,"Smithing",2);state(name).next_action=elapsed+60
 		return
 	if not person.job.is_empty() and person.job.get("stage") not in ["start","break"]:return
+	if not available_between_shifts(person):return
 	state(name).next_action=elapsed+8
 	if need(name,"hygiene")<28 and start_washing(person):return
 	if need(name,"energy")<15:
@@ -256,6 +257,12 @@ func context(person: Node) -> Dictionary:
 		if skill_level(name,skill)>0:skills[skill]=skill_level(name,skill)
 	return {"personality_traits":state(name).traits,"current_mood":mood(name),"own_needs":state(name).needs,"skills_out_of_10":skills,"relationship_with_visitor":relationship_status(name),"instruction":"Let personality and current feelings affect your tone naturally. Do not recite meters or statistics unless asked. Only physical game actions can give items, change money, finish a lesson or prepare food."}
 
+func available_between_shifts(person: Node) -> bool:
+	var workforce: Node=town.get("industrial_workforce")
+	if workforce and workforce.get("bound")==true and workforce.workers.has(person):
+		return workforce.workers[person].phase=="home"
+	return true
+
 func give_food(name: String) -> bool:
 	if not people.has(name) or town.player.position.distance_to(people[name].position)>4:return false
 	var person: Node=people[name]
@@ -317,6 +324,7 @@ func apologize(name: String) -> bool:
 func invite_home(name: String) -> bool:
 	if not people.has(name) or not is_instance_valid(town.player_home.house):return false
 	var person: CharacterBody3D=people[name]
+	if not available_between_shifts(person):return false
 	if person.is_child or person.posture!="standing" or person.night_schedule or person.talking or not person.guard_label.is_empty() or not person.carry_kind.is_empty():return false
 	if int(town.adventures.relationship(name).trust)<8 or town.day_night.night:return false
 	var house: Node3D=town.player_home.house
@@ -406,6 +414,7 @@ func cancel_activity() -> void:
 func lesson(name: String,skill: String) -> bool:
 	if not people.has(name) or skill not in SKILLS or skill_level(name,skill)<3:return false
 	var person: Node=people[name]
+	if not available_between_shifts(person):return false
 	if person.is_child or skill_level("You",skill)>=skill_level(name,skill) or int(town.adventures.relationship(name).trust)<5:return false
 	if person.position.distance_to(town.player.position)>4 or person.posture!="standing" or person.night_schedule:return false
 	if not person.guard_label.is_empty():return false

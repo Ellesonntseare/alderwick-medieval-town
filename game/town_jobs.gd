@@ -213,6 +213,11 @@ func suspend(person: CharacterBody3D) -> void:
 
 func tick(person: CharacterBody3D,delta: float) -> void:
 	var job: Dictionary=person.job
+	if job.kind=="industrial":
+		# The corridor manager owns these shifts; normal routines still run
+		# during breaks and the existing night system owns sleeping.
+		person.rest(delta);person.animate("Idle")
+		return
 	if job.kind=="guard":
 		var difference: Vector3=person.guard_post-person.position
 		difference.y=0
