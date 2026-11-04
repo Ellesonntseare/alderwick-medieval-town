@@ -73,6 +73,14 @@ func run() -> void:
 	drag=InputEventScreenDrag.new();drag.index=0;drag.position=origin+Vector2(1,1);mobile._input(drag)
 	assert(mobile.move_axis==Vector2.ZERO)
 	mobile.reset_touches()
+	mobile.editing=true;mobile.select_control("Jump");mobile.draft_backup={}
+	var drag_start: Vector2=mobile.control_center()
+	var edit_down:=InputEventScreenTouch.new();edit_down.index=6;edit_down.pressed=true;edit_down.position=drag_start;mobile.edit_touch(edit_down)
+	var edit_drag:=InputEventScreenDrag.new();edit_drag.index=6;edit_drag.position=Vector2(750,360);mobile.edit_touch(edit_drag)
+	mobile.size_slider.value=1.45
+	assert(mobile.control_center().distance_to(edit_drag.position)<1 and is_equal_approx(jump.scale.x,1.45))
+	assert(mobile.action_hit(edit_drag.position))
+	mobile.finish_edit(false);assert(mobile.control_center().distance_to(drag_start)<1 and jump.scale==Vector2.ONE)
 	var saved: String=mobile.endpoint;mobile.endpoint="http://192.168.1.5:34322/token/test-pair"
 	assert(mobile.backend_url(34320)=="http://192.168.1.5:34322/token/test-pair/ai")
 	assert(mobile.backend_url(34319).ends_with("/speech"));mobile.endpoint=saved

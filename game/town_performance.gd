@@ -9,6 +9,8 @@ var actors: Dictionary={}
 var mode: OptionButton
 var smooth:=true
 var stats_clock:=0.0
+var sample_time:=0.0
+var sample_frames:=0
 var quality:=1
 var frame_label: Label
 var save_path:="user://graphics-settings.json"
@@ -30,7 +32,7 @@ func _ready() -> void:
 
 func collect() -> void:
 	while not town.life.navigation_ready:await get_tree().process_frame
-	batch_house_surfaces()
+	await batch_house_surfaces()
 	for mesh: MeshInstance3D in town.find_children("*","MeshInstance3D",true,false):
 		if mesh.skin:continue
 		if mesh.mesh==null:continue
@@ -62,6 +64,8 @@ func choose_quality(index: int,persist:=true) -> void:
 	if Phone.enabled():Engine.max_fps=30 if quality==0 else 45 if quality==1 else 60
 	get_viewport().scaling_3d_scale=[.60,.80,1.0,1.0][quality]
 	get_viewport().mesh_lod_threshold=[5.0,3.0,1.0,.5][quality]
+	if Phone.enabled() and quality<2:get_viewport().scaling_3d_scale=[.78,.90][quality]
+	sample_time=0;sample_frames=0
 	if persist:
 		var file:=FileAccess.open(save_path,FileAccess.WRITE)
 		if file:file.store_string(JSON.stringify({"version":1,"quality":quality}))
@@ -72,6 +76,7 @@ func batch_house_surfaces() -> void:
 	var batch_count:=0
 	for house in get_tree().get_nodes_in_group("enterable_houses"):
 		if not house.get_meta("modular_house",false):continue
+		if Phone.enabled():await get_tree().process_frame
 		var groups: Dictionary={}
 		for mesh: MeshInstance3D in house.find_children("*","MeshInstance3D",true,false):
 			if not mesh.visible or mesh.skin or not mesh.mesh:continue
@@ -118,6 +123,16 @@ func apply_ranges() -> void:
 			mesh.cast_shadow=mesh.get_meta("performance_original_shadow",GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
 func _process(delta: float) -> void:
+	if Phone.enabled() and quality<2 and delta<.4:
+		sample_time+=delta;sample_frames+=1
+		if sample_time>=4:
+			var fps:=sample_frames/sample_time
+			var target:=float(Engine.max_fps)
+			var scale_now:=get_viewport().scaling_3d_scale
+			if fps<target*.90:scale_now-=.06
+			elif fps>=target*.98:scale_now+=.03
+			get_viewport().scaling_3d_scale=clampf(scale_now,[.60,.70][quality],[.86,1.0][quality])
+			sample_time=0;sample_frames=0
 	clock+=delta;stats_clock+=delta
 	if clock<.3:return
 	clock=0
@@ -130,6 +145,7 @@ func _process(delta: float) -> void:
 		var distance: float=camera.global_position.distance_to(person.global_position)
 		var visible: bool=quality==3 or distance<[35,50,85,1000][quality] or person.talking or overview
 		if Phone.enabled() and quality<2:visible=distance<(22 if quality==0 else 35) or person.talking
+		if Phone.enabled() and distance>8 and not person.talking and camera.is_position_behind(person.global_position):visible=false
 		record.visual.visible=visible
 		# Keep routines, movement, collision and conversations running. Only the
 		# costly skin/animation evaluation sleeps when its model cannot be seen.

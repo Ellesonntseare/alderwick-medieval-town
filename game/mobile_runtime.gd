@@ -21,6 +21,72 @@ var dead_zone:=.12
 var invert_look:=false
 var use_button: Label
 var run_caption: Label
+var prompt_clock:=0.0
+var placements: Dictionary={}
+var editing:=false
+var selected: String="Move"
+var drag_index:=-1
+var drag_offset:=Vector2.ZERO
+var toolbar: HBoxContainer
+var size_slider: HSlider
+var selection_label: Label
+var draft_backup: Dictionary
+
+func place_controls() -> void:
+	var viewport_size:=get_viewport().get_visible_rect().size
+	for id in placements:
+		var record: Dictionary=placements[id]
+		var factor:=clampf(float(record.get("size",1)),.65,1.65)
+		var button=actions.get_node_or_null(NodePath(id)) if id!="Move" else null
+		if id!="Move" and not button:continue
+		var radius: float=(85 if id=="Move" else button.shape.radius)*factor*control_scale
+		var center:=Vector2(record.x,record.y)*viewport_size
+		center=center.clamp(Vector2.ONE*radius,viewport_size-Vector2.ONE*radius)
+		if id=="Move":
+			joystick.scale=Vector2.ONE*factor*control_scale
+			joystick.global_position=center-Vector2.ONE*radius
+		else:
+			button.scale=Vector2.ONE*factor
+			button.global_position=center
+			var panel: Panel=button.get_meta("caption").get_parent()
+			panel.scale=button.scale
+			panel.global_position=center-Vector2.ONE*radius
+
+func record_position(id: String,center: Vector2,factor: float) -> void:
+	var relative:=center/get_viewport().get_visible_rect().size
+	placements[id]={"x":relative.x,"y":relative.y,"size":factor}
+	layout_controls()
+
+func select_control(id: String) -> void:
+	selected=id
+	selection_label.text=id
+	size_slider.set_value_no_signal(placements.get(id,{}).get("size",1.0))
+
+func control_center() -> Vector2:
+	if selected=="Move":return joystick.get_global_rect().get_center()
+	return actions.get_node(NodePath(selected)).global_position
+
+func edit_touch(event: InputEvent) -> void:
+	if event is InputEventScreenTouch and event.pressed and drag_index==-1:
+		if toolbar.get_global_rect().has_point(event.position):return
+		var id: String=""
+		if joystick.get_global_rect().has_point(event.position):id="Move"
+		for button in actions.get_children():
+			if button is TouchScreenButton and button.to_local(event.position).length()<=button.shape.radius:id=String(button.name)
+		if id.is_empty():return
+		select_control(id);drag_index=event.index;drag_offset=control_center()-event.position
+	elif event is InputEventScreenDrag and event.index==drag_index:
+		record_position(selected,event.position+drag_offset,size_slider.value)
+	elif event is InputEventScreenTouch and not event.pressed and event.index==drag_index:
+		drag_index=-1
+	else:return
+	get_viewport().set_input_as_handled()
+
+func finish_edit(save: bool) -> void:
+	if save:save_controls()
+	else:placements=draft_backup.duplicate(true)
+	editing=false;toolbar.hide();drag_index=-1;layout_controls();reset_touches()
+
 
 func load_controls() -> void:
 	if not FileAccess.file_exists("user://touch-settings.json"):return
@@ -29,11 +95,12 @@ func load_controls() -> void:
 	control_scale=clampf(float(saved.get("scale",1)),.8,1.35)
 	look_sensitivity=clampf(float(saved.get("sensitivity",1)),.3,2)
 	dead_zone=clampf(float(saved.get("dead_zone",.12)),0,.35)
+	placements=saved.get("placements",{})
 	invert_look=bool(saved.get("invert",false))
 
 func save_controls() -> void:
 	var file:=FileAccess.open("user://touch-settings.json",FileAccess.WRITE)
-	if file:file.store_string(JSON.stringify({"scale":control_scale,"sensitivity":look_sensitivity,"dead_zone":dead_zone,"invert":invert_look}))
+	if file:file.store_string(JSON.stringify({"placements":placements,"scale":control_scale,"sensitivity":look_sensitivity,"dead_zone":dead_zone,"invert":invert_look}))
 
 func reset_touches() -> void:
 	move_axis=Vector2.ZERO;joystick_touch=-1;look_touch=-1
@@ -45,15 +112,31 @@ func _notification(what: int) -> void:
 
 func layout_controls() -> void:
 	joystick.scale=Vector2.ONE*control_scale
+	joystick.offset_left=24;joystick.offset_right=194
+	for child in actions.get_children():
+		if child is TouchScreenButton:
+			child.position=child.get_meta("default_point");child.scale=Vector2.ONE
+			var panel: Panel=child.get_meta("caption").get_parent()
+			panel.scale=Vector2.ONE;panel.position=child.position-Vector2.ONE*child.shape.radius
 	joystick.offset_top=-30-170*control_scale
 	joystick.offset_bottom=joystick.offset_top+170
 	actions.scale=Vector2.ONE*control_scale
 	actions.offset_left=-20-290*control_scale;actions.offset_top=-20-246*control_scale
 	actions.offset_right=actions.offset_left+290;actions.offset_bottom=actions.offset_top+246
+	place_controls()
 
 func build_preferences(root: Control) -> void:
 	preferences=AcceptDialog.new();preferences.title="Touch controls";root.add_child(preferences)
+	toolbar=HBoxContainer.new();root.add_child(toolbar);toolbar.position=Vector2(180,12);toolbar.hide()
+	selection_label=Label.new();toolbar.add_child(selection_label)
+	size_slider=HSlider.new();size_slider.min_value=.65;size_slider.max_value=1.65;size_slider.step=.05;size_slider.custom_minimum_size=Vector2(180,48);toolbar.add_child(size_slider)
+	size_slider.value_changed.connect(func(value: float):record_position(selected,control_center(),value))
+	button(toolbar,"Save",func():finish_edit(true))
+	button(toolbar,"Cancel",func():finish_edit(false))
+	button(toolbar,"Reset",func():placements.clear();layout_controls();select_control("Move"))
 	var column:=VBoxContainer.new();column.custom_minimum_size.x=420;preferences.add_child(column)
+	button(column,"Edit layout - drag controls",func():
+		preferences.hide();reset_touches();draft_backup=placements.duplicate(true);editing=true;toolbar.show();select_control("Move"))
 	for spec in [["Button and joystick size",.8,1.35,control_scale],["Look sensitivity",.3,2.0,look_sensitivity],["Joystick dead zone",0,.35,dead_zone]]:
 		var label:=Label.new();label.text=spec[0];column.add_child(label)
 		var slider:=HSlider.new();slider.min_value=spec[1];slider.max_value=spec[2];slider.step=.01;slider.value=spec[3];slider.custom_minimum_size.y=42;column.add_child(slider)
@@ -106,7 +189,7 @@ func attach(owner: Node) -> void:
 	use.released.connect(func():
 		if using_workbench:held_key(KEY_E,false)
 		using_workbench=false
-		if not blocked():use_nearby())
+		if not blocked() and not editing:use_nearby())
 	touch_button(actions,"Jump",Vector2(145,105),36,func():town.player.jump_requested=true)
 	var run:=touch_button(actions,"Run",Vector2(45,28),28,func():running=not running)
 	run_caption=run.get_meta("caption")
@@ -115,6 +198,7 @@ func attach(owner: Node) -> void:
 	touch_button(actions,"Activities",Vector2(48,106),35,func():town.interior_activities.open())
 	touch_button(actions,"Controls",Vector2(145,28),28,func():reset_touches();preferences.popup_centered())
 	build_preferences(root);layout_controls()
+	if not get_viewport().size_changed.is_connected(layout_controls):get_viewport().size_changed.connect(layout_controls)
 	var network:=Button.new();network.text="Connect to PC AI";network.position=Vector2(20,8);network.pressed.connect(show_connection);root.add_child(network)
 	connection=AcceptDialog.new();connection.title="PC conversations & voices";connection.size=Vector2i(650,240);root.add_child(connection)
 	var column:=VBoxContainer.new();connection.add_child(column)
@@ -146,9 +230,9 @@ func touch_button(parent: Control,text: String,point: Vector2,radius: float,call
 	var touch:=TouchScreenButton.new();touch.name=text;touch.position=point;touch.visibility_mode=TouchScreenButton.VISIBILITY_ALWAYS
 	var shape:=CircleShape2D.new();shape.radius=radius;touch.shape=shape;touch.shape_centered=false;parent.add_child(touch)
 	var caption:=Label.new();caption.text=text;caption.size=Vector2.ONE*size;caption.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;caption.vertical_alignment=VERTICAL_ALIGNMENT_CENTER;caption.add_theme_font_size_override("font_size",15 if radius<40 else 18);caption.mouse_filter=Control.MOUSE_FILTER_IGNORE;visual.add_child(caption)
-	touch.set_meta("caption",caption)
+	touch.set_meta("default_point",point);touch.set_meta("caption",caption)
 	touch.pressed.connect(func():
-		if blocked():return
+		if blocked() or editing:return
 		visual.modulate=Color(1.3,1.3,.9);callback.call())
 	touch.released.connect(func():visual.modulate=Color.WHITE)
 	return touch
@@ -180,17 +264,18 @@ func use_nearby() -> void:
 
 func _input(event: InputEvent) -> void:
 	if not enabled() or not is_instance_valid(town) or not joystick:return
+	if editing:edit_touch(event);return
 	if blocked() or not town.menu_collapsed:reset_touches();return
 	if event is InputEventScreenTouch:
 		if not event.pressed:
 			if event.index==joystick_touch:joystick_touch=-1;move_axis=Vector2.ZERO;stick.position=Vector2(58,58)
 			if event.index==look_touch:look_touch=-1
 		elif joystick_touch==-1 and joystick.get_global_rect().has_point(event.position):
-			joystick_touch=event.index;joystick_origin=joystick.global_position+Vector2(85,85)*control_scale
+			joystick_touch=event.index;joystick_origin=joystick.get_global_rect().get_center()
 		elif look_touch==-1 and event.position.x>get_viewport().get_visible_rect().size.x*.42 and not action_hit(event.position) and event.position.y>70:look_touch=event.index
 	if event is InputEventScreenDrag:
 		if event.index==joystick_touch:
-			move_axis=((event.position-joystick_origin)/(65*control_scale)).limit_length(1)
+			move_axis=((event.position-joystick_origin)/(65*joystick.scale.x)).limit_length(1)
 			if move_axis.length()<dead_zone:move_axis=Vector2.ZERO
 			stick.position=Vector2(58,58)+move_axis*55
 		elif event.index==look_touch:
@@ -221,7 +306,9 @@ func _process(_delta: float) -> void:
 		var modal: bool=(connection and connection.visible) or (preferences and preferences.visible)
 		controls.visible=modal or not blocked()
 		if blocked():reset_touches()
-		if use_button:
+		prompt_clock+=_delta
+		if use_button and prompt_clock>=.15:
+			prompt_clock=0
 			use_button.text=preload("res://interaction_target.gd").resolve(town).verb
 		if run_caption:run_caption.text="Run ON" if running else "Run"
 
