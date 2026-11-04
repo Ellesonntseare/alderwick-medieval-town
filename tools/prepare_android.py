@@ -1,12 +1,21 @@
 """Create a separate Android project; never modify desktop assets or settings."""
-import argparse,pathlib,shutil,re,json
+import argparse,pathlib,shutil,re,json,subprocess
+from mobile_textures import resize_glb
 parser=argparse.ArgumentParser();parser.add_argument('--output',default='mobile-build/game');args=parser.parse_args()
 ROOT=pathlib.Path(__file__).resolve().parents[1];target=(ROOT/args.output).resolve()
-if ROOT not in target.parents:raise ValueError('Android staging must stay inside project')
+staging=(ROOT/'mobile-build').resolve()
+if target!=staging and staging not in target.parents:raise ValueError('Android staging must stay inside mobile-build')
+if target.exists():shutil.rmtree(target)
 target.mkdir(parents=True,exist_ok=True)
-shutil.copytree(ROOT/'game',target,dirs_exist_ok=True,ignore=shutil.ignore_patterns('.godot','*.import','export_credentials.cfg'))
+shutil.copytree(ROOT/'game',target,dirs_exist_ok=True,ignore=shutil.ignore_patterns('.godot','*.import','export_credentials.cfg','*_Image_*.png','*_Image_*.jpg','*_Image_*.jpeg'))
+before=sum(path.stat().st_size for path in target.rglob('*.glb'))
+images=sum(resize_glb(path,512) for path in target.rglob('*.glb'))
+after=sum(path.stat().st_size for path in target.rglob('*.glb'))
+print('ANDROID_TEXTURES_OPTIMIZED',images,'images;',before-after,'source bytes saved; geometry and rigs preserved')
 project=(target/'project.godot').read_text(encoding='utf-8-sig')
 project=project.replace('config/name="Alderwick — Medieval Town"','config/name="Alderwick Mobile"')
+revision=subprocess.check_output(['git','rev-parse','--short','HEAD'],cwd=ROOT,text=True).strip()
+project=project.replace('[application]', '[application]\nconfig/version="'+revision+'"')
 project=project.replace('"process/size_limit": 1024','"process/size_limit": 512')
 project=project.replace('window/size/viewport_width=1440','window/size/viewport_width=1280').replace('window/size/viewport_height=900','window/size/viewport_height=720')
 project=project.replace('[display]','[display]\nwindow/stretch/mode="canvas_items"\nwindow/handheld/orientation=0')
@@ -34,8 +43,8 @@ architectures/armeabi-v7a=false
 architectures/arm64-v8a=true
 architectures/x86=false
 architectures/x86_64=false
-version/code=1
-version/name="0.1.0"
+version/code=2
+version/name="0.2.0"
 package/unique_name="com.elleson.alderwick"
 package/name="Alderwick"
 package/signed=true

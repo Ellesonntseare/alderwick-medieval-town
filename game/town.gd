@@ -35,6 +35,7 @@ var home_district: Node3D
 var industrial_workforce: Node3D
 var character_life: Node
 var cooking: Node3D
+var loading_screen: CanvasLayer
 var interior_activities: Node
 var economy: Node
 var routines: Node
@@ -48,6 +49,9 @@ var locations: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
+	if preload("res://mobile_runtime.gd").enabled():
+		set_meta("world_loading",true);loading_screen=load("res://town_loading.gd").new();add_child(loading_screen)
+		await get_tree().process_frame
 	if DisplayServer.get_name()!="headless":Engine.max_fps=45
 	get_window().title="Alderwick — 53 Residents · Jobs & Voices"
 	rng.seed = 41729
@@ -55,16 +59,22 @@ func _ready() -> void:
 	world()
 	print("TOWN_BUILD_CENTRE")
 	town()
+	if loading_screen:
+		loading_screen.stage("Opening the surrounding districts…",20);await get_tree().process_frame
 	print("TOWN_BUILD_DISTRICTS")
 	expansion=Node3D.new()
 	expansion.set_script(load("res://native_districts.gd"))
 	add_child(expansion)
 	chateaux=load("res://chateau_districts.gd").new()
 	add_child(chateaux)
+	if loading_screen:
+		loading_screen.stage("Preparing roads and woodland…",40);await get_tree().process_frame
 	var neighbouring_town: Node3D=load("res://neighbouring_town.gd").new()
 	add_child(neighbouring_town)
 	var woodlands: Node3D=load("res://forest_districts.gd").new()
 	add_child(woodlands)
+	if loading_screen:
+		loading_screen.stage("Preparing your home and neighbours…",55);await get_tree().process_frame
 	jobs=Node3D.new()
 	jobs.set_script(load("res://town_jobs.gd"))
 	add_child(jobs)
@@ -151,6 +161,7 @@ func _ready() -> void:
 	var clock_text := Label.new()
 	view_selector.get_parent().add_child(clock_text)
 	day_night.clock_label=clock_text
+	if loading_screen:loading_screen.stage("Preparing residents and walking routes…",65)
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--capture"):get_viewport().gui_disable_input=true
 	if "--capture" in OS.get_cmdline_user_args(): capture.call_deferred()

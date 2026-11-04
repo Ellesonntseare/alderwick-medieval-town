@@ -38,12 +38,22 @@ func run() -> void:
 	await mobile.attach(town)
 	for frame in range(3):await process_frame
 	assert(town.menu_collapsed)
-	assert(mobile.controls.get_child(0).find_children("*","Button",true,false).size()>=7)
+	assert(mobile.actions.find_children("*","TouchScreenButton",true,false).size()==8)
 	var origin: Vector2=mobile.joystick.global_position+Vector2(85,85)
 	assert(origin.y>400 and origin.y<720)
 	var down:=InputEventScreenTouch.new();down.index=0;down.pressed=true;down.position=origin;mobile._input(down)
 	var drag:=InputEventScreenDrag.new();drag.index=0;drag.position=origin+Vector2(40,-40);mobile._input(drag)
 	assert(mobile.move_axis.x>.3 and mobile.move_axis.y<-.3)
+	# A second finger looks while the first remains on the joystick.
+	var look:=InputEventScreenTouch.new();look.index=2;look.pressed=true;look.position=Vector2(800,230);mobile._input(look)
+	var look_drag:=InputEventScreenDrag.new();look_drag.index=2;look_drag.position=Vector2(830,240);look_drag.relative=Vector2(30,10);mobile._input(look_drag)
+	assert(mobile.move_axis.length()>.3 and town.player.rotation.y<0)
+	var jump: TouchScreenButton=mobile.actions.get_node("Jump")
+	var tap:=InputEventScreenTouch.new();tap.index=3;tap.pressed=true;tap.position=jump.global_position
+	Input.parse_input_event(tap);await process_frame
+	assert(town.player.jump_requested and mobile.move_axis.length()>.3)
+	tap.pressed=false;Input.parse_input_event(tap);await process_frame
+	look.pressed=false;mobile._input(look)
 	down=InputEventScreenTouch.new();down.index=0;down.pressed=false;mobile._input(down)
 	assert(mobile.move_axis==Vector2.ZERO)
 	down=InputEventScreenTouch.new();down.index=1;down.pressed=true;down.position=Vector2(900,250);mobile._input(down)

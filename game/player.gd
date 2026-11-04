@@ -161,11 +161,11 @@ func set_view(mode: int) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if enabled and event is InputEventKey and event.pressed and not event.echo and event.physical_keycode==KEY_SPACE:jump_requested=true
-	if enabled and event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+	if enabled and not Phone.enabled() and event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotation.y -= event.relative.x * 0.0025
 		if view_mode == 0: camera.rotation.x = clampf(camera.rotation.x - event.relative.y * 0.0025, -1.35, 1.35)
 		else: arm.rotation.x = clampf(arm.rotation.x - event.relative.y * 0.0025, -0.9, 0.2)
-	if enabled and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if enabled and not Phone.enabled() and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _physics_process(delta: float) -> void:

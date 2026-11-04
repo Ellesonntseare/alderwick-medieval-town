@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['game/**', 'tools/prepare_android.py', '.github/workflows/android.yml']
+    paths: ['game/**', 'tools/prepare_android.py', 'tools/mobile_textures.py', '.github/workflows/android.yml']
 permissions:
   contents: read
 jobs:
@@ -41,6 +41,7 @@ jobs:
       - name: Prepare independent mobile project and signing
         shell: bash
         run: |
+          python3 -m pip install 'Pillow>=11,<13'
           python3 tools/prepare_android.py
           mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android
           keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000

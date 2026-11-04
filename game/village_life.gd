@@ -72,47 +72,11 @@ func setup() -> void:
 	query.collision_mask=1
 	query.exclude=[town.player.get_rid()]
 	var space := town.get_world_3d().direct_space_state
-	for x in range(NAV_REGION.position.x,NAV_REGION.end.x):
-		for z in range(NAV_REGION.position.y,NAV_REGION.end.y):
-			var cell := Vector2i(x,z)
-			var height := navigation_floor(Vector3(x,0,z),space)
-			floor_heights[cell]=height
-			query.transform=Transform3D(Basis.IDENTITY,Vector3(x,height+0.86,z))
-			var blocked := height>2.0 or not space.intersect_shape(query,1).is_empty()
-			if absf(x-64)<4 and abs(z)<74 and abs(z)>1.5 and abs(z-48)>1.5:blocked=true
-			grid.set_point_solid(cell,blocked)
-		if (x-NAV_REGION.position.x)%25==0:await get_tree().process_frame
-	var blocked_edges: Array[Vector2i]=[]
-	for x in range(NAV_REGION.position.x,NAV_REGION.end.x):
-		for z in range(NAV_REGION.position.y,NAV_REGION.end.y):
-			var cell := Vector2i(x,z)
-			if grid.is_point_solid(cell):continue
-			for offset in [Vector2i.RIGHT,Vector2i.DOWN]:
-				var next: Vector2i=cell+offset
-				if not grid.is_in_boundsv(next) or grid.is_point_solid(next):continue
-				var height: float=(floor_heights[cell]+floor_heights[next])*0.5
-				query.transform.origin=Vector3(x+offset.x*0.5,height+0.86,z+offset.y*0.5)
-				if absf(floor_heights[cell]-floor_heights[next])>0.38 or not space.intersect_shape(query,1).is_empty():
-					blocked_edges.append(cell)
-					blocked_edges.append(next)
-		if (x-NAV_REGION.position.x)%25==0:await get_tree().process_frame
-	for cell in blocked_edges:grid.set_point_solid(cell,true)
-	# Keep new residents and destinations on the public street network.
-	# Tiny clear pockets behind scenery must not become spawn/route endpoints.
-	var seed := free_cell(Vector3(0,0,10))
-	var queue: Array[Vector2i]=[seed]
-	street_cells[seed]=true
-	var cursor := 0
-	while cursor<queue.size():
-		var cell: Vector2i=queue[cursor]
-		cursor+=1
-		for offset: Vector2i in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN]:
-			var next := cell+offset
-			if not grid.is_in_boundsv(next) or grid.is_point_solid(next) or street_cells.has(next):continue
-			street_cells[next]=true
-			queue.append(next)
-		if cursor%8000==0:await get_tree().process_frame
-	print("NAVIGATION_STREETS_READY connected_cells=",street_cells.size())
+	var phone: bool=preload("res://mobile_runtime.gd").enabled()
+	var restored: bool=phone and preload("res://phone_navigation_cache.gd").restore(self)
+	if not restored:
+		await build_navigation(query,space)
+		if phone:preload("res://phone_navigation_cache.gd").save(self)
 	walking_routes=preload("res://walking_routes.gd").new()
 	walking_routes.build(self)
 	var residents := [
@@ -201,6 +165,9 @@ func setup() -> void:
 		people.append(person)
 		person.plan()
 		person.wait_time=person.decision_rng.randf_range(1,4)
+		if preload("res://mobile_runtime.gd").enabled() and i%3==0:
+			if town.loading_screen:town.loading_screen.stage("Preparing neighbours · "+str(i+1)+" / "+str(RESIDENT_COUNT),65.0+25.0*float(i+1)/RESIDENT_COUNT)
+			await get_tree().process_frame
 	occupy_interiors()
 	staff_stalls()
 	town.jobs.bind(self)
@@ -850,3 +817,46 @@ func close_dialog() -> void:
 	town.player.enabled=town.view_mode!=1
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE if town.view_mode==1 else Input.MOUSE_MODE_CAPTURED
 	town.music.volume_db=previous_music
+
+func build_navigation(query: PhysicsShapeQueryParameters3D,space: PhysicsDirectSpaceState3D) -> void:
+	for x in range(NAV_REGION.position.x,NAV_REGION.end.x):
+		for z in range(NAV_REGION.position.y,NAV_REGION.end.y):
+			var cell := Vector2i(x,z)
+			var height := navigation_floor(Vector3(x,0,z),space)
+			floor_heights[cell]=height
+			query.transform=Transform3D(Basis.IDENTITY,Vector3(x,height+0.86,z))
+			var blocked := height>2.0 or not space.intersect_shape(query,1).is_empty()
+			if absf(x-64)<4 and abs(z)<74 and abs(z)>1.5 and abs(z-48)>1.5:blocked=true
+			grid.set_point_solid(cell,blocked)
+		if (x-NAV_REGION.position.x)%(3 if preload("res://mobile_runtime.gd").enabled() else 25)==0:await get_tree().process_frame
+	var blocked_edges: Array[Vector2i]=[]
+	for x in range(NAV_REGION.position.x,NAV_REGION.end.x):
+		for z in range(NAV_REGION.position.y,NAV_REGION.end.y):
+			var cell := Vector2i(x,z)
+			if grid.is_point_solid(cell):continue
+			for offset in [Vector2i.RIGHT,Vector2i.DOWN]:
+				var next: Vector2i=cell+offset
+				if not grid.is_in_boundsv(next) or grid.is_point_solid(next):continue
+				var height: float=(floor_heights[cell]+floor_heights[next])*0.5
+				query.transform.origin=Vector3(x+offset.x*0.5,height+0.86,z+offset.y*0.5)
+				if absf(floor_heights[cell]-floor_heights[next])>0.38 or not space.intersect_shape(query,1).is_empty():
+					blocked_edges.append(cell)
+					blocked_edges.append(next)
+		if (x-NAV_REGION.position.x)%(3 if preload("res://mobile_runtime.gd").enabled() else 25)==0:await get_tree().process_frame
+	for cell in blocked_edges:grid.set_point_solid(cell,true)
+	# Keep new residents and destinations on the public street network.
+	# Tiny clear pockets behind scenery must not become spawn/route endpoints.
+	var seed := free_cell(Vector3(0,0,10))
+	var queue: Array[Vector2i]=[seed]
+	street_cells[seed]=true
+	var cursor := 0
+	while cursor<queue.size():
+		var cell: Vector2i=queue[cursor]
+		cursor+=1
+		for offset: Vector2i in [Vector2i.RIGHT,Vector2i.LEFT,Vector2i.UP,Vector2i.DOWN]:
+			var next := cell+offset
+			if not grid.is_in_boundsv(next) or grid.is_point_solid(next) or street_cells.has(next):continue
+			street_cells[next]=true
+			queue.append(next)
+		if cursor%8000==0:await get_tree().process_frame
+	print("NAVIGATION_STREETS_READY connected_cells=",street_cells.size())
