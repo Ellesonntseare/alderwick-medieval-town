@@ -14,7 +14,7 @@ func _ready() -> void:
 	mouse_filter=Control.MOUSE_FILTER_IGNORE
 	viewport=SubViewport.new();viewport.world_3d=map.town.get_world_3d();viewport.size=Vector2i(384,384);viewport.positional_shadow_atlas_size=0;viewport.render_target_update_mode=SubViewport.UPDATE_DISABLED;add_child(viewport)
 	camera=Camera3D.new();camera.projection=Camera3D.PROJECTION_ORTHOGONAL;camera.physics_interpolation_mode=Node.PHYSICS_INTERPOLATION_MODE_OFF;camera.size=180;camera.far=1000;camera.environment=map.camera.environment;viewport.add_child(camera);camera.current=true
-	picture=TextureRect.new();picture.show_behind_parent=true;picture.size=Vector2(190,190);picture.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(picture);picture.texture=viewport.get_texture()
+	picture=TextureRect.new();picture.show_behind_parent=true;picture.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;picture.size=Vector2(190,190);picture.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(picture);picture.texture=viewport.get_texture()
 	map_material=ShaderMaterial.new();var shader:=Shader.new()
 	shader.code="""shader_type canvas_item;
 uniform vec2 map_center=vec2(0.5);

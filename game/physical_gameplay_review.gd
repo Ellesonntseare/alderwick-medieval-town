@@ -43,5 +43,16 @@ func run() -> void:
 	var station: Node3D=physical.objects[1];physical.start_work(station)
 	physical._physics_process(4.1)
 	assert(town.adventures.inventory.get("Timber",0)==1 and station.get_meta("stock")==2)
+	var previous_player: Node=town.player
+	town.player=load("res://player.gd").new();town.add_child(town.player);town.player.set_physics_process(false);town.player.position=Vector3(20,.1,0);previous_player.queue_free()
+	for index in range(12):
+		var height: float=(index+1)*.2
+		town.box(town,Vector3(1.1,height,.35),Vector3(20,height/2,-index*.35),Color.WHITE,true)
+	physical.climb_goal=Vector3(20,2.45,-3.85);physical.climbing=true;physical.climb_previous=town.player.position
+	for frame in range(240):
+		await physics_frame
+		physical.move_climber(1.0/60)
+		if not physical.climbing:break
+	assert(town.player.position.distance_to(physical.climb_goal)<.3)
 	print("PHYSICAL_GAMEPLAY_REVIEW_COMPLETE carry_place=true tool_output=true station_stock=true")
 	quit()

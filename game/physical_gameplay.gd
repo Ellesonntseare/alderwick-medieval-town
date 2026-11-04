@@ -22,6 +22,10 @@ var lamps: Array[OmniLight3D]=[]
 var elapsed:=0.0
 var tool: Node3D
 var gesture:=0.0
+var climbing:=false
+var climb_goal:=Vector3.ZERO
+var climb_stuck:=0.0
+var climb_previous:=Vector3.ZERO
 
 func _ready() -> void:
 	town=get_parent()
@@ -57,9 +61,12 @@ func setup() -> void:
 	chest.set_meta("lid",lid)
 	var lamp:=prop("Home lamp","Mug",home.to_global(Vector3(4.5,0,-2)),"lamp")
 	var light:=OmniLight3D.new();lamp.add_child(light);light.position.y=1.0;light.omni_range=6;light.light_color=Color("ffd492");light.light_energy=1.2;lamp.set_meta("light",light);lamps.append(light)
-	var ladder:=prop("Loft ladder","",home.to_global(Vector3(5.8,0,0)),"ladder")
-	for x in [-.3,.3]:town.box(ladder,Vector3(.08,2.7,.08),Vector3(x,1.35,0),Color("82603d"),false)
-	for rung in range(9):town.box(ladder,Vector3(.65,.06,.08),Vector3(0,.2+rung*.29,0),Color("a57a4d"),false)
+	var ladder:=prop("Loft ladder","",home.to_global(Vector3(6.7,0,4.55)),"ladder")
+	ladder.collision_layer=0
+	var ladder_visual:=Node3D.new();ladder.add_child(ladder_visual);ladder_visual.rotation.x=-atan2(4.2,2.59)
+	for x in [-.3,.3]:town.box(ladder_visual,Vector3(.08,4.95,.08),Vector3(x,2.475,0),Color("82603d"),false)
+	for rung in range(16):town.box(ladder_visual,Vector3(.65,.06,.08),Vector3(0,.2+rung*.3,0),Color("a57a4d"),false)
+	var top:=Marker3D.new();add_child(top);top.name="Loft ladder top";top.position=home.to_global(Vector3(6.7,2.72,.3));top.set_meta("activity","ladder");objects.append(top)
 	cart=CharacterBody3D.new();cart.name="Supply cart";add_child(cart);cart.position=Vector3(-29,.1,34)
 	town.box(cart,Vector3(1.2,.2,1.6),Vector3(0,.6,0),Color("785636"),false)
 	for x in [-.7,.7]:
@@ -73,6 +80,7 @@ func setup() -> void:
 	town.add_sign("TRAINING GROUND",Vector3(30,2.2,37),0,22)
 
 func target() -> Dictionary:
+	if climbing:return {"kind":"physical","verb":"Climbing","label":"Climbing the ladder","object":self}
 	if carried:return {"kind":"physical","verb":"Place","label":"Place "+String(carried.name),"object":carried}
 	if mounted:return {"kind":"physical","verb":"Dismount","label":"Dismount horse","object":mounted}
 	if pushing:return {"kind":"physical","verb":"Stop cart","label":"Stop pushing the cart","object":cart}
@@ -94,7 +102,7 @@ func option(title: String,callback: Callable) -> void:
 	button.pressed.connect(func():panel.hide();callback.call())
 
 func interact(data: Dictionary) -> void:
-	if busy>0:return
+	if busy>0 or climbing:return
 	if carried:place();return
 	if mounted:dismount();return
 	if pushing:pushing=false;return
@@ -134,9 +142,7 @@ func interact(data: Dictionary) -> void:
 				option("Open / close cupboard",func():var lid: Node3D=object.get_meta("lid");lid.rotation.x=0 if absf(lid.rotation.x)>.1 else -1.2)
 				option("Store or take belongings",town.player_home.show_home)
 			"lamp":option("Light / extinguish",func():var light: OmniLight3D=object.get_meta("light");light.visible=not light.visible)
-			"ladder":option("Climb to loft / return",func():
-				var destination: Vector3=town.home_district.room_origin+Vector3(5.5,2.72,.3) if town.player.position.y< -78 else town.home_district.room_origin+Vector3(4.8,.12,1)
-				if town.home_district.clear_capsule(destination):town.player.position=destination;town.player.velocity=Vector3.ZERO)
+			"ladder":option("Climb ladder",begin_climb)
 	option("Crouch / stand",func():toggle_crouch())
 	previous_enabled=town.player.enabled;previous_mouse=Input.mouse_mode;town.player.enabled=false;town.player.velocity=Vector3.ZERO;Input.mouse_mode=Input.MOUSE_MODE_VISIBLE;panel.popup_centered()
 
@@ -269,3 +275,27 @@ func toggle_crouch() -> void:
 		child.shape.height=1.2 if crouching else 1.8
 		child.position.y=child.shape.height/2
 		return
+
+
+func begin_climb() -> void:
+	if mounted or carried or pushing or crouching or stamina<15:
+		town.economy.announce("Free your hands, stand up, and recover stamina to climb.");return
+	climb_goal=town.home_district.room_origin+(Vector3(6.7,2.72,.3) if town.player.position.y< -78 else Vector3(6.7,.12,4.55))
+	if not town.home_district.clear_capsule(climb_goal):
+		town.economy.announce("The ladder landing is blocked.");return
+	climbing=true;climb_stuck=0;climb_previous=town.player.global_position
+
+func move_climber(delta: float) -> void:
+	var offset: Vector3=climb_goal-town.player.global_position
+	if offset.length()<.2:
+		climbing=false;town.player.velocity=Vector3.ZERO;return
+	if stamina<1:
+		climbing=false;return
+	town.player.velocity=offset.normalized()*1.8
+	town.player.move_with_steps(delta)
+	stamina=maxf(0,stamina-delta*5)
+	if town.player.global_position.distance_to(climb_previous)<.004:climb_stuck+=delta
+	else:climb_stuck=0
+	climb_previous=town.player.global_position
+	if climb_stuck>1:
+		climbing=false;town.economy.announce("The ladder is obstructed. Clear the way and try again.")

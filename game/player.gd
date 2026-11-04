@@ -182,6 +182,8 @@ func _physics_process(delta: float) -> void:
 		return
 	avatar.transform=standing_avatar
 	var physical=get_parent().get("physical_gameplay")
+	if physical and physical.climbing:
+		physical.move_climber(delta);return
 	if physical and (physical.busy>0 or physical.gesture>0):
 		velocity=Vector3(0,-2,0);move_and_slide();return
 	var direction := Vector3.ZERO
