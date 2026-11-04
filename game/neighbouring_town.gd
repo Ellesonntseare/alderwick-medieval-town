@@ -49,6 +49,7 @@ func distance_to_district(point: Vector3) -> float:
 	return flat.distance_to(Vector2(clampf(flat.x,bounds.position.x,bounds.end.x),clampf(flat.y,bounds.position.y,bounds.end.y)))
 
 func _process(delta: float) -> void:
+	if get_meta("map_capture",false):return
 	stream_clock+=delta
 	if stream_clock<.5:return
 	stream_clock=0

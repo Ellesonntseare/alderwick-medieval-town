@@ -287,6 +287,8 @@ func _input(event: InputEvent) -> void:
 				camera.rotation.x=clampf(camera.rotation.x-event.relative.y*.004*look_sensitivity*(-1 if invert_look else 1),-1.1,.2)
 
 func blocked() -> bool:
+	if town.get("town_map") and town.town_map.opened:return true
+	if town.get("challenges") and town.challenges.panel.visible:return true
 	if town.get("character_life") and town.character_life.view.visible():return true
 	if town.get("interior_activities") and town.interior_activities.panel.visible:return true
 	if town.get("player_home") and town.player_home.panel.visible:return true

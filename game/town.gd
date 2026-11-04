@@ -36,6 +36,8 @@ var industrial_workforce: Node3D
 var character_life: Node
 var cooking: Node3D
 var physical_gameplay: Node3D
+var challenges: Node
+var town_map: CanvasLayer
 var loading_screen: CanvasLayer
 var interior_activities: Node
 var economy: Node
@@ -145,6 +147,8 @@ func _ready() -> void:
 	add_child(interior_activities)
 	physical_gameplay=load("res://physical_gameplay.gd").new()
 	add_child(physical_gameplay)
+	challenges=load("res://town_challenges.gd").new();add_child(challenges)
+	town_map=load("res://town_map.gd").new();add_child(town_map)
 	industrial_workforce=load("res://industrial_workforce.gd").new()
 	add_child(industrial_workforce)
 	var performance: Node=load("res://town_performance.gd").new()
@@ -1023,6 +1027,11 @@ func interface() -> void:
 	layer.add_child(hint)
 
 func _input(event: InputEvent) -> void:
+	if town_map and town_map.opened:
+		if event is InputEventKey:
+			if event.pressed and not event.echo and event.physical_keycode in [KEY_ESCAPE,KEY_K]:town_map.close()
+			get_viewport().set_input_as_handled()
+		return
 	if builder and builder.active:return
 	if character_directory and character_directory.is_open():
 		if event is InputEventKey and event.pressed and event.physical_keycode==KEY_ESCAPE:character_directory.hide_directory();get_viewport().set_input_as_handled()

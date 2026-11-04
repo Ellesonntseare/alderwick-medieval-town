@@ -121,7 +121,7 @@ func interact(data: Dictionary) -> void:
 					if object.has_meta("seat") and object.get_meta("seat").has_meta("occupant"):return
 					carried=object;carried.set_meta("pickup_position",carried.global_position);carried.collision_layer=0;carried.reparent(town.player);carried.position=Vector3(0,1,-.8))
 				if object.has_meta("seat"):option("Sit on stool",func():town.player.use_furniture(object.get_meta("seat"),"sitting"))
-			"chop","repair":option("Use tool · 4 seconds",func():start_work(object))
+			"chop","repair","furniture_repair":option("Use tool · 4 seconds",func():start_work(object))
 			"cart":
 				option("Push cart",func():pushing=true)
 				option("Load vegetables · 1 portion",func():
@@ -197,7 +197,10 @@ func _physics_process(delta: float) -> void:
 			if tool:tool.queue_free();tool=null
 			work.set_meta("stock",int(work.get_meta("stock"))-1)
 			save_layout()
-			var item: String="Timber" if work.get_meta("activity")=="chop" else "Wagon fittings" if work.get_meta("activity")=="repair" else "Training practice"
+			var item: String="Timber" if work.get_meta("activity")=="chop" else "Wagon fittings" if work.get_meta("activity")=="repair" else "Repaired furniture" if work.get_meta("activity")=="furniture_repair" else "Training practice"
+			if item=="Repaired furniture":
+				for child in work.get_children():
+					if child is Node3D and not child is CollisionShape3D:child.rotation.z=0
 			if item!="Training practice":town.adventures.inventory[item]=int(town.adventures.inventory.get(item,0))+1;town.adventures.save_state()
 			if item!="Training practice":town.box(work,Vector3(.5,.1,.15),Vector3(.6,.1+int(work.get_meta("stock"))*.12,0),Color("b38d5c"),false)
 			town.character_life.gain_skill("You","Carpentry" if item!="Training practice" else "Archery",8)
