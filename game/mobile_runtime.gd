@@ -180,7 +180,7 @@ func use_nearby() -> void:
 
 func _input(event: InputEvent) -> void:
 	if not enabled() or not is_instance_valid(town) or not joystick:return
-	if blocked():reset_touches();return
+	if blocked() or not town.menu_collapsed:reset_touches();return
 	if event is InputEventScreenTouch:
 		if not event.pressed:
 			if event.index==joystick_touch:joystick_touch=-1;move_axis=Vector2.ZERO;stick.position=Vector2(58,58)

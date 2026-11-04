@@ -38,13 +38,20 @@ jobs:
               for name in ['android_debug.apk','android_release.apk']:
                   out.joinpath(name).write_bytes(archive.read('templates/'+name))
           PY
+      - name: Restore Android test signing key
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: alderwick-android-debug-signing-v1
       - name: Prepare independent mobile project and signing
         shell: bash
         run: |
           python3 -m pip install 'Pillow>=11,<13'
           python3 tools/prepare_android.py
           mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android
-          keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000
+          fi
           cat > "$HOME/.config/godot/editor_settings-4.7.tres" <<EOF
           [gd_resource type="EditorSettings" format=3]
           [resource]
