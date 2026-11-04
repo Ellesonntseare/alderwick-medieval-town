@@ -206,7 +206,7 @@ func attach(owner: Node) -> void:
 	address=LineEdit.new();address.placeholder_text="http://PC-IP:34322/token/your-pairing-code";address.text=endpoint;column.add_child(address)
 	connection.confirmed.connect(func():
 		var value:=address.text.strip_edges().trim_suffix("/")
-		if not value.is_empty() and not value.begins_with("http://"):return
+		if not value.is_empty() and not (value.begins_with("http://") or value.begins_with("https://")):return
 		endpoint=value
 		var file:=FileAccess.open("user://phone-connection.json",FileAccess.WRITE);file.store_string(JSON.stringify({"endpoint":endpoint}))
 		if town.life.ai:town.life.ai.URL=backend_url(34320);town.life.ai.check_health()

@@ -38,7 +38,8 @@ class Handler(BaseHTTPRequestHandler):
    try:data=json.loads(body);data['pid']=os.getpid();body=json.dumps(data).encode()
    except ValueError:self.send_error(400);return
   port=34320 if service=='ai' else 34319
-  request=Request(f'http://127.0.0.1:{port}{endpoint}?{urlencode(query)}',data=body,headers={'Content-Type':content_type},method=self.command)
+  suffix='' if service=='ai' and self.command=='POST' else '?'+urlencode(query)
+  request=Request(f'http://127.0.0.1:{port}{endpoint}{suffix}',data=body,headers={'Content-Type':content_type},method=self.command)
   try:
    with urlopen(request,timeout=180) as response:
     payload=response.read();code=response.status;kind=response.headers.get('Content-Type','application/octet-stream')
