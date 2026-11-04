@@ -181,6 +181,9 @@ func _physics_process(delta: float) -> void:
 		if resting=="sitting" and animator.current_animation!="SitIdle" and not animator.is_playing():animator.play("SitIdle",0.15)
 		return
 	avatar.transform=standing_avatar
+	var physical=get_parent().get("physical_gameplay")
+	if physical and (physical.busy>0 or physical.gesture>0):
+		velocity=Vector3(0,-2,0);move_and_slide();return
 	var direction := Vector3.ZERO
 	if Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP): direction.z -= 1
 	if Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN): direction.z += 1
@@ -190,6 +193,10 @@ func _physics_process(delta: float) -> void:
 	direction = basis * direction.normalized()
 	var speed := 6.5 if Input.is_physical_key_pressed(KEY_SHIFT) else 3.5
 	if Phone.enabled() and Phone.running:speed=6.5
+	if physical:
+		if physical.stamina<8:speed=minf(speed,3.5)
+		if physical.carried or physical.pushing:speed=minf(speed,2.2)
+		if physical.crouching:speed=1.7
 	velocity.x = move_toward(velocity.x, direction.x * speed, delta * 22)
 	velocity.z = move_toward(velocity.z, direction.z * speed, delta * 22)
 	if not is_on_floor(): velocity.y -= 22 * delta
@@ -206,6 +213,10 @@ func _physics_process(delta: float) -> void:
 			if animator.current_animation != clip: animator.play(clip,0.2)
 	if is_on_floor() and direction.length() > 0.1: bob += delta * speed * 2
 	camera.position.y = 1.65 + sin(bob) * 0.025
+	if physical and physical.crouching:camera.position.y=1.0
+	if physical and physical.mounted:
+		camera.position.y=2.5
+		avatar.position.y+=.9
 	if position.y < -150: position = Vector3(0, 2, 23)
 
 func move_with_steps(delta: float) -> void:

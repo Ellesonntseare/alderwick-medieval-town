@@ -35,6 +35,7 @@ var home_district: Node3D
 var industrial_workforce: Node3D
 var character_life: Node
 var cooking: Node3D
+var physical_gameplay: Node3D
 var loading_screen: CanvasLayer
 var interior_activities: Node
 var economy: Node
@@ -142,6 +143,8 @@ func _ready() -> void:
 	add_child(character_life)
 	interior_activities=load("res://interior_activities.gd").new()
 	add_child(interior_activities)
+	physical_gameplay=load("res://physical_gameplay.gd").new()
+	add_child(physical_gameplay)
 	industrial_workforce=load("res://industrial_workforce.gd").new()
 	add_child(industrial_workforce)
 	var performance: Node=load("res://town_performance.gd").new()

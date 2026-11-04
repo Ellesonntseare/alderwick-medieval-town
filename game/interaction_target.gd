@@ -12,6 +12,9 @@ static func resolve(town: Node) -> Dictionary:
 			var step: Dictionary=mission.steps[int(town.adventures.progress[id].step)]
 			return {"kind":"task","id":id,"verb":"Work" if step.kind=="work" else "Pick up","label":("Hold Use to work: "+mission.title) if step.kind=="work" else "Pick up "+String(step.get("item",mission.title))}
 	var life=town.life
+	if town.get("physical_gameplay"):
+		var physical: Dictionary=town.physical_gameplay.target()
+		if not physical.is_empty():return physical
 	var furniture=life.nearest_furniture
 	var door=life.nearest_door
 	if furniture and (not door or furniture.global_position.distance_to(town.player.position)<door.global_position.distance_to(town.player.position)):
@@ -25,6 +28,7 @@ static func resolve(town: Node) -> Dictionary:
 
 static func perform(town: Node,target: Dictionary) -> void:
 	match target.kind:
+		"physical":town.physical_gameplay.interact(target)
 		"stand":town.player.stand_from_furniture()
 		"home":
 			if Time.get_ticks_msec()-town.home_district.transferred_at>700:
