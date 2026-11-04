@@ -56,7 +56,7 @@ func run() -> void:
 		while map.refresh_pending:await process_frame
 		for frame in range(4):await process_frame
 		await RenderingServer.frame_post_draw
-		root.get_texture().get_image().save_png("res://../town-map-review.png")
+		root.get_texture().get_image().save_png("res://../town-map-review.png" if "--world-map" in OS.get_cmdline_user_args() else "res://../town-map-fixture.png")
 		if "--world-map" in OS.get_cmdline_user_args():
 			map.center=Vector3.ZERO;map.zoom=180;map.request_render()
 			while map.refresh_pending:await process_frame
@@ -65,5 +65,13 @@ func run() -> void:
 	var old_zoom: float=map.zoom
 	map.zoom_in();assert(map.zoom<old_zoom)
 	map.close();assert(town.player.enabled and not map.opened)
+	if DisplayServer.get_name()!="headless":
+		for frame in range(5):await process_frame
+		while map.minimap.capturing:await process_frame
+		town.player.rotation.y=PI/2
+		map.minimap._process(.3)
+		assert(is_equal_approx(float(map.minimap.map_material.get_shader_parameter("heading")),-PI/2))
+		await process_frame;await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://../walking-minimap-review.png")
 	print("TOWN_MAP_REVIEW_COMPLETE objective=true map_pause_restore=true zoom=true")
 	quit()

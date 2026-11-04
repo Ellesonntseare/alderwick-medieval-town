@@ -19,6 +19,7 @@ var refresh_pending:=false
 var mesh_ranges: Dictionary={}
 var tracking_ids: Array[String]=[]
 var clock:=0.0
+var minimap: Control
 
 func _ready() -> void:
 	town=get_parent();layer=22
@@ -41,6 +42,7 @@ func _ready() -> void:
 	texture.resized.connect(func():if opened:request_render())
 	hud=load("res://town_map_overlay.gd").new();hud.map=self;hud.navigation_only=true;hud.mouse_filter=Control.MOUSE_FILTER_IGNORE;add_child(hud);hud.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.hide()
+	minimap=load("res://walking_minimap.gd").new();minimap.map=self;add_child(minimap)
 	var shortcut:=Button.new();shortcut.text="Detailed town map · K";town.menu_body.add_child(shortcut);shortcut.pressed.connect(open)
 
 func objective() -> Dictionary:
@@ -66,6 +68,7 @@ func refresh_objective() -> void:
 func open() -> void:
 	if opened or not town.life.navigation_ready or town.life.active:return
 	if town.builder.active:return
+	if town.menu_panel and not town.menu_collapsed:town.toggle_menu()
 	previous_enabled=town.player.enabled;previous_mouse=Input.mouse_mode;town.player.enabled=false;town.player.velocity=Vector3.ZERO;Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 	opened=true;root.show();tracking_ids.assign([""]);selector.clear();selector.add_item("Choose an objective")
 	if not town.challenges.active.is_empty():tracking_ids.append("challenge");selector.add_item(town.challenges.DEFINITIONS[town.challenges.active].title)
@@ -99,6 +102,7 @@ func request_render() -> void:
 
 func render() -> void:
 	await get_tree().process_frame
+	while minimap and minimap.capturing:await get_tree().process_frame
 	if not opened:refresh_pending=false;return
 	var district=town.find_child("NeighbouringIndustrialTown",true,false)
 	var extent:=Vector2(zoom*texture.size.x/maxf(1,texture.size.y),zoom)

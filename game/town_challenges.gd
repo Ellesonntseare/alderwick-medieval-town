@@ -39,6 +39,7 @@ func start(id: String) -> void:
 	if finished.has(id) or town.economy.story_rewards.has("challenge_"+id):message.text="You have already completed this challenge.";return
 	if not town.life.navigation_ready or town.physical_gameplay.objects.is_empty():message.text="The town is still preparing.";return
 	active=id;remaining=DEFINITIONS[id].seconds
+	if town.menu_panel and not town.menu_collapsed:town.toggle_menu()
 	baseline=town.physical_gameplay.score if id=="archery" else int(town.adventures.inventory.get("Timber",0))
 	if id=="delivery":
 		if not is_instance_valid(crate):crate=town.physical_gameplay.prop("Express delivery crate","Crate_Wooden",DEFINITIONS.delivery.point,"carry")
