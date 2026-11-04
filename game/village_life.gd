@@ -593,15 +593,14 @@ func _process(delta: float) -> void:
 				nearest_furniture=item
 				furniture_distance=d
 	hint.visible=active==null
-	hint.text=str(people.size())+" villagers · Click a resident to talk" if town.view_mode==1 else "[E] "+("Close " if nearest_door.is_open else "Open ")+nearest_door.door_name if nearest_door else "[E] Talk to "+nearest.person_name+" · "+nearest.occupation if nearest else "E: talk / open doors · Tab: change view"
-	if not town.player.resting.is_empty():hint.text="[E / Space] Get up · You are "+town.player.resting
-	elif nearest_furniture and (not nearest_door or furniture_distance<door_distance):hint.text="[E] Sit down" if nearest_furniture.is_in_group("seats") else "[E] Lie down / sleep"
-	elif nearest and not nearest_door:hint.text="[F] Talk to "+nearest.person_name+" · "+nearest.occupation
+	var target:=preload("res://interaction_target.gd").resolve(town)
+	hint.text=("Use: " if preload("res://mobile_runtime.gd").enabled() else "[E] ")+target.label
+	if town.view_mode==1:hint.text=str(people.size())+" villagers · Select a resident to talk"
 	talk_button.visible=active==null and nearest!=null and town.view_mode!=1
 	if nearest:
 		if nearest.social_partner and nearest.has_conversation_partner():
 			talk_button.text="Join "+nearest.person_name+" & "+nearest.social_partner.person_name+" [F]"
-			if not nearest_door and not nearest_furniture:hint.text="[F] Join their conversation"
+			if target.kind=="talk":hint.text="Join "+nearest.person_name+" & "+nearest.social_partner.person_name
 		else:talk_button.text="Talk to "+nearest.person_name+" [F]"
 
 func close_night_doors() -> void:
@@ -764,11 +763,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			open_dialog(nearest)
 			get_viewport().set_input_as_handled()
 		elif event.physical_keycode==KEY_E and not active and town.view_mode!=1:
-			if nearest_furniture and (not nearest_door or nearest_furniture.global_position.distance_to(town.player.position)<nearest_door.global_position.distance_to(town.player.position)):
-				town.player.use_furniture(nearest_furniture,"sitting" if nearest_furniture.is_in_group("seats") else "sleeping")
-			elif nearest_door:
-				if not nearest_door.toggle(town.player.position):hint.text="Step clear of the doorway before closing it"
-			elif nearest:open_dialog(nearest)
+			preload("res://interaction_target.gd").perform(town,preload("res://interaction_target.gd").resolve(town))
 			get_viewport().set_input_as_handled()
 	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT and town.view_mode==1 and not active:
 		var camera := get_viewport().get_camera_3d()

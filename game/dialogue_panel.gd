@@ -118,3 +118,4 @@ static func build(life: Node) -> void:
 	life.ai.layout()
 	life.ai.layout.call_deferred()
 	life.dialog.hide()
+	var focus:=preload("res://conversation_focus.gd").new();life.add_child(focus)

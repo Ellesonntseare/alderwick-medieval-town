@@ -56,6 +56,7 @@ func set_quality(value: bool) -> void:
 
 func choose_quality(index: int,persist:=true) -> void:
 	quality=clampi(index,0,3);smooth=quality<2
+	town.set_meta("district_load_distance",[110.0,150.0,220.0,350.0][quality])
 	Engine.physics_ticks_per_second=30 if quality<2 else 60
 	Engine.max_fps=60 if quality<3 else 120
 	get_viewport().scaling_3d_scale=[.60,.80,1.0,1.0][quality]

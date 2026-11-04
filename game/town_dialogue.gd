@@ -25,6 +25,7 @@ var voice_input: Node
 var group_members: Array[CharacterBody3D]=[]
 var group_turns: Array[Dictionary]=[]
 var group_target: OptionButton
+var focused_person: CharacterBody3D
 var group_index := 0
 
 func _ready() -> void:
@@ -164,6 +165,7 @@ func send(text: String) -> void:
 	call.request(URL+"/chat",PackedStringArray(["Content-Type: application/json"]),HTTPClient.METHOD_POST,JSON.stringify({"name":person.person_name,"message":message,"context":context(person),"pid":OS.get_process_id(),"scope":scope}))
 
 func close() -> void:
+	focused_person=null
 	generation+=1
 	waiting=false
 	if voice_input:voice_input.cancel()
@@ -268,6 +270,7 @@ func is_group_member(person: Node) -> bool:
 	return group_members.has(person) and person.talking and life.active!=null
 
 func begin_group(first: CharacterBody3D,second: CharacterBody3D,overheard: Array[Dictionary]) -> void:
+	focused_person=first
 	group_members.assign([first,second])
 	group_turns=overheard.duplicate(true)
 	group_index=0
@@ -298,6 +301,7 @@ func send_group(text: String) -> void:
 			var name: String=group_members[candidate].person_name.to_lower()
 			if text.strip_edges().to_lower().begins_with(name+",") or text.strip_edges().to_lower().begins_with(name+" "):index=candidate;break
 	var person: CharacterBody3D=group_members[index]
+	focused_person=person
 	var message := text.strip_edges().left(1000)
 	var ticket := generation
 	if town.adventures:town.adventures.before_message(person,message)

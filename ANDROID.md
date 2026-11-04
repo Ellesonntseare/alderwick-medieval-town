@@ -6,6 +6,10 @@ Touch controls: left pad moves, drag the right side to look, Run toggles running
 
 **Activities** opens nearby seats, beds, meals, a kitchen when in reach, and storage at your home. On desktop, press **G** for the same list. Cooking and social options lead to their existing recipes, supplies, skills, and relationship systems. The **Controls** button adjusts touch-control size, look sensitivity, joystick dead zone, and vertical inversion; choices are saved on the device. Movement resets when a conversation or activity panel opens and when the app loses focus. Use also enters and leaves the player's home.
 
+Interaction prompts name the selected person, door, seat, bed, or mission item. The phone Use button displays the action, while the world prompt supplies the target's name. Conversations show a named recipient in the panel and gold markers beside participating residents; group conversations identify a specifically selected recipient.
+
+The industrial district keeps its compact, baked collision scene and working doors loaded. Its visual model loads in the background when the player or camera approaches and unloads farther away. Quality controls adjust the approach distance, with a wider unload distance to prevent repeated loading near the boundary. NPC routes and door state survive visual unloads. Regenerate the collision scene with `Godot --headless --path game --script res://bake_industrial_collision.gd` if the industrial source model changes. Other districts still load at startup; this is the first district converted to streaming.
+
 Jobs, family routines, market transactions, missions and movement are local game systems. Free-form generated conversation, transcription and neural voices use the existing PC services over the same private Wi-Fi:
 
 1. On the PC, open **Start Phone AI.cmd** and keep its window open. This starts the existing local AI/voice services and a paired LAN bridge on port 34322.

@@ -155,18 +155,8 @@ func talk() -> void:
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
 func use_nearby() -> void:
-	if town.get("home_district") and town.home_district.prompt and not town.home_district.prompt.text.is_empty():
-		if Time.get_ticks_msec()-town.home_district.transferred_at>700:
-			if town.home_district.inside:town.home_district.leave_home()
-			else:town.home_district.enter_home()
-		return
-	if not town.player.resting.is_empty():town.player.stand_from_furniture();return
-	if town.adventures:
-		var task: String=town.adventures.nearby_task()
-		if not task.is_empty():town.adventures.use_task(task);return
-	if town.life.nearest_furniture and (not town.life.nearest_door or town.life.nearest_furniture.global_position.distance_to(town.player.position)<town.life.nearest_door.global_position.distance_to(town.player.position)):
-		town.player.use_furniture(town.life.nearest_furniture,"sitting" if town.life.nearest_furniture.is_in_group("seats") else "sleeping")
-	elif town.life.nearest_door:town.life.nearest_door.toggle(town.player.position)
+	var target:=preload("res://interaction_target.gd").resolve(town)
+	preload("res://interaction_target.gd").perform(town,target)
 
 func _input(event: InputEvent) -> void:
 	if not enabled() or not is_instance_valid(town) or not joystick:return
@@ -205,5 +195,5 @@ func _process(_delta: float) -> void:
 		controls.visible=modal or not blocked()
 		if blocked():reset_touches()
 		if use_button:
-			use_button.text="Stand" if not town.player.resting.is_empty() else "Use"
+			use_button.text=preload("res://interaction_target.gd").resolve(town).verb
 
