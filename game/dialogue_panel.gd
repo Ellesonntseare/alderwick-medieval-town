@@ -107,6 +107,13 @@ static func build(life: Node) -> void:
 	life.ai.submit.text="Send"
 	life.ai.submit.pressed.connect(life.send_entry)
 	footer.add_child(life.ai.submit)
+	if preload("res://mobile_runtime.gd").enabled():
+		life.transcript.add_theme_font_size_override("normal_font_size",21)
+		life.entry.add_theme_font_size_override("font_size",21)
+		life.entry.custom_minimum_size.y=80
+		help.text="Write below, then tap Send"
+		for control: Button in life.dialog.find_children("*","Button",true,false):
+			control.custom_minimum_size.y=maxf(control.custom_minimum_size.y,48)
 	life.get_viewport().size_changed.connect(life.ai.layout)
 	life.ai.layout()
 	life.ai.layout.call_deferred()

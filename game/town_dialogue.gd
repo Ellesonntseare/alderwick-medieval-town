@@ -202,9 +202,11 @@ func layout() -> void:
 	if not life.dialog:return
 	var size := get_viewport().get_visible_rect().size
 	var width := clampf(size.x*0.37,350,470)
+	var phone: bool=Phone.enabled()
+	if phone:width=minf(size.x-24,maxf(460,size.x*.48))
 	life.dialog.custom_minimum_size=Vector2(width,0)
-	life.dialog.position=Vector2(size.x-width-20,24)
-	life.dialog.size=Vector2(width,size.y-48)
+	life.dialog.position=Vector2(size.x-width-(12 if phone else 20),12 if phone else 24)
+	life.dialog.size=Vector2(width,size.y-(24 if phone else 48))
 	if life.dialog.visible:print("CHAT_PANEL_LAYOUT viewport=",size," panel=",life.dialog.get_rect())
 
 func settle_layout() -> void:

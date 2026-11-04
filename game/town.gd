@@ -35,6 +35,7 @@ var home_district: Node3D
 var industrial_workforce: Node3D
 var character_life: Node
 var cooking: Node3D
+var interior_activities: Node
 var economy: Node
 var routines: Node
 var atmosphere: Node3D
@@ -129,6 +130,8 @@ func _ready() -> void:
 	add_child(cooking)
 	character_life=load("res://character_life.gd").new()
 	add_child(character_life)
+	interior_activities=load("res://interior_activities.gd").new()
+	add_child(interior_activities)
 	industrial_workforce=load("res://industrial_workforce.gd").new()
 	add_child(industrial_workforce)
 	var performance: Node=load("res://town_performance.gd").new()

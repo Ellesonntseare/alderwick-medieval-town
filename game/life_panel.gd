@@ -74,7 +74,7 @@ func rich(parent: Node) -> RichTextLabel:
 	var text := RichTextLabel.new();text.custom_minimum_size.y=110;text.size_flags_vertical=Control.SIZE_EXPAND_FILL;text.add_theme_font_size_override("normal_font_size",16);parent.add_child(text);return text
 
 func action(parent: Node,text: String,callback: Callable) -> Button:
-	var button := Button.new();button.text=text;button.pressed.connect(callback);parent.add_child(button);return button
+	var button := Button.new();button.text=text;button.custom_minimum_size.y=44;button.pressed.connect(callback);parent.add_child(button);return button
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.pressed or event.echo:return

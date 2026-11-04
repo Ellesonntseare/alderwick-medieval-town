@@ -1,6 +1,7 @@
 extends SceneTree
 
 class Player extends CharacterBody3D:
+	var enabled:=true
 	var resting:=""
 	var jump_requested:=false
 	var camera:=Camera3D.new()
@@ -48,6 +49,20 @@ func run() -> void:
 	down=InputEventScreenTouch.new();down.index=1;down.pressed=true;down.position=Vector2(900,250);mobile._input(down)
 	drag=InputEventScreenDrag.new();drag.index=1;drag.position=Vector2(930,260);drag.relative=Vector2(30,10);mobile._input(drag)
 	assert(town.player.rotation.y<0)
+	mobile.control_scale=1.35;mobile.layout_controls()
+	await process_frame
+	assert(mobile.actions.get_global_rect().position.x>0)
+	assert(mobile.actions.get_global_rect().end.y<=721)
+	mobile.move_axis=Vector2.ONE;mobile.look_touch=4;town.player.enabled=false
+	mobile._input(drag)
+	assert(mobile.move_axis==Vector2.ZERO and mobile.look_touch==-1)
+	town.player.enabled=true
+	mobile.control_scale=1.0;mobile.layout_controls()
+	origin=mobile.joystick.global_position+Vector2(85,85)
+	down=InputEventScreenTouch.new();down.index=0;down.pressed=true;down.position=origin;mobile._input(down)
+	drag=InputEventScreenDrag.new();drag.index=0;drag.position=origin+Vector2(1,1);mobile._input(drag)
+	assert(mobile.move_axis==Vector2.ZERO)
+	mobile.reset_touches()
 	var saved: String=mobile.endpoint;mobile.endpoint="http://192.168.1.5:34322/token/test-pair"
 	assert(mobile.backend_url(34320)=="http://192.168.1.5:34322/token/test-pair/ai")
 	assert(mobile.backend_url(34319).ends_with("/speech"));mobile.endpoint=saved
