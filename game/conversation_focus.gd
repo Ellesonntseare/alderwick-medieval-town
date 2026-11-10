@@ -3,7 +3,6 @@ extends Node
 var life: Node
 var banner: Label
 var markers: Array[Node3D]=[]
-var labels: Array[Label3D]=[]
 
 func _ready() -> void:
 	life=get_parent()
@@ -14,7 +13,6 @@ func _ready() -> void:
 		var marker:=Node3D.new();life.town.add_child(marker);markers.append(marker)
 		var ring:=MeshInstance3D.new();var mesh:=TorusMesh.new();mesh.inner_radius=.36;mesh.outer_radius=.43;mesh.rings=16;mesh.ring_segments=12;ring.mesh=mesh
 		var material:=StandardMaterial3D.new();material.albedo_color=Color("f6cf77");material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED;ring.material_override=material;marker.add_child(ring)
-		var label:=Label3D.new();label.position.y=2.25;label.billboard=BaseMaterial3D.BILLBOARD_ENABLED;label.font_size=25;label.pixel_size=.004;label.modulate=Color("ffe0a0");label.no_depth_test=false;marker.add_child(label);labels.append(label)
 		marker.hide()
 
 func _process(_delta: float) -> void:
@@ -34,7 +32,6 @@ func _process(_delta: float) -> void:
 		var person: Node3D=members[index]
 		if not is_instance_valid(person):continue
 		markers[index].show();markers[index].global_position=person.global_position+Vector3.UP*.035
-		labels[index].text="▼ "+person.person_name
 		markers[index].scale=Vector3.ONE*(1.0 if person==recipient else .85)
 
 func _exit_tree() -> void:

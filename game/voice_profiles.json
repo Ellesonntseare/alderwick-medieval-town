@@ -377,6 +377,116 @@
       "mix": 0.35,
       "speed": 1.02,
       "pitch": 0.99
+    },
+    "Alec": {
+      "voice": "bm_george",
+      "speed": 0.96,
+      "pitch": 0.98
+    },
+    "Bess": {
+      "voice": "bf_alice",
+      "speed": 0.985,
+      "pitch": 0.995
+    },
+    "Cara": {
+      "voice": "bf_isabella",
+      "speed": 1.01,
+      "pitch": 1.01
+    },
+    "Davin": {
+      "voice": "bm_lewis",
+      "speed": 1.035,
+      "pitch": 1.025
+    },
+    "Enid": {
+      "voice": "bf_emma",
+      "speed": 1.06,
+      "pitch": 0.98
+    },
+    "Faris": {
+      "voice": "bm_daniel",
+      "speed": 0.96,
+      "pitch": 0.995
+    },
+    "Gilda": {
+      "voice": "bf_isabella",
+      "speed": 0.985,
+      "pitch": 1.01
+    },
+    "Hector": {
+      "voice": "bm_lewis",
+      "speed": 1.01,
+      "pitch": 1.025
+    },
+    "Isla": {
+      "voice": "bf_emma",
+      "speed": 1.035,
+      "pitch": 0.98
+    },
+    "Jasper": {
+      "voice": "bm_daniel",
+      "speed": 1.06,
+      "pitch": 0.995
+    },
+    "Kira": {
+      "voice": "bf_isabella",
+      "speed": 0.96,
+      "pitch": 1.01
+    },
+    "Lennox": {
+      "voice": "bm_lewis",
+      "speed": 0.985,
+      "pitch": 1.025
+    },
+    "Maeve": {
+      "voice": "bm_george",
+      "speed": 1.01,
+      "pitch": 0.98
+    },
+    "Nolan": {
+      "voice": "bf_alice",
+      "speed": 1.035,
+      "pitch": 0.995
+    },
+    "Orla": {
+      "voice": "bf_isabella",
+      "speed": 1.06,
+      "pitch": 1.01
+    },
+    "Perrin": {
+      "voice": "bm_lewis",
+      "speed": 0.96,
+      "pitch": 1.025
+    },
+    "Quinn": {
+      "voice": "bf_emma",
+      "speed": 0.985,
+      "pitch": 0.98
+    },
+    "Rhea": {
+      "voice": "bm_daniel",
+      "speed": 1.01,
+      "pitch": 0.995
+    },
+    "Silas": {
+      "voice": "bf_isabella",
+      "speed": 1.035,
+      "pitch": 1.01
+    },
+    "Tessa": {
+      "voice": "bm_lewis",
+      "speed": 1.06,
+      "pitch": 1.025
+    },
+    "Ulric": {
+      "voice": "bf_emma",
+      "speed": 0.96,
+      "pitch": 0.98
+    },
+    "Vera": {
+      "voice": "bm_daniel",
+      "speed": 0.985,
+      "pitch": 0.995
     }
   }
 }

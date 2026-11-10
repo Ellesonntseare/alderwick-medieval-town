@@ -9,12 +9,14 @@ var layout: Dictionary={}
 var floors: Array[Dictionary]=[]
 var western_center := Vector3(-170,0,95)
 var western_scale := 1.45
+var prepared := false
 
 func _ready() -> void:
 	town=get_parent()
 	name="NativeDistricts"
 	layout=JSON.parse_string(FileAccess.get_file_as_string("res://downloaded/native-interiors.json"))
-	build()
+	await build()
+	prepared = true
 
 func bounds_in(node: Node3D,reference: Node3D) -> AABB:
 	var result := AABB()
@@ -41,9 +43,7 @@ func asset(id: String,parent: Node3D,pos: Vector3,solid := false) -> Node3D:
 					copy.shading_mode=BaseMaterial3D.SHADING_MODE_PER_PIXEL
 					mesh.set_surface_override_material(surface,copy)
 	if solid:
-		town.collisions(node)
-		for collider: CollisionShape3D in node.find_children("*","CollisionShape3D",true,false):
-			if collider.shape is ConcavePolygonShape3D:collider.shape.backface_collision=true
+		town.collisions(node,true)
 	return node
 
 func furniture(id: String,parent: Node3D,pos: Vector3,angle := 0.0,solid := true) -> Node3D:
@@ -99,6 +99,7 @@ func build() -> void:
 		["fortress","Fortress Outpost",Vector3(80,0,-110),"barracks"],
 		["arnstein_castle","Burg Arnstein",Vector3(182,0,-95),"ruin"]]:
 		make_native_building(spec[0],spec[1],spec[2],spec[3])
+		if town.loading_screen:await get_tree().process_frame
 	var village := asset("satellite_village",self,western_center+Vector3(0,-1.1*western_scale,0))
 	village.scale=Vector3.ONE*western_scale
 	town.collisions(village)
@@ -107,6 +108,7 @@ func build() -> void:
 		["West Mill House",Vector3(-135,0,170)],["Western Gate House",Vector3(-100,0,125)]]:
 		make_native_building("viking_house",spec[0],spec[1],"home")
 		road([Vector3(-82,0,95),Vector3(-82,0,spec[1].z-9),Vector3(spec[1].x,0,spec[1].z-9)])
+		if town.loading_screen:await get_tree().process_frame
 	var cat := asset("resting_cat",self,Vector3(-14,0,9))
 	cat.scale=Vector3.ONE*(0.30/0.55)
 	asset("warrior_display",self,Vector3(48,0,49))

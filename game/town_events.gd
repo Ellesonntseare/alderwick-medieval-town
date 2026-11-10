@@ -8,6 +8,7 @@ var elapsed:=0.0
 var family_clock:=0.0
 var family_turn:=0
 var save_path:="user://town-events.json"
+var save_writer=preload("res://background_json_save.gd").new()
 
 func _ready() -> void:
 	town=get_parent()
@@ -16,9 +17,13 @@ func _ready() -> void:
 		var data=JSON.parse_string(FileAccess.get_file_as_string(save_path))
 		if data is Dictionary:records=data.get("events",{});knowledge=data.get("knowledge",{})
 
-func save_state() -> void:
-	var file:=FileAccess.open(save_path,FileAccess.WRITE)
-	if file:file.store_string(JSON.stringify({"events":records,"knowledge":knowledge}))
+func save_state(background:=false) -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
+	save_state_traced(background)
+	preload("res://frame_costs.gd").finish("town_events.save_state",trace,"")
+
+func save_state_traced(background:=false) -> void:
+	save_writer.save(save_path,{"events":records,"knowledge":knowledge},background)
 
 func publish(id: String,text: String,witnesses: Array,point: Vector3) -> void:
 	if records.has(id):return
@@ -121,10 +126,13 @@ func _process(delta: float) -> void:
 		for chat in town.life.chats.values():
 			# News passes only in an actual, nearby, unobstructed conversation.
 			if chat.index>=1 and chat.a.position.distance_to(chat.b.position)<2.5 and visible_between(chat.a.position,chat.b.position):share(chat.a,chat.b);share(chat.b,chat.a)
-		save_state()
+		save_state(true)
 	if family_clock>18 and town.families.bound and not town.day_night.night and town.weather.current!="Rain":
 		family_clock=0
 		for attempt in range(town.families.households.size()):
 			var family: Dictionary=town.families.households[family_turn%town.families.households.size()]
 			family_turn+=1
 			if family_activity(family):break
+
+func _exit_tree() -> void:
+	save_writer.shutdown()

@@ -52,7 +52,6 @@ func run() -> void:
 		person.style=entry.style
 		stage.add_child(person)
 		person.set_physics_process(false)
-		person.label.hide()
 		person.bubble.hide()
 		person.animator.play("Idle")
 		person.animator.advance(0.3)

@@ -10,6 +10,7 @@ var corrections := 0
 var performance_clock:=0.0
 
 func initialize(skeleton: Skeleton3D) -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
 	initialized=true
 	for side in ["L","R"]:
 		var bone := skeleton.find_bone("Foot."+side)
@@ -41,6 +42,7 @@ func initialize(skeleton: Skeleton3D) -> void:
 			if (rest*point).y>lowest+0.018:break
 			sole.append(point)
 		feet[bone]=sole
+	preload("res://frame_costs.gd").finish("foot_sole_initialize",trace,String(model.scene_file_path))
 
 func _process_modification_with_delta(delta: float) -> void:
 	if not is_instance_valid(resident) or not is_instance_valid(model):return
@@ -50,6 +52,9 @@ func _process_modification_with_delta(delta: float) -> void:
 	delta=performance_clock;performance_clock=0
 	if resident.get("posture") in ["sleeping","sitting"] or resident.get("getting_up")>0:return
 	if resident.get("jump_active")==true or resident.get("resting") in ["sleeping","sitting"]:return
+	var animator: AnimationPlayer=resident.get("animator")
+	# The fitted prayer clip shifts its root from standing to knee support.
+	if animator and animator.current_animation=="Praying":return
 	var skeleton := get_skeleton()
 	if not initialized:initialize(skeleton)
 	if feet.is_empty():return

@@ -142,6 +142,7 @@ func review_player() -> void:
 	var player := CharacterBody3D.new()
 	player.set_script(load("res://player.gd"))
 	stage.add_child(player)
+	if "--erika" in OS.get_cmdline_user_args():check(player.set_skin("erika_archer",false),"Erika loads through the player skin selector")
 	player.set_view(2)
 	player.third_camera.current=false
 	camera.current=true
@@ -164,6 +165,7 @@ func review_player() -> void:
 	player.enabled=true
 	for i in range(20):await physics_frame
 	var ground_y := player.position.y
+	var idle_offset: Vector3=player.avatar.position
 	player.jump_requested=true
 	var top := ground_y
 	var jump_seen := false
@@ -183,12 +185,25 @@ func review_player() -> void:
 	player.stand_from_furniture()
 	player.use_furniture(bed,"sleeping")
 	player.stand_from_furniture()
-	player.getting_up=0
 	player.position=Vector3(0,0.1,0)
 	player.set_view(2)
-	for i in range(20):await physics_frame
-	check(player.avatar.position.length()<0.01,"Furniture transitions must not leave the avatar away from its body")
+	for i in range(120):await physics_frame
+	var offset: Vector3=player.avatar.position-idle_offset
+	check(Vector2(offset.x,offset.z).length()<0.01 and absf(offset.y)<0.15,"Furniture transitions must restore the grounded avatar position")
 	check(root.get_camera_3d()==player.third_camera and player.avatar.visible,"Third-person view must select its own camera and show the avatar")
 	check(player.third_camera.global_position.distance_to(player.global_position)>1.0,"Third-person camera must sit outside the body")
-	print("THIRD_PERSON_AFTER_FURNITURE_OK avatar_offset=",player.avatar.position.length()," camera_distance=",player.third_camera.global_position.distance_to(player.global_position))
+	print("THIRD_PERSON_AFTER_FURNITURE_OK avatar_offset=",player.avatar.position," idle_offset=",idle_offset," camera_distance=",player.third_camera.global_position.distance_to(player.global_position))
 	await capture("third-person-after-furniture.png")
+	if "--erika" in OS.get_cmdline_user_args() and DisplayServer.get_name()!="headless":
+		player.enabled=false
+		camera.current=true
+		root.size=Vector2i(512,512)
+		var head_position: Vector3=skeleton.to_global(skeleton.get_bone_global_pose(skeleton.find_bone("Head")).origin)
+		camera.size=.65
+		camera.position=head_position+Vector3(0,.05,-3)
+		camera.look_at(head_position+Vector3.UP*.07)
+		await process_frame
+		await RenderingServer.frame_post_draw
+		var portrait:=root.get_texture().get_image()
+		portrait.save_png("res://portraits/Erika.png")
+		portrait.save_png("res://../review/Elsa-Erika.png")

@@ -30,9 +30,7 @@ func _ready() -> void:
 	add_child(interior);interior.position=room_origin
 	interior.add_to_group("enterable_houses")
 	var room: Node3D=load("res://downloaded/player-home/interior.glb").instantiate();interior.add_child(room)
-	town.collisions(room)
-	for collision: CollisionShape3D in room.find_children("*","CollisionShape3D",true,false):
-		if collision.shape is ConcavePolygonShape3D:collision.shape.backface_collision=true
+	town.collisions(room,true)
 	# Back the supplied single-sided floor without replacing its appearance.
 	town.box(interior,Vector3(11.2,.15,12.3),Vector3(2.25,-.09,0),Color("6d655a"),true)
 	for spec in [[Vector3(11.2,5,.2),Vector3(2.25,2.5,-6.15)],[Vector3(11.2,5,.2),Vector3(2.25,2.5,6.15)],[Vector3(.2,5,12.3),Vector3(-3.35,2.5,0)],[Vector3(.2,5,12.3),Vector3(7.85,2.5,0)]]:
@@ -73,6 +71,7 @@ func start() -> void:
 func clear_capsule(point: Vector3) -> bool:
 	var shape:=CapsuleShape3D.new();shape.radius=.34;shape.height=1.8
 	var query:=PhysicsShapeQueryParameters3D.new();query.shape=shape;query.collision_mask=1
+	query.exclude=[town.player.get_rid()]
 	query.transform.origin=point+Vector3.UP*.92
 	return get_world_3d().direct_space_state.intersect_shape(query,1).is_empty()
 
@@ -86,15 +85,19 @@ func enter_home() -> void:
 	town.adventures.stop_work()
 	if town.life.active:town.life.close_dialog()
 	if not town.player.resting.is_empty():town.player.stand_from_furniture(true)
-	inside=true;interior.show();exterior.hide()
+	set_inside(true)
 	town.player.position=safe_spawn();town.player.velocity=Vector3.ZERO
 	town.player.rotation=Vector3.ZERO;town.player.camera.rotation=Vector3.ZERO
-	town.set_view(0);transferred_at=Time.get_ticks_msec()
+	town.player.reset_physics_interpolation()
+	town.set_view(0)
 
 func leave_home() -> void:
 	if not clear_capsule(porch):return
-	inside=false;exterior.show();interior.hide()
+	set_inside(false)
 	town.player.position=porch;town.player.velocity=Vector3.ZERO;town.player.rotation.y=PI
+
+func set_inside(value: bool) -> void:
+	inside=value;interior.visible=value;exterior.visible=not value
 	transferred_at=Time.get_ticks_msec()
 
 func _process(_delta: float) -> void:
@@ -102,7 +105,7 @@ func _process(_delta: float) -> void:
 	prompt.text=""
 	if town.life.active or not town.player.enabled or not town.player.resting.is_empty():return
 	var point:=exit_point if inside else porch
-	if town.player.position.distance_to(point)<2.5:prompt.text="[E] Leave your home" if inside else "[E] Enter your home"
+	if not preload("res://interaction_target.gd").uses_focus(town) and town.player.position.distance_to(point)<2.5:prompt.text="[E] Leave your home" if inside else "[E] Enter your home"
 	if inside and town.player.position.y<room_origin.y-4:town.player.position=safe_spawn();town.player.velocity=Vector3.ZERO
 
 func enter_visitor(person: CharacterBody3D) -> bool:

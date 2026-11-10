@@ -31,7 +31,7 @@ func run() -> void:
 	check(not town.music.playing,"Music starts off")
 	var guard: CharacterBody3D
 	for person in life.people:
-		check(person.label.font_size==18 and person.label.pixel_size<0.005,"Smaller labels for "+person.person_name)
+		check(person.get("label")==null,"No overhead name for "+person.person_name)
 		if person.person_name=="Edric":guard=person
 	check(guard!=null,"Edric exists")
 	var cast=JSON.parse_string(FileAccess.get_file_as_string("res://character_stories.json"))

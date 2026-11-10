@@ -21,7 +21,4 @@ func _physics_process(delta: float) -> void:
 		var difference:=survey_target-position;difference.y=0
 		if difference.length()<.2 or test_move(global_transform,difference.normalized()*.5):survey_pause=decision_rng.randf_range(6,12)
 		else:move_direction(difference.normalized(),.65,delta)
-	var camera:=get_viewport().get_camera_3d()
-	label.visible=not talking and camera and camera.global_position.distance_to(position)<15
-	label.text="Ansel · Surveyor"
 	bubble.hide()

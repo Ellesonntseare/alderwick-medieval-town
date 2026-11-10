@@ -7,5 +7,18 @@
   {"id":"viking","name":"Viking","portrait":"Nell","description":"A northern warrior with a round shield and layered armour.","base":"viking"},
   {"id":"mercenary","name":"Mercenary","portrait":"Bram","description":"A seasoned fighter wearing practical armour.","base":"mercenary"},
   {"id":"night_hunter","name":"Hooded ranger","portrait":"Jory","description":"A hooded figure in dark travelling gear.","base":"night_hunter"},
-  {"id":"emlyn","name":"Emlyn","portrait":"Mina","description":"A purple-haired traveller with light armour.","base":"emlyn"}
+  {"id":"emlyn","name":"Emlyn","portrait":"Mina","description":"A purple-haired traveller with light armour.","base":"emlyn"},
+  {"id":"erika_archer","name":"Erika archer","portrait":"Erika","description":"A hooded archer in dark leather armour.","base":"erika_archer"},
+  {"id":"armoured_assassin","name":"Armoured scout","portrait":"Selene","description":"A hooded scout with a bow and layered armour.","base":"armoured_assassin"},
+  {"id":"bruce","name":"Duncan","portrait":"Duncan","description":"An armoured courier in leather and plate.","base":"bruce"},
+  {"id":"cult_archer","name":"Fenn the archer","portrait":"Fenn","description":"A bowman with a quiver and sturdy boots.","base":"cult_archer"},
+  {"id":"female_peasant","name":"Village worker","portrait":"Wren","description":"Practical clothes for daily work around the village.","base":"female_peasant"},
+  {"id":"female_ranger","name":"Elowen the ranger","portrait":"Elowen","description":"A ranger in a green hood and leather armour.","base":"female_ranger"},
+  {"id":"male_peasant","name":"Finn the villager","portrait":"Finn","description":"A villager in a plain tunic and hood.","base":"male_peasant"},
+  {"id":"male_ranger","name":"Kael the ranger","portrait":"Kael","description":"A ranger in green travelling clothes.","base":"male_ranger"},
+  {"id":"medieval_woman","name":"Roslin","portrait":"Roslin","description":"A townswoman in a long red gown.","base":"medieval_woman"},
+  {"id":"robed_scholar","name":"Ivor the scholar","portrait":"Ivor","description":"A scholar in a hooded robe.","base":"robed_scholar"},
+  {"id":"runner_child","name":"Ollie","portrait":"Ollie","description":"The younger village child in a green hood.","base":"runner_child"},
+  {"id":"runner_youth","name":"Theo","portrait":"Theo","description":"A young apprentice in green travelling clothes.","base":"runner_youth"},
+  {"id":"saxon","name":"Saxon guard","portrait":"Gareth","description":"A guard with a round shield and a sword.","base":"saxon"}
 ]

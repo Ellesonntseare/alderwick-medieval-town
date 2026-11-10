@@ -23,6 +23,7 @@ var transcript: RichTextLabel
 var entry: TextEdit
 var ai: Node
 var hint: Label
+var hud_target: Dictionary={}
 var visits: Dictionary = {}
 var previous_music := -34.0
 var heartbeat := 0.0
@@ -72,13 +73,20 @@ func setup() -> void:
 	query.collision_mask=1
 	query.exclude=[town.player.get_rid()]
 	var space := town.get_world_3d().direct_space_state
-	var phone: bool=preload("res://mobile_runtime.gd").enabled()
-	var restored: bool=phone and preload("res://phone_navigation_cache.gd").restore(self)
+	var cache=preload("res://phone_navigation_cache.gd")
+	var cache_path:="user://world-navigation-v3.cache" if not automated else "user://review-world-navigation-v3.cache"
+	var cache_started:=Time.get_ticks_msec()
+	var geometry: String=cache.geometry_key(town)
+	var restored: bool=not geometry.is_empty() and cache.restore(self,cache_path,geometry)
 	if not restored:
 		await build_navigation(query,space)
-		if phone:preload("res://phone_navigation_cache.gd").save(self)
+		if not geometry.is_empty():cache.save(self,cache_path,geometry)
+	print("CITY_NAVIGATION_READY cached=",restored," elapsed_ms=",Time.get_ticks_msec()-cache_started)
 	walking_routes=preload("res://walking_routes.gd").new()
 	walking_routes.build(self)
+	if town.loading_screen:
+		town.loading_screen.stage("Preparing neighbours", 72)
+		await get_tree().process_frame
 	var residents := [
 		["Mara","Baker","Willow House","worker",Vector3(20,0,10),Vector3(8,0,4),Vector3(14,0,22)],
 		["Bram","Blacksmith","Hearth House","mercenary",Vector3(20,0,-10),Vector3(8,0,-4),Vector3(-14,0,22)],
@@ -131,7 +139,7 @@ func setup() -> void:
 		["Ollie","Village child","Willow House","runner_child",Vector3(5,0,20),Vector3(-3,0,12),Vector3(10,0,20)],
 		["Theo","Young apprentice","Hearth House","runner_youth",Vector3(27,0,20),Vector3(10,0,18),Vector3(-7,0,23)]
 	])
-	var wardrobe := {"Finn":"male_peasant","Wren":"female_peasant","Kael":"male_ranger","Elowen":"female_ranger"}
+	var wardrobe := {"Finn":"male_peasant","Wren":"female_peasant","Kael":"male_ranger","Elowen":"female_ranger","Elsa":"erika_archer"}
 	for i in range(residents.size()):
 		var data: Array = residents[i]
 		var person := CharacterBody3D.new()
@@ -142,6 +150,7 @@ func setup() -> void:
 		person.style=data[3]
 		if person.person_name=="Mina":person.style="emlyn"
 		if wardrobe.has(person.person_name):person.style=wardrobe[person.person_name]
+		if person.person_name=="Elsa":person.occupation="Guard"
 		person.is_child=person.style in ["runner_child","runner_youth"]
 		person.walking_policy="pavement" if person.person_name in ["Ollie","Theo","Wren","Pip","Alden","Ivor"] else "road" if posmod(hash(person.person_name),2)==0 else "open"
 		if person.person_name in ["Duncan","Gareth"]:person.walking_policy="road"
@@ -165,9 +174,12 @@ func setup() -> void:
 		people.append(person)
 		person.plan()
 		person.wait_time=person.decision_rng.randf_range(1,4)
-		if preload("res://mobile_runtime.gd").enabled() and i%3==0:
-			if town.loading_screen:town.loading_screen.stage("Preparing neighbours · "+str(i+1)+" / "+str(RESIDENT_COUNT),65.0+25.0*float(i+1)/RESIDENT_COUNT)
+		if town.loading_screen and (i + 1) % 3 == 0:
+			town.loading_screen.stage("Preparing neighbours · %d / %d" % [i+1, residents.size()], 72.0+20.0*float(i+1)/residents.size())
 			await get_tree().process_frame
+	if town.loading_screen:
+		town.loading_screen.stage("Opening your house…", 94)
+		await get_tree().process_frame
 	occupy_interiors()
 	staff_stalls()
 	town.jobs.bind(self)
@@ -272,12 +284,13 @@ func inside_current_home(person: CharacterBody3D) -> bool:
 	return absf(local.x)<width/2+0.4 and absf(local.z)<depth/2+0.4 and entrance.z>0.25
 
 func assign_home(person: CharacterBody3D) -> bool:
-	if town.get("industrial_workforce") and town.industrial_workforce.intercept_home(person):return true
 	if town.families and town.families.send_home(person):return true
 	var best: Node3D=null
 	var best_distance := INF
 	var best_route := PackedVector3Array()
+	var reserved: Node3D=person.get_meta("reserved_home",null)
 	for house: Node3D in get_tree().get_nodes_in_group("enterable_houses"):
+		if reserved and house!=reserved:continue
 		if house.get_meta("player_owned",false) or house.get_meta("family_excluded",false):continue
 		var capacity := false
 		for bed in house.get_children():
@@ -367,7 +380,18 @@ func free_cell(point: Vector3) -> Vector2i:
 	return Vector2i(0,10)
 
 func find_route(from: Vector3,to: Vector3,person: Node=null,avoid_people := false,physical_person: CharacterBody3D=null) -> PackedVector3Array:
+	var trace:=preload("res://frame_costs.gd").begin()
+	var result: PackedVector3Array=find_route_impl(from,to,person,avoid_people,physical_person)
+	preload("res://frame_costs.gd").finish("find_route",trace,[from,to,person.get("person_name") if person else ""])
+	return result
+
+func find_route_impl(from: Vector3,to: Vector3,person: Node=null,avoid_people := false,physical_person: CharacterBody3D=null) -> PackedVector3Array:
 	var result := PackedVector3Array()
+	# The nearest-cell search can only reach thirteen cells from an endpoint.
+	# Reject distant requests instead of substituting an unrelated city cell.
+	var search_bounds:=grid.region.grow(13)
+	if not search_bounds.has_point(Vector2i(roundi(from.x/CELL),roundi(from.z/CELL))):return result
+	if not search_bounds.has_point(Vector2i(roundi(to.x/CELL),roundi(to.z/CELL))):return result
 	var ids: Array[Vector2i]=walking_routes.path(from,to,person,avoid_people) if walking_routes else grid.get_id_path(free_cell(from),free_cell(to),false)
 	for id in ids: result.append(Vector3(id.x*CELL,float(floor_heights.get(id,0))+0.01,id.y*CELL))
 	# A free grid cell may be across the corner of a stool or workbench.
@@ -444,6 +468,12 @@ func release_bed(person: CharacterBody3D) -> void:
 	person.assigned_bed=null
 
 func indoor_route(person: CharacterBody3D,house: Node3D,from: Vector3,to: Vector3) -> PackedVector3Array:
+	var trace:=preload("res://frame_costs.gd").begin()
+	var result: PackedVector3Array=indoor_route_impl(person,house,from,to)
+	preload("res://frame_costs.gd").finish("indoor_route",trace,[person.person_name,house.name])
+	return result
+
+func indoor_route_impl(person: CharacterBody3D,house: Node3D,from: Vector3,to: Vector3) -> PackedVector3Array:
 	var cell_size := 0.25
 	var nav: AStarGrid2D
 	if interior_grids.has(house):nav=interior_grids[house]
@@ -536,6 +566,14 @@ func _process(delta: float) -> void:
 	heartbeat=0
 	if active and not active.stall_name.is_empty():refresh_trade()
 	if town.day_night and town.day_night.night:close_night_doors()
+	if preload("res://interaction_target.gd").uses_focus(town):
+		hud_target=preload("res://interaction_target.gd").resolve(town)
+		if preload("res://interaction_target.gd").gameplay_visible(town):
+			nearest=hud_target.node if hud_target.kind in ["talk","shop"] else null
+			nearest_door=hud_target.node if hud_target.kind=="door" else null
+			nearest_furniture=hud_target.node if hud_target.kind=="furniture" else null
+		talk_button.hide()
+		return
 	nearest=null
 	var distance := 5.0
 	for person in people:
@@ -631,6 +669,11 @@ func stop_chat(person: CharacterBody3D) -> void:
 	chats.erase(person.chat_id)
 
 func consider_meetups() -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
+	consider_meetups_impl()
+	preload("res://frame_costs.gd").finish("social_search",trace)
+
+func consider_meetups_impl() -> void:
 	if town.day_night and town.day_night.night:return
 	var chatting := 0
 	for person in people:
@@ -641,15 +684,16 @@ func consider_meetups() -> void:
 	for a in candidates:
 		if not available_for_meeting(a):continue
 		if social_rng.randf()>a.sociability:continue
-		var partners := candidates.duplicate()
+		var partners: Array=traffic.people_near(a.position,12.0)
+		partners.shuffle()
 		partners.sort_custom(func(first: CharacterBody3D,second: CharacterBody3D):return int(a.friendships.get(first.person_name,0))>int(a.friendships.get(second.person_name,0)))
 		for b in partners:
-			if not available_for_meeting(b) or a==b:continue
+			if a==b or a.position.distance_squared_to(b.position)>144 or not available_for_meeting(b):continue
 			if start_meetup(a,b) or invite_meetup(a,b):return
 
 func available_for_meeting(person: CharacterBody3D) -> bool:
 	if not person.routine.is_empty():return false
-	if not person.job.is_empty() and person.job.get("stage","") in ["harvesting","crafting"]:return false
+	if not person.job.is_empty() and person.job.get("stage","") in ["planting","harvesting","crafting"]:return false
 	if not person.guard_label.is_empty() and Vector2(person.position.x-person.guard_post.x,person.position.z-person.guard_post.z).length()>0.3:return false
 	return person.posture=="standing" and person.getting_up<=0 and not person.talking and not person.social_partner and not person.meeting_partner and person.social_cooldown<=0 and not person.night_schedule and not person.indoor_house and person.stall_name.is_empty()
 
@@ -676,7 +720,7 @@ func invite_meetup(a: CharacterBody3D,b: CharacterBody3D) -> bool:
 		query.transform=Transform3D(Basis.IDENTITY,target+Vector3.UP*0.91)
 		if not space.intersect_shape(query,1).is_empty():continue
 		var occupied := false
-		for person in people:
+		for person in traffic.people_near(target,1.0):
 			if person!=a and person!=b and person.position.distance_to(target)<0.95:occupied=true;break
 		if occupied:continue
 		var sight := PhysicsRayQueryParameters3D.create(a.position+Vector3.UP*1.3,target+Vector3.UP*1.3,1)
@@ -726,11 +770,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.physical_keycode==KEY_ESCAPE and active:
 			close_dialog()
 			get_viewport().set_input_as_handled()
-		elif event.physical_keycode==KEY_F and not active and nearest and town.view_mode!=1:
-			open_dialog(nearest)
-			get_viewport().set_input_as_handled()
+		elif event.physical_keycode==KEY_F and not active and town.view_mode!=1:
+			var person:=nearest
+			if preload("res://interaction_target.gd").uses_focus(town):
+				var focus:=preload("res://interaction_target.gd").resolve(town)
+				person=focus.node if focus.kind in ["talk","shop"] else null
+			if is_instance_valid(person):open_dialog(person);get_viewport().set_input_as_handled()
 		elif event.physical_keycode==KEY_E and not active and town.view_mode!=1:
-			preload("res://interaction_target.gd").perform(town,preload("res://interaction_target.gd").resolve(town))
+			hud_target=preload("res://interaction_target.gd").resolve(town)
+			preload("res://interaction_target.gd").perform(town,hud_target)
 			get_viewport().set_input_as_handled()
 	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT and town.view_mode==1 and not active:
 		var camera := get_viewport().get_camera_3d()
@@ -743,17 +791,20 @@ func make_interface() -> void:
 	preload("res://dialogue_panel.gd").build(self)
 
 func open_dialog(person: CharacterBody3D,allow_join := true) -> void:
-	if allow_join and person.social_partner and person.has_conversation_partner() and person.position.distance_to(town.player.position)<=5:
+	if preload("res://dialogue_features.gd").ENABLED and allow_join and person.social_partner and person.has_conversation_partner() and person.position.distance_to(town.player.position)<=5:
 		join_conversation(person)
 		return
 	if person.posture=="sleeping":
 		town.economy.announce(person.person_name+" is sleeping. Come back during their shift.")
 		return
 	if active:close_dialog()
-	if not person.routine.is_empty():town.routines.cancel(person)
+	if town.routines:town.routines.actions.clear_work(person)
+	# Keep the chair reservation, meal and visit state while speaking. Seated
+	# dialogue uses a seated gesture instead of pulling the resident upright.
+	if not person.routine.is_empty() and person.posture!="sitting":town.routines.cancel(person)
 	if person.meeting_partner:cancel_meeting(person)
 	if person.social_partner:person.end_social()
-	person.stand_up()
+	if person.posture!="sitting":person.stand_up()
 	active=person
 	active.talking=true
 	active.work_timer=0
@@ -763,10 +814,10 @@ func open_dialog(person: CharacterBody3D,allow_join := true) -> void:
 	entry.clear()
 	dialog.show()
 	refresh_trade()
+	if town.adventures:town.adventures.refresh_conversation_action()
 	hint.hide()
-	active.label.hide()
 	var facing: Vector3 = town.player.position-active.position
-	if Vector2(facing.x,facing.z).length()>0.01:active.visual.rotation.y=atan2(facing.x,facing.z)
+	if active.posture!="sitting" and Vector2(facing.x,facing.z).length()>0.01:active.visual.rotation.y=atan2(facing.x,facing.z)
 	ai.layout()
 	ai.open(person)
 	town.player.enabled=false
@@ -789,6 +840,11 @@ func join_conversation(person: CharacterBody3D) -> void:
 	ai.begin_group(person,partner,overheard)
 
 func refresh_trade() -> void:
+	var shop_button := dialog.find_child("ShopButton", true, false) as Button
+	if shop_button:
+		var inventory: Node = town.inventory_ui
+		shop_button.visible = is_instance_valid(inventory) and inventory.shop.available_for(active)
+		if shop_button.visible:shop_button.text = "Furniture commissions" if active.person_name == "Oren" else "Browse goods"
 	trade_row.visible=active!=null and not active.stall_name.is_empty()
 	if not trade_row.visible:return
 	var market: Dictionary=town.economy.market_for(active)

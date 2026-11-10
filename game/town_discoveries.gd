@@ -18,10 +18,10 @@ func _ready() -> void:
 
 func setup() -> void:
 	while not town.life.navigation_ready:await get_tree().process_frame
-	add_site("delivery_slip","A mud-stained delivery slip",Vector3(39,.04,-40),"The delivery slip says Ada's greens were sent to Fère-en-Tardenois by mistake. Corvin checked the destination label.",["Corvin","Ada"],"missing_delivery",1)
+	add_site("delivery_slip","A mud-stained delivery slip",Vector3(39,.04,-40),"The delivery slip says Ada's greens were sent to the western market by mistake. Corvin checked the destination label.",["Corvin","Ada"],"missing_delivery",1)
 	add_site("workshop_note","A carpenter's work note",Vector3(35,.08,19.5),"Oren's note says Bram was making replacement wagon fittings. The eastern supply store was their collection point.",["Oren","Bram"],"wagon_fittings",1)
-	for site in town.chateaux.sites:
-		if site.id=="montfaucon_chateau":add_site("survey_sketch","A charcoal masonry sketch",site.inside+Vector3(3,.05,1),"Ansel's dated masonry sketch belongs to his current survey. A margin asks Nils to compare the western entrance. Greta is waiting for a check-in; the sketch alone does not prove Ansel is safe.",["Nils","Greta","Ansel"],"overdue_surveyor",2)
+	var survey: Vector3=town.adventures.step_position(town.adventures.find_mission("overdue_surveyor").steps[2])
+	add_site("survey_sketch","A charcoal masonry sketch",survey+Vector3(3,.05,1),"Ansel's dated masonry sketch belongs to his current survey of the western gatehouse. A margin asks Nils to compare the entrance. Greta is waiting for a check-in; the sketch alone does not prove Ansel is safe.",["Nils","Greta","Ansel"],"overdue_surveyor",2)
 
 func add_site(id: String,title: String,point: Vector3,text: String,people: Array,mission: String,lead_step: int) -> void:
 	var paper:=MeshInstance3D.new();var mesh:=BoxMesh.new();mesh.size=Vector3(.3,.015,.23);paper.mesh=mesh

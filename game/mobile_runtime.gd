@@ -199,19 +199,7 @@ func attach(owner: Node) -> void:
 	touch_button(actions,"Controls",Vector2(145,28),28,func():reset_touches();preferences.popup_centered())
 	build_preferences(root);layout_controls()
 	if not get_viewport().size_changed.is_connected(layout_controls):get_viewport().size_changed.connect(layout_controls)
-	var network:=Button.new();network.text="Connect to PC AI";network.position=Vector2(20,8);network.pressed.connect(show_connection);root.add_child(network)
-	connection=AcceptDialog.new();connection.title="PC conversations & voices";connection.size=Vector2i(650,240);root.add_child(connection)
-	var column:=VBoxContainer.new();connection.add_child(column)
-	var label:=Label.new();label.text="On your PC, open Start Phone AI.cmd.\nPaste its connection address below. Both devices need the same Wi-Fi.\nThe town works without a PC; generated dialogue and voices need this connection.";label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;column.add_child(label)
-	address=LineEdit.new();address.placeholder_text="http://PC-IP:34322/token/your-pairing-code";address.text=endpoint;column.add_child(address)
-	connection.confirmed.connect(func():
-		var value:=address.text.strip_edges().trim_suffix("/")
-		if not value.is_empty() and not (value.begins_with("http://") or value.begins_with("https://")):return
-		endpoint=value
-		var file:=FileAccess.open("user://phone-connection.json",FileAccess.WRITE);file.store_string(JSON.stringify({"endpoint":endpoint}))
-		if town.life.ai:town.life.ai.URL=backend_url(34320);town.life.ai.check_health()
-		if town.speech:town.speech.URL=backend_url(34319);town.speech.check_health())
-	town.menu_collapsed=false;town.toggle_menu()
+	town.menu_collapsed=true;town.menu_panel.hide()
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
 func button(parent: Node,text: String,action: Callable) -> Button:
@@ -246,6 +234,11 @@ func held_key(key: Key,pressed: bool) -> void:
 func begin_use() -> void:
 	using_workbench=false
 	if not town.adventures:return
+	if preload("res://interaction_target.gd").uses_focus(town):
+		var focus:=preload("res://interaction_target.gd").resolve(town)
+		town.life.hud_target=focus
+		if focus.get("hold",false):using_workbench=true;held_key(KEY_E,true)
+		return
 	var id: String=town.adventures.nearby_task()
 	if id.is_empty():return
 	var mission: Dictionary=town.adventures.find_mission(id)
@@ -254,6 +247,9 @@ func begin_use() -> void:
 
 func talk() -> void:
 	if town.life.active:town.life.close_dialog()
+	elif preload("res://interaction_target.gd").uses_focus(town):
+		var focus:=preload("res://interaction_target.gd").resolve(town)
+		if focus.kind in ["talk","shop"]:town.life.open_dialog(focus.node)
 	elif town.life.nearest:town.life.open_dialog(town.life.nearest)
 	elif town.adventures and town.adventures.visitor and town.adventures.visitor.position.distance_to(town.player.position)<4:town.life.open_dialog(town.adventures.visitor)
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
@@ -287,6 +283,7 @@ func _input(event: InputEvent) -> void:
 				camera.rotation.x=clampf(camera.rotation.x-event.relative.y*.004*look_sensitivity*(-1 if invert_look else 1),-1.1,.2)
 
 func blocked() -> bool:
+	if town.get("interface_ui") and town.interface_ui.active:return true
 	if town.get("town_map") and town.town_map.opened:return true
 	if town.get("challenges") and town.challenges.panel.visible:return true
 	if town.get("character_life") and town.character_life.view.visible():return true
@@ -311,6 +308,7 @@ func _process(_delta: float) -> void:
 		prompt_clock+=_delta
 		if use_button and prompt_clock>=.15:
 			prompt_clock=0
-			use_button.text=preload("res://interaction_target.gd").resolve(town).verb
+			var target: Dictionary=town.life.hud_target if preload("res://interaction_target.gd").uses_focus(town) else preload("res://interaction_target.gd").resolve(town)
+			use_button.text=target.get("verb","Use")
 		if run_caption:run_caption.text="Run ON" if running else "Run"
 

@@ -50,6 +50,11 @@ func run() -> void:
 	walker.walking_policy="open"
 	var direct: Array[Vector2i]=routes.path(start,end,walker,false)
 	check(direct.size()==17,"Open-area walker can take the clear direct route")
+	var searches_before: int=routes.searches
+	var cached: Array[Vector2i]=routes.path(start,end,walker,false)
+	check(routes.cache_hits==1 and routes.searches==searches_before,"Repeated static route reuses a cached search")
+	cached.clear()
+	check(routes.path(start,end,walker,false).size()==17,"Callers cannot mutate another resident's cached route")
 	walker.walking_policy="road"
 	var road: Array[Vector2i]=routes.path(start,end,walker,false)
 	check(road.size()>direct.size(),"Road follower uses the longer road instead of crossing the field")
@@ -69,8 +74,10 @@ func run() -> void:
 	var passing: Array[Vector2i]=routes.path(start,end,walker,true)
 	check(not passing.is_empty() and not passing.has(Vector2i(2,7)),"Walker finds a way around a stationary person")
 	check(not routes.pavement_grid.is_point_solid(Vector2i(2,7)),"Temporary crowd avoidance must not corrupt navigation")
+	var before_dynamic: int=routes.cache_hits
 	routes.avoid(walker,Vector3(2,0,6))
 	var recovered: Array[Vector2i]=routes.path(start,end,walker,false)
+	check(routes.cache_hits==before_dynamic,"Personal obstacle detours bypass the static route cache")
 	check(not recovered.is_empty() and not recovered.has(Vector2i(2,6)),"Repeated obstacle recovery selects a different route")
 	walker.night_schedule=true
 	check(routes.path(start,end,walker,false).size()==direct.size(),"Home access remains available at night")
@@ -78,6 +85,7 @@ func run() -> void:
 	check(routes.pavement_components.has(old_cell),"Original paved path is present before editing")
 	lane.remove_meta("walking_lane")
 	routes.build(life)
+	check(routes.route_cache.is_empty() and routes.connector_cache.is_empty() and routes.options_cache.is_empty(),"Layout edits invalidate cached routes and paving connections")
 	check(not routes.paved.has(old_cell) and not routes.pavement_components.has(old_cell),"Removing a path removes its cached pavement connections")
 	check(routes.pavement_grid.is_point_solid(old_cell),"Removed paving is unavailable to pavement walkers")
 	check(routes.detours.is_empty(),"Rebuilding a layout discards detours from the old layout")
@@ -85,5 +93,8 @@ func run() -> void:
 	routes.build(life)
 	walker.night_schedule=false
 	check(not routes.path(start,end,walker,false).is_empty(),"Restoring a path restores its connected walking route")
+	check(routes.claim_replan() and routes.claim_replan() and routes.claim_replan() and not routes.claim_replan(),"Crowd recovery limits recalculation bursts to three per physics tick")
+	await physics_frame
+	check(routes.claim_replan(),"Deferred route recovery resumes on the next physics tick")
 	print("WALKING_ROUTES_REVIEW_COMPLETE failures=",failures," direct=",direct.size()," road=",road.size()," pavement=",pavement.size())
 	quit(0 if failures.is_empty() else 1)

@@ -34,10 +34,10 @@ func _ready() -> void:
 func face(skin: Dictionary) -> Texture2D:
 	if portraits.has(skin.id):return portraits[skin.id]
 	var path := "res://portraits/"+String(skin.portrait)+".png"
-	if not FileAccess.file_exists(path):return null
-	var picture := Image.load_from_file(ProjectSettings.globalize_path(path))
-	if picture.is_empty():return null
-	portraits[skin.id]=ImageTexture.create_from_image(picture)
+	if not ResourceLoader.exists(path):return null
+	var picture:=load(path) as Texture2D
+	if not picture:return null
+	portraits[skin.id]=picture
 	return portraits[skin.id]
 
 func build() -> void:

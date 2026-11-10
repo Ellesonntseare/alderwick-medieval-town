@@ -6,6 +6,7 @@ const RECIPES := {
 	"Garden broth":{"food":1,"herbs":1,"level":1,"servings":1,"seconds":6.0,"hunger":45.0,"xp":12.0},
 	"Family stew":{"food":3,"herbs":1,"level":2,"servings":4,"seconds":9.0,"hunger":46.0,"xp":14.0}
 }
+const SEEDS := "Seed packet"
 var town: Node3D
 var stations: Array[Node3D]=[]
 var garden: Node3D
@@ -59,6 +60,13 @@ func build_garden() -> void:
 	for x in range(3):
 		for z in range(3):town.detailed_prop("Carrot",crop_visual,Vector3((x-1)*.65,0,(z-1)*.6),Vector3(.2,.4,.2),false)
 	for x in range(3):town.detailed_prop("Carrot",herb_visual,Vector3((x-1)*.28,-.16,0),Vector3(.17,.32,.17),false)
+	for side in [-1,1]:
+		var center:=Vector3(side*2.7,0,0)
+		town.box(garden,Vector3(1.25,.05,2.4),center,Color("65503b"),false)
+		for edge in [-1,1]:
+			town.box(garden,Vector3(.07,.15,2.5),center+Vector3(edge*.65,.06,0),Color("8c704c"),false)
+		for row in range(4):
+			town.detailed_prop("Carrot",garden,center+Vector3(0,.02,(row-1.5)*.5),Vector3(.25,.35,.25),false)
 	garden_label=Label3D.new();garden.add_child(garden_label);garden_label.position=Vector3(0,1.2,0)
 	garden_label.font_size=19;garden_label.pixel_size=.006;garden_label.billboard=BaseMaterial3D.BILLBOARD_ENABLED
 	update_garden()
@@ -82,8 +90,11 @@ func _process(delta: float) -> void:
 
 func save_state() -> void:
 	if testing:return
+	var trace := preload("res://frame_costs.gd").begin()
 	var file := FileAccess.open(save_path,FileAccess.WRITE)
 	if file:file.store_string(JSON.stringify({"clock":clock,"growth_ready":growth_ready,"crop_state":crop_state,"herb_stock":herb_stock,"herb_regrow":herb_regrow}))
+	if file:file.close()
+	preload("res://frame_costs.gd").finish("garden.save_state",trace)
 
 func near_station() -> bool:
 	for station in stations:
@@ -137,15 +148,26 @@ func gather_herbs() -> bool:
 	return true
 
 func plant() -> bool:
-	if not near_garden() or crop_state!="empty" or town.economy.player_food<1:return false
+	if not can_plant():return false
+	if town.interface_ui and town.interface_ui.active:town.interface_ui.close()
 	return town.character_life.begin_activity("plant",4)
 
+func can_plant() -> bool:
+	return near_garden() and crop_state=="empty" and (town.economy.player_food>0 or int(town.adventures.inventory.get(SEEDS,0))>0)
+
 func finish_planting() -> bool:
-	if not near_garden() or crop_state!="empty" or town.economy.player_food<1:return false
-	town.economy.player_food-=1;town.economy.refresh()
+	if not can_plant():return false
+	if int(town.adventures.inventory.get(SEEDS,0))>0:
+		town.adventures.inventory[SEEDS]=int(town.adventures.inventory[SEEDS])-1
+		if int(town.adventures.inventory[SEEDS])==0:town.adventures.inventory.erase(SEEDS)
+		town.adventures.save_state()
+	else:
+		town.economy.player_food-=1;town.economy.refresh()
 	crop_state="growing";growth_ready=clock+45/(1+.08*town.character_life.skill_level("You","Farming"))
 	town.character_life.gain_skill("You","Farming",4)
-	update_garden();save_state();return true
+	update_garden();save_state()
+	if town.session:town.session.save_now(true)
+	return true
 
 func harvest() -> bool:
 	if not near_garden() or crop_state!="ready":return false
@@ -154,4 +176,7 @@ func harvest() -> bool:
 	crop_state="empty";town.character_life.gain_skill("You","Farming",8)
 	town.character_life.feel("You","Proud",30);update_garden();save_state()
 	town.economy.announce("Harvested "+str(portions)+" vegetable portions.")
+	if town.player.animator.has_animation("PickFruit"):
+		town.player.animator.play("PickFruit",.15)
+		if town.get("physical_gameplay"):town.physical_gameplay.gesture=2.0
 	return true

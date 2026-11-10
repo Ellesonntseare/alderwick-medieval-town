@@ -47,6 +47,9 @@ func open_people() -> void:
 	town.character_life.view.tabs.current_tab=2;town.character_life.view.open()
 
 func open() -> void:
+	var journal: Node=town.get("interface_ui")
+	if journal and journal.ready_for_use:
+		journal.open_page("Activities");return
 	if panel.visible or not town.character_life.bound or town.life.active or town.builder.active:return
 	for child in choices.get_children():choices.remove_child(child);child.queue_free()
 	var help:=Label.new();help.text="Activities use nearby furniture and your own supplies.";help.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;help.custom_minimum_size.x=420;choices.add_child(help)

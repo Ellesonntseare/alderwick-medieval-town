@@ -1,3 +1,5 @@
+> Current status, 5 November 2026. Character AI dialogue and neural voices are disabled at the user's request. Opening the game no longer starts or polls local AI/voice services. The phone connection UI is removed. The Llama runtimes, Qwen model, partial model files and runtime archives have been removed from this project into the Windows Recycle Bin. The notes below describe the earlier implementation.
+
 # Talking with residents
 
 Use **F** beside an awake resident. The dialogue panel offers **Type a message**

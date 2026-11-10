@@ -69,6 +69,14 @@ static func build(life: Node) -> void:
 		button.add_theme_font_size_override("font_size",14)
 		button.pressed.connect(spec[1])
 		buttons.add_child(button)
+	var shop := Button.new()
+	shop.name = "ShopButton"
+	shop.text = "Browse goods"
+	shop.pressed.connect(func():
+		var inventory: Node = life.town.inventory_ui
+		if is_instance_valid(inventory):inventory.open_shop(is_instance_valid(life.active) and life.active.person_name == "Oren"))
+	column.add_child(shop)
+	shop.hide()
 	life.ai.status=Label.new()
 	life.ai.status.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	life.ai.status.add_theme_font_size_override("font_size",14)
@@ -77,9 +85,10 @@ static func build(life: Node) -> void:
 	life.ai.group_target=OptionButton.new()
 	column.add_child(life.ai.group_target)
 	life.ai.group_target.hide()
-	life.ai.voice_input=load("res://town_voice_input.gd").new()
-	life.ai.add_child(life.ai.voice_input)
-	life.ai.voice_input.build(life.ai,column)
+	if preload("res://dialogue_features.gd").ENABLED:
+		life.ai.voice_input=load("res://town_voice_input.gd").new()
+		life.ai.add_child(life.ai.voice_input)
+		life.ai.voice_input.build(life.ai,column)
 	life.entry=TextEdit.new()
 	life.entry.placeholder_text="Write a message…"
 	life.entry.custom_minimum_size=Vector2(0,68)
@@ -114,6 +123,10 @@ static func build(life: Node) -> void:
 		help.text="Write below, then tap Send"
 		for control: Button in life.dialog.find_children("*","Button",true,false):
 			control.custom_minimum_size.y=maxf(control.custom_minimum_size.y,48)
+	if not preload("res://dialogue_features.gd").ENABLED:
+		life.entry.hide()
+		footer.hide()
+		life.ai.status.hide()
 	life.get_viewport().size_changed.connect(life.ai.layout)
 	life.ai.layout()
 	life.ai.layout.call_deferred()

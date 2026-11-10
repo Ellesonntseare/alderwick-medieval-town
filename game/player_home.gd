@@ -35,6 +35,9 @@ func _ready() -> void:
 	var button:=Button.new();button.text="Your home";town.menu_body.add_child(button);button.pressed.connect(show_home)
 
 func show_home() -> void:
+	if town.get("inventory_ui") and town.get("interface_ui") and town.interface_ui.ready_for_use:
+		town.inventory_ui.source="storage";town.inventory_ui.selection=""
+		town.interface_ui.open_page("Belongings");return
 	previous_enabled=town.player.enabled;previous_mouse=Input.mouse_mode
 	town.player.enabled=false;town.player.velocity=Vector3.ZERO;Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 	update_details()

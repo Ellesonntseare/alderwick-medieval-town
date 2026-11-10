@@ -1,6 +1,7 @@
 extends Node
 
 const Phone=preload("res://mobile_runtime.gd")
+const Features=preload("res://dialogue_features.gd")
 
 var URL := "http://127.0.0.1:34319"
 const VOICES_M := ["bm_george","bm_daniel","bm_fable","bm_lewis"]
@@ -31,6 +32,12 @@ var generated := 0
 var played := 0
 
 func _ready() -> void:
+	if not Features.ENABLED:
+		town=get_parent()
+		enabled=false
+		ambient_enabled=false
+		set_process(false)
+		return
 	URL=Phone.backend_url(34319)
 	town=get_parent()
 	var data=JSON.parse_string(FileAccess.get_file_as_string("res://voice_profiles.json"))
@@ -53,11 +60,13 @@ func _ready() -> void:
 	else:enabled=false
 
 func check_health() -> void:
+	if not Features.ENABLED:return
 	if health_pending:return
 	health_pending=true
 	if health.request(URL+"/health?pid="+str(OS.get_process_id()))!=OK:health_pending=false
 
 func health_result(_result: int,code: int,_headers: PackedStringArray,body: PackedByteArray) -> void:
+	if not Features.ENABLED:return
 	health_pending=false
 	available=code==200
 	var data=JSON.parse_string(body.get_string_from_utf8()) if available else null
@@ -99,6 +108,7 @@ func _process(delta: float) -> void:
 			else:next_lines.erase(person)
 
 func allowed(person: Node) -> bool:
+	if not Features.ENABLED:return false
 	if not enabled or listening or gain<=0 or not is_instance_valid(person) or person.posture=="sleeping":return false
 	if direct_conversation(person):return true
 	if town.life.active or not ambient_enabled:return false
@@ -174,6 +184,7 @@ func say(person: Node3D,text: String,direct := false) -> void:
 	request.request(URL+"/speak",PackedStringArray(["Content-Type: application/json"]),HTTPClient.METHOD_POST,JSON.stringify({"text":text,"character":person.person_name,"voice":profile(person),"speed":speed,"pid":OS.get_process_id()}))
 
 func read_dialogue(person: Node3D,text: String) -> void:
+	if not Features.ENABLED:return
 	stop(person)
 	var pieces: Array[String]=[]
 	var current := ""
@@ -187,6 +198,7 @@ func read_dialogue(person: Node3D,text: String) -> void:
 	next_lines[person]=pieces
 
 func precache(person: Node3D,text: String) -> void:
+	if not Features.ENABLED:return
 	if not available or not enabled or listener.global_position.distance_to(person.global_position)>27:return
 	var speed: float=float(voice_settings(person).get("speed",1.0))
 	var key := speech_key(person,text)
@@ -213,6 +225,9 @@ func stop(person: Node) -> void:
 	if players.has(person):players[person].stop()
 
 func set_enabled(value: bool) -> void:
+	if not Features.ENABLED:
+		enabled=false
+		return
 	enabled=value
 	if not value:
 		for person in players:stop(person)

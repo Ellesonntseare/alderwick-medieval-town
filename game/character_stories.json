@@ -761,6 +761,292 @@
       "story": "Compare a practice sign with Finn, learn to repair the uneven letter, and help Ollie build a model bridge. Learning, play and light supervised tasks replace adult shifts or alcohol.",
       "private_fact": "Theo keeps the very first crooked practice letter because it shows how much the newer ones have improved.",
       "voice": "Youthful, thoughtful and a little proud; enthusiasm grows when talking about making things."
+    },
+    {
+      "name": "Alec",
+      "past": "Alec joined the southern workshops as a timber sorter and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at timber sorter work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Bess": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Bess",
+      "past": "Bess joined the southern workshops as a supply packer and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at supply packer work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Cara": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Cara",
+      "past": "Cara joined the southern workshops as a joiner and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at joiner work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Davin": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Davin",
+      "past": "Davin joined the southern workshops as a warehouse assistant and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at warehouse assistant work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Enid": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Enid",
+      "past": "Enid joined the southern workshops as a tool sorter and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at tool sorter work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Faris": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Faris",
+      "past": "Faris joined the southern workshops as a workshop provisioner and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at workshop provisioner work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Gilda": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Gilda",
+      "past": "Gilda joined the southern workshops as a crate maker and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at crate maker work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Hector": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Hector",
+      "past": "Hector joined the southern workshops as a goods inspector and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at goods inspector work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Isla": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Isla",
+      "past": "Isla joined the southern workshops as a yard carrier and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at yard carrier work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Jasper": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Jasper",
+      "past": "Jasper joined the southern workshops as a textile packer and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at textile packer work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Kira": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Kira",
+      "past": "Kira joined the southern workshops as a timber carrier and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at timber carrier work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Lennox": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Lennox",
+      "past": "Lennox joined the southern workshops as a workshop assistant and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at workshop assistant work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Maeve": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Maeve",
+      "past": "Maeve joined the southern workshops as a bench carpenter and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at bench carpenter work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Nolan": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Nolan",
+      "past": "Nolan joined the southern workshops as a parts sorter and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at parts sorter work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Orla": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Orla",
+      "past": "Orla joined the southern workshops as a storekeeper and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at storekeeper work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Perrin": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Perrin",
+      "past": "Perrin joined the southern workshops as a delivery checker and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at delivery checker work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Quinn": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Quinn",
+      "past": "Quinn joined the southern workshops as a wood stacker and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at wood stacker work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Rhea": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Rhea",
+      "past": "Rhea joined the southern workshops as a workshop cook and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at workshop cook work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Silas": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Silas",
+      "past": "Silas joined the southern workshops as a wheelwright assistant and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at wheelwright assistant work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Tessa": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Tessa",
+      "past": "Tessa joined the southern workshops as a repair carpenter and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at repair carpenter work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Ulric": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Ulric",
+      "past": "Ulric joined the southern workshops as a supply checker and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at supply checker work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Vera": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
+    },
+    {
+      "name": "Vera",
+      "past": "Vera joined the southern workshops as a goods carrier and lives in one of the workers' lodges along the road to Alderwick.",
+      "want": "Become dependable at goods carrier work and save enough wages for a comfortable home.",
+      "problem": "Work orders sometimes reach the yard in a different order from the actual supplies.",
+      "connections": {
+        "Alec": "workmate who helps check the next load",
+        "Duncan": "courier connecting the workshops with Alderwick"
+      },
+      "story": "Compare the real goods with the workshop orders, help a colleague finish a difficult job, and earn trust through completed deliveries.",
+      "private_fact": "Keeps a small notebook of useful repairs learned from neighbours.",
+      "voice": "Practical and friendly, with an interest in the people working nearby."
     }
   ]
 }

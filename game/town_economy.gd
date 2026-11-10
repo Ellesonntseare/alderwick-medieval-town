@@ -150,8 +150,12 @@ func refresh() -> void:
 	if wallet_label:wallet_label.text="Your purse: %d coins\nFood: %d portions"%[player_coins,player_food]
 	if eat_button:eat_button.disabled=player_food<1
 	if not testing():
+		var trace := preload("res://frame_costs.gd").begin()
 		var file := FileAccess.open("user://town-economy.json",FileAccess.WRITE)
-		file.store_string(JSON.stringify({"version":2,"coins":player_coins,"food":player_food,"story_rewards":story_rewards}))
+		if file:
+			file.store_string(JSON.stringify({"version":2,"coins":player_coins,"food":player_food,"story_rewards":story_rewards}))
+			file.close()
+		preload("res://frame_costs.gd").finish("economy.save_state",trace)
 
 func award_story(id: String,amount: int) -> bool:
 	if story_rewards.has(id):return false

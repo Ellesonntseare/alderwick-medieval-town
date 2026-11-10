@@ -119,7 +119,6 @@ func start_evening() -> void:
 		var centre:=Vector3.ZERO
 		for person in family.residents:
 			if person.guard_shift=="night" or person.indoor_house or person.talking:continue
-			if person.get_meta("industrial_worker",false) and person.position.z>66:continue
 			mobile.append(person);centre+=person.position
 		if mobile.size()<2:continue
 		centre/=mobile.size()

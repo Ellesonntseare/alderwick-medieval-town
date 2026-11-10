@@ -14,9 +14,9 @@ The editor freezes simulation while retaining physical collision for placement c
 
 ## Three connected missions
 
-1. **The misplaced delivery:** Ada → Corvin's delivery slip → the labelled crate inside Fère-en-Tardenois → return to Ada. Pays 12 coins, increases trust, restores 12 market portions, and grants a market favour.
+1. **The misplaced delivery:** Ada → Corvin's delivery slip → the labelled crate beside the western market → return to Ada. Pays 12 coins, increases trust, restores 12 market portions, and grants a market favour.
 2. **A wagon before the fair:** Oren → Bram → collect fittings → use the carpenter's workbench → return to Oren. Pays 18 coins, increases trust and reveals the repaired wagon in the workyard.
-3. **The overdue surveyor:** Greta → Rowan → Nils → speak with Ansel inside Montfaucon → report to Greta. Pays 15 coins, increases trust and grants the survey map.
+3. **The overdue surveyor:** Greta → Rowan → Nils → speak with Ansel beside the western gatehouse → report to Greta. Pays 15 coins, increases trust and grants the survey map.
 
 `story_missions.json` holds facts and objectives rather than canned conversation lines. `mission_cast.json` supplies the visiting surveyor's background alongside the 53 permanent residents. Ansel surveys the masonry and has a camp bed for the night. Edda works inside Feira Castle; Sven works inside Castle XIX and produces visible stools and wages. Public boards display actual completed-mission news.
 

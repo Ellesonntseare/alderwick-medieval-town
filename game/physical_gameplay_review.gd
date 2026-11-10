@@ -25,6 +25,10 @@ func run() -> void:
 	root.size=Vector2i(1280,720)
 	var town:=Town.new();root.add_child(town)
 	town.player=Player.new();town.add_child(town.player);town.player.add_child(town.player.animator)
+	var library:=AnimationLibrary.new()
+	for name in ["PickUp","Interact","Idle"]:
+		var clip:=Animation.new();clip.length=1;library.add_animation(name,clip)
+	town.player.animator.add_animation_library("",library)
 	town.home_district=Home.new();town.add_child(town.home_district);town.home_district.add_child(town.home_district.interior)
 	town.character_life=Sim.new();town.add_child(town.character_life)
 	town.economy=Economy.new();town.add_child(town.economy)
@@ -37,8 +41,12 @@ func run() -> void:
 	physical.interact({"object":crate})
 	for button in physical.choices.get_children():
 		if button.text=="Pick up":button.pressed.emit();break
+	assert(physical.carried==null and physical.object_action.active)
+	physical._physics_process(1.4)
 	assert(physical.carried==crate and crate.get_parent()==town.player and crate.collision_layer==0)
 	town.player.position=Vector3(0,.1,0);await physics_frame;physical.place()
+	assert(physical.carried==crate and physical.object_action.active)
+	physical._physics_process(1.4)
 	assert(physical.carried==null and crate.collision_layer==1)
 	var station: Node3D=physical.objects[1];physical.start_work(station)
 	physical._physics_process(4.1)

@@ -37,20 +37,20 @@ func run() -> void:
 	for skin in menu.entries:
 		if seen.has(skin.base):failures.append("Repeated base model "+skin.base)
 		seen[skin.base]=true
-	if menu.entries.size()!=9 or menu.portraits.size()!=9:failures.append("Nine approved distinct models and actual faces must appear")
+	if menu.entries.size()!=22 or menu.portraits.size()!=22:failures.append("All 22 distinct models and portraits must appear")
 	menu.search.text="Knight"
 	menu.refresh()
 	if menu.grid.get_child_count()!=1:failures.append("Name search must filter skins")
 	menu.search.text=""
 	menu.refresh()
 	for skin in menu.entries:
-		if skin.id=="emlyn":menu.select(skin);break
-	if menu.large_face.texture==null or not menu.details.text.contains("Emlyn"):failures.append("Selected face needs name and information")
+		if skin.id=="erika_archer":menu.select(skin);break
+	if menu.large_face.texture==null or not menu.details.text.contains("Erika archer"):failures.append("Selected face needs name and information")
 	for frame in range(4):await process_frame
 	if "--capture-skins" in OS.get_cmdline_user_args():
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("res://../town-player-appearance-menu.png")
 	menu.apply_selected(false)
-	if town.player.skin_id!="emlyn" or town.view_mode!=2:failures.append("Choosing a face must change the player's skin and show third person")
+	if town.player.skin_id!="erika_archer" or town.view_mode!=2:failures.append("Choosing a face must change the player's skin and show third person")
 	print("PLAYER_APPEARANCE_MENU_REVIEW_COMPLETE failures=",failures," unique_bases=",seen.size()," selected_skin=",town.player.skin_id)
 	quit(0 if failures.is_empty() else 1)

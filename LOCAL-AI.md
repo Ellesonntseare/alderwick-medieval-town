@@ -1,3 +1,5 @@
+> Current status, 5 November 2026. Character AI dialogue and neural voices are disabled at the user's request. Opening the game no longer starts or polls local AI/voice services. The phone connection UI is removed. The Llama runtimes, Qwen model, partial model files and runtime archives have been removed from this project into the Windows Recycle Bin. The notes below describe the earlier implementation.
+
 # Local character conversations
 
 The town uses a local Qwen2.5-3B-Instruct model through llama.cpp. Character replies are generated from freely typed messages, the character's individual background, recent game events, and previous conversations. The text is then spoken by the local Kokoro voice runtime. Neither inference system needs an account or sends conversation text to an external provider.

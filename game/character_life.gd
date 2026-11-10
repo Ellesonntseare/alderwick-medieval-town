@@ -15,6 +15,7 @@ var was_night := false
 var tick_clock := 0.0
 var save_clock := 0.0
 var save_path := "user://character-life.json"
+var save_writer=preload("res://background_json_save.gd").new()
 var view: Node
 var activity: Dictionary={}
 var wash_owner: CharacterBody3D
@@ -68,11 +69,15 @@ func bind() -> void:
 	view.refresh_people()
 	print("CHARACTER_LIFE_READY residents=",people.size()," needs=6 skills=6 personalities=true shared_relationship_store=true")
 
-func save_state() -> void:
+func save_state(background:=false) -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
+	save_state_traced(background)
+	preload("res://frame_costs.gd").finish("character_life.save_state",trace,"")
+
+func save_state_traced(background:=false) -> void:
 	if testing or not bound:return
 	for name in people:states[name]["friendships"]=people[name].friendships
-	var file := FileAccess.open(save_path,FileAccess.WRITE)
-	if file:file.store_string(JSON.stringify({"version":1,"enabled":enabled,"day":day,"elapsed":elapsed,"states":states}))
+	save_writer.save(save_path,{"version":1,"enabled":enabled,"day":day,"elapsed":elapsed,"states":states},background)
 
 func state(name: String) -> Dictionary:
 	if not states.has(name):states[name]=defaults(name)
@@ -132,6 +137,11 @@ func mood(name: String) -> String:
 	return "Content"
 
 func _process(delta: float) -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
+	_process_traced(delta)
+	preload("res://frame_costs.gd").finish("character_life._process",trace,"")
+
+func _process_traced(delta: float) -> void:
 	if not bound:return
 	elapsed+=delta
 	if town.day_night.night!=was_night:
@@ -146,7 +156,7 @@ func _process(delta: float) -> void:
 			update_player(step)
 			for name in people:update_person(people[name],step)
 		if view.visible():view.refresh()
-	if save_clock>=15:save_clock=0;save_state()
+	if save_clock>=15:save_clock=0;save_state(true)
 
 func update_player(step: float) -> void:
 	var resting: String=town.player.resting
@@ -189,7 +199,6 @@ func update_person(person: CharacterBody3D,step: float) -> void:
 		elif person.occupation=="Blacksmith":gain_skill(name,"Smithing",2);state(name).next_action=elapsed+60
 		return
 	if not person.job.is_empty() and person.job.get("stage") not in ["start","break"]:return
-	if not available_between_shifts(person):return
 	state(name).next_action=elapsed+8
 	if need(name,"hygiene")<28 and start_washing(person):return
 	if need(name,"energy")<15:
@@ -257,12 +266,6 @@ func context(person: Node) -> Dictionary:
 		if skill_level(name,skill)>0:skills[skill]=skill_level(name,skill)
 	return {"personality_traits":state(name).traits,"current_mood":mood(name),"own_needs":state(name).needs,"skills_out_of_10":skills,"relationship_with_visitor":relationship_status(name),"instruction":"Let personality and current feelings affect your tone naturally. Do not recite meters or statistics unless asked. Only physical game actions can give items, change money, finish a lesson or prepare food."}
 
-func available_between_shifts(person: Node) -> bool:
-	var workforce: Node=town.get("industrial_workforce")
-	if workforce and workforce.get("bound")==true and workforce.workers.has(person):
-		return workforce.workers[person].phase=="home"
-	return true
-
 func give_food(name: String) -> bool:
 	if not people.has(name) or town.player.position.distance_to(people[name].position)>4:return false
 	var person: Node=people[name]
@@ -324,7 +327,6 @@ func apologize(name: String) -> bool:
 func invite_home(name: String) -> bool:
 	if not people.has(name) or not is_instance_valid(town.player_home.house):return false
 	var person: CharacterBody3D=people[name]
-	if not available_between_shifts(person):return false
 	if person.is_child or person.posture!="standing" or person.night_schedule or person.talking or not person.guard_label.is_empty() or not person.carry_kind.is_empty():return false
 	if int(town.adventures.relationship(name).trust)<8 or town.day_night.night:return false
 	var house: Node3D=town.player_home.house
@@ -386,6 +388,8 @@ func begin_activity(kind: String,seconds: float,extra: Dictionary={}) -> bool:
 	activity["previous_enabled"]=town.player.enabled
 	town.player.enabled=false;town.player.velocity=Vector3.ZERO
 	var clip := "WorkHarvest" if kind=="plant" else "WorkTable"
+	if kind=="plant" and town.player.animator.has_animation("DigPlant"):clip="DigPlant"
+	if kind=="cook" and town.player.animator.has_animation("RunnerWorking"):clip="RunnerWorking"
 	if town.player.animator.has_animation(clip):town.player.animator.play(clip,.15)
 	return true
 
@@ -414,7 +418,6 @@ func cancel_activity() -> void:
 func lesson(name: String,skill: String) -> bool:
 	if not people.has(name) or skill not in SKILLS or skill_level(name,skill)<3:return false
 	var person: Node=people[name]
-	if not available_between_shifts(person):return false
 	if person.is_child or skill_level("You",skill)>=skill_level(name,skill) or int(town.adventures.relationship(name).trust)<5:return false
 	if person.position.distance_to(town.player.position)>4 or person.posture!="standing" or person.night_schedule:return false
 	if not person.guard_label.is_empty():return false
@@ -425,4 +428,6 @@ func lesson(name: String,skill: String) -> bool:
 	person.talking=true;person.activity="Sharing a short "+skill.to_lower()+" lesson"
 	return true
 
-func _exit_tree() -> void:save_state()
+func _exit_tree() -> void:
+	save_state()
+	save_writer.shutdown()

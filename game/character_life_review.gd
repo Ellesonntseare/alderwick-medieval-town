@@ -24,9 +24,6 @@ class Life extends Node:
 	func cancel_meeting(_person: Node) -> void:pass
 class Home extends Node:
 	var house: Node3D
-class Workforce extends Node3D:
-	var bound := true
-	var workers: Dictionary={}
 
 var failures: Array[String]=[]
 var town: Node3D
@@ -102,15 +99,12 @@ func run() -> void:
 	check(sim.lesson("Finn","Carpentry"),"A trusted expert can start a nearby lesson")
 	sim.update_activity(9)
 	check(sim.state("You").skills.Carpentry==10 and not finn.talking,"The completed lesson grants practice and releases the teacher")
-	town.industrial_workforce=Workforce.new();town.add_child(town.industrial_workforce)
-	town.industrial_workforce.workers[finn]={"phase":"work"}
-	check(not sim.available_between_shifts(finn) and not sim.lesson("Finn","Carpentry"),"An on-shift industrial worker cannot be interrupted for a personal lesson")
+	finn.job={"kind":"carpentry","stage":"crafting"}
 	finn.set_meta("review_home_requested",false)
 	sim.state("Finn").needs.energy=5;sim.state("Finn").next_action=0
 	sim.update_person(finn,1)
-	check(not finn.get_meta("review_home_requested",false),"Need-driven rest cannot interrupt an industrial shift")
-	town.industrial_workforce.workers[finn].phase="home"
-	check(sim.available_between_shifts(finn),"The same resident is available between shifts")
+	check(not finn.get_meta("review_home_requested",false),"Need-driven rest cannot interrupt an active carpentry job")
+	finn.job={}
 	sim.state("Finn").needs.energy=85;sim.state("Finn").next_action=0
 	var before: float=sim.state("Finn").skills.Carpentry
 	sim.worked(finn,"crafted")
@@ -148,6 +142,14 @@ func run() -> void:
 	sim.testing=false;sim.save_path="user://life-functional-review.json";sim.save_state();sim.testing=true
 	var saved=JSON.parse_string(FileAccess.get_file_as_string("user://life-functional-review.json"))
 	check(saved.states.You.skills.Cooking>0 and saved.states.Finn.friendships.has("Roslin"),"Skills, needs and resident friendships are saved")
+	sim.testing=false;sim.state("Finn").needs.energy=41
+	sim.save_state(true);sim.state("Finn").needs.energy=99
+	check(sim.save_writer.flush()==OK,"Background life autosave flushes successfully")
+	saved=JSON.parse_string(FileAccess.get_file_as_string("user://life-functional-review.json"))
+	check(saved.states.Finn.needs.energy==41,"Autosave keeps a detached life snapshot while simulation continues")
+	sim.save_state();sim.testing=true
+	saved=JSON.parse_string(FileAccess.get_file_as_string("user://life-functional-review.json"))
+	check(saved.states.Finn.needs.energy==99,"Explicit life save replaces older autosave with the latest state")
 	sim.view.open()
 	for frame in range(5):await process_frame
 	check(sim.view.panel.size.y<=root.size.y and sim.view.people_choice.item_count==3,"Life panel lists actual residents and fits the window")

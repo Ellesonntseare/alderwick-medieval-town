@@ -4,11 +4,8 @@ class Person extends Node:
 	var person_name:="Ada"
 class Player extends Node3D:
 	var enabled:=true
-class Chateaux extends Node3D:
-	var sites: Array=[{"id":"fere_chateau","inside":Vector3(245,.7,70)},{"id":"montfaucon_chateau","inside":Vector3(265,1.8,-90)}]
 class Town extends Node3D:
 	var player=Player.new()
-	var chateaux=Chateaux.new()
 	var families: Node
 	var economy: Node
 var failures: Array[String]=[]
@@ -31,7 +28,7 @@ func run() -> void:
 	check(story.progress.missing_delivery.step==1,"Free-form investigation advances the relevant clue")
 	town.player.position=Vector3.ZERO
 	check(not story.use_task("missing_delivery"),"A remote pickup must be rejected")
-	town.player.position=Vector3(245.5,.73,70)
+	town.player.position=story.step_position(story.find_mission("missing_delivery").steps[1])
 	check(story.use_task("missing_delivery"),"An actual nearby crate can be recovered")
 	person.person_name="Ada";story.after_reply(person,"I brought your crate back")
 	check(story.progress.missing_delivery.status=="complete","Returning the actual crate completes delivery")
@@ -61,6 +58,6 @@ func run() -> void:
 	var economy=load("res://town_economy.gd").new()
 	check(economy.award_story("test_contract",12) and economy.player_coins==42,"A contract pays its real coin reward")
 	check(not economy.award_story("test_contract",12) and economy.player_coins==42,"A contract cannot pay twice")
-	economy.free();restored.free();story.free();person.free();town.player.free();town.chateaux.free();town.free()
+	economy.free();restored.free();story.free();person.free();town.player.free();town.free()
 	print("ADVENTURES_REVIEW_COMPLETE failures=",failures)
 	quit(0 if failures.is_empty() else 1)

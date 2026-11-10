@@ -1,21 +1,228 @@
 {
- "missions": [
-  {"id":"missing_delivery","title":"The misplaced delivery","giver":"Ada","reward":12,"item_reward":"Market favour","first_lead":"Corvin handled the delivery slip. Ask him to check the destination label.","summary":"Ada's labelled vegetable crate reached the wrong destination. Find out where it went and bring it back before the fair.","steps":[
-   {"kind":"talk","person":"Corvin","text":"Ask Corvin about Ada's delivery labels.","fact":"Confirmed: Ada's actual vegetable crate is currently inside the Fère-en-Tardenois ruins. The crate was delivered there because its destination label was wrong. It has not reached Ada. Alden is not the delivery destination, and theft has not been proved. Tell the visiting player to recover the crate at Fère-en-Tardenois."},
-   {"kind":"collect","item":"Ada's vegetable crate","site":"fere_chateau","offset":[0,0,0],"text":"Recover Ada's labelled crate inside Fère-en-Tardenois."},
-   {"kind":"handin","person":"Ada","item":"Ada's vegetable crate","text":"Bring the recovered crate back to Ada.","fact":"The visitor is returning your labelled crate of greens. The agreed reward is twelve coins from the town's delivery fund. Once they hand it over, you can sell those vegetables at your stall again. Speak as Ada about the delivery and your thanks."}
-  ]},
-  {"id":"wagon_fittings","title":"A wagon before the fair","giver":"Oren","reward":18,"item_reward":"Craftsman's favour","first_lead":"Bram is making the replacement metal fittings. Ask whether they are ready.","summary":"Oren can repair a supply wagon if Bram's replacement fittings arrive. Help finish the work so deliveries can continue.","steps":[
-   {"kind":"talk","person":"Bram","text":"Ask Bram about Oren's replacement wagon fittings.","fact":"You finished Oren's wagon fittings and left the labelled bundle beside the eastern supply store at (42,-43). Tell the visitor where to collect it. No payment is needed."},
-   {"kind":"collect","item":"Wagon fittings","position":[42,0.05,-41.5],"text":"Collect the labelled fittings beside the eastern supply store."},
-   {"kind":"work","item":"Wagon fittings","position":[35,0.05,17.4],"text":"Fit the parts at the carpenter's workbench. Hold E nearby for four seconds."},
-   {"kind":"handin","person":"Oren","item":"Repaired wagon fittings","text":"Tell Oren the fittings are ready and hand them over.","fact":"The visitor fitted the real wagon parts at your workbench. You can complete the supply wagon in the workyard and use it for deliveries. The agreed repair reward is eighteen coins from the town's repair fund."}
-  ]},
-  {"id":"overdue_surveyor","title":"The overdue surveyor","giver":"Greta","reward":15,"item_reward":"Surveyor's map","first_lead":"Rowan served Ansel breakfast before the trip. Ask Rowan where he was going.","summary":"Ansel went to inspect Montfaucon and missed a check-in. Follow the accounts of the people who saw him and make sure he is safe.","steps":[
-   {"kind":"talk","person":"Rowan","text":"Ask Rowan when Ansel last visited the tavern.","fact":"Ansel had breakfast here, then went to compare old masonry at Montfaucon. Nils lent him a survey sketch. You saw no sign of trouble. Share these facts if asked."},
-   {"kind":"talk","person":"Nils","text":"Ask Nils which part of Montfaucon Ansel planned to inspect.","fact":"Ansel planned to work just inside Montfaucon's west entrance. He often forgets the time when sketching, but promised Greta a check-in. Tell the visitor where to look."},
-   {"kind":"talk","person":"Ansel","site":"montfaucon_chateau","text":"Find Ansel inside Montfaucon and speak with him.","fact":"You are safe, tired from surveying and embarrassed that you missed Greta's check-in. Ask the visitor to let Greta know you are well; you will remain here to finish recording the masonry."},
-   {"kind":"handin","person":"Greta","text":"Let Greta know Ansel is safe at Montfaucon.","fact":"The visitor personally found Ansel alive and safe inside Montfaucon. They are bringing his check-in, not rescuing him from an invented attack. Thank them for checking."}
-  ]}
- ]
+  "missions": [
+    {
+      "id": "missing_delivery",
+      "title": "The misplaced delivery",
+      "giver": "Ada",
+      "reward": 12,
+      "item_reward": "Market favour",
+      "first_lead": "Corvin handled the delivery slip. Ask him to check the destination label.",
+      "summary": "Ada's labelled vegetable crate reached the wrong destination. Find out where it went and bring it back before the fair.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Corvin",
+          "text": "Ask Corvin about Ada's delivery labels.",
+          "fact": "Confirmed: Ada's actual vegetable crate is currently beside the western market. The crate was delivered there because its destination label was wrong. It has not reached Ada. Alden is not the delivery destination, and theft has not been proved. Tell the visiting player to recover the labelled crate at the western market.",
+          "action": "Check the delivery label",
+          "journal_note": "The destination label sent Ada’s vegetable crate to the western market. It is waiting beside the stalls."
+        },
+        {
+          "kind": "collect",
+          "item": "Ada's vegetable crate",
+          "text": "Recover Ada's labelled crate beside the western market.",
+          "position": [
+            -92,
+            0.05,
+            103
+          ]
+        },
+        {
+          "kind": "handin",
+          "person": "Ada",
+          "item": "Ada's vegetable crate",
+          "text": "Bring the recovered crate back to Ada.",
+          "fact": "The visitor is returning your labelled crate of greens. The agreed reward is twelve coins from the town's delivery fund. Once they hand it over, you can sell those vegetables at your stall again. Speak as Ada about the delivery and your thanks.",
+          "action": "Hand over Ada’s vegetable crate",
+          "journal_note": "The recovered crate is back with Ada. The delivery fund paid twelve coins, and her stall has been restocked."
+        }
+      ]
+    },
+    {
+      "id": "wagon_fittings",
+      "title": "A wagon before the fair",
+      "giver": "Oren",
+      "reward": 18,
+      "item_reward": "Craftsman's favour",
+      "first_lead": "Bram is making the replacement metal fittings. Ask whether they are ready.",
+      "summary": "Oren can repair a supply wagon if Bram's replacement fittings arrive. Help finish the work so deliveries can continue.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Bram",
+          "text": "Ask Bram about Oren's replacement wagon fittings.",
+          "fact": "You finished Oren's wagon fittings and left the labelled bundle beside the eastern supply store at (42,-43). Tell the visitor where to collect it. No payment is needed.",
+          "action": "Check the replacement fittings",
+          "journal_note": "Bram finished the fittings and left the labelled bundle beside the eastern supply store."
+        },
+        {
+          "kind": "collect",
+          "item": "Wagon fittings",
+          "position": [
+            42,
+            0.05,
+            -41.5
+          ],
+          "text": "Collect the labelled fittings beside the eastern supply store."
+        },
+        {
+          "kind": "work",
+          "item": "Wagon fittings",
+          "position": [
+            35,
+            0.05,
+            17.4
+          ],
+          "text": "Fit the parts at the carpenter's workbench. Hold E nearby for four seconds."
+        },
+        {
+          "kind": "handin",
+          "person": "Oren",
+          "item": "Repaired wagon fittings",
+          "text": "Tell Oren the fittings are ready and hand them over.",
+          "fact": "The visitor fitted the real wagon parts at your workbench. You can complete the supply wagon in the workyard and use it for deliveries. The agreed repair reward is eighteen coins from the town's repair fund.",
+          "action": "Hand over the repaired fittings",
+          "journal_note": "Oren received the finished fittings. His supply wagon can return to work."
+        }
+      ]
+    },
+    {
+      "id": "overdue_surveyor",
+      "title": "The overdue surveyor",
+      "giver": "Greta",
+      "reward": 15,
+      "item_reward": "Surveyor's map",
+      "first_lead": "Rowan served Ansel breakfast before the trip. Ask Rowan where he was going.",
+      "summary": "Ansel went to survey the western gatehouse and missed a check-in. Follow the accounts of the people who saw him and make sure he is safe.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Rowan",
+          "text": "Ask Rowan when Ansel last visited the tavern.",
+          "fact": "Ansel had breakfast here, then went to compare old masonry at the western gatehouse. Nils lent him a survey sketch. You saw no sign of trouble. Share these facts if asked.",
+          "action": "Check Ansel’s last visit",
+          "journal_note": "Rowan saw Ansel leave breakfast to survey the western gatehouse. Nils lent him a sketch."
+        },
+        {
+          "kind": "talk",
+          "person": "Nils",
+          "text": "Ask Nils which part of the western gatehouse Ansel planned to inspect.",
+          "fact": "Ansel planned to work beside the western gatehouse entrance. He often forgets the time when sketching, but promised Greta a check-in. Tell the visitor where to look.",
+          "action": "Check the survey sketch",
+          "journal_note": "Nils marked the entrance to the western gatehouse. Ansel planned to compare the masonry there."
+        },
+        {
+          "kind": "talk",
+          "person": "Ansel",
+          "text": "Find Ansel beside the western gatehouse and speak with him.",
+          "fact": "You are safe, tired from surveying and embarrassed that you missed Greta's check-in. Ask the visitor to let Greta know you are well; you will remain here to finish recording the masonry.",
+          "position": [
+            -88,
+            0.05,
+            108
+          ],
+          "action": "Check that Ansel is safe",
+          "journal_note": "Ansel is safe at the gatehouse. He lost track of time while sketching and needs Greta to receive his check-in."
+        },
+        {
+          "kind": "handin",
+          "person": "Greta",
+          "text": "Let Greta know Ansel is safe at the western gatehouse.",
+          "fact": "The visitor personally found Ansel alive and safe beside the western gatehouse. They are bringing his check-in, not rescuing him from an invented attack. Thank them for checking.",
+          "action": "Give Greta Ansel’s check-in",
+          "journal_note": "Greta has received Ansel’s check-in. He is safe and finishing his survey beside the western gatehouse."
+        }
+      ]
+    },
+    {
+      "id": "castle_store",
+      "title": "A dry store for the castle",
+      "giver": "Sven",
+      "reward": 16,
+      "item_reward": "Castle supplier badge",
+      "summary": "Sven needs a sound supply crate to replace damaged storage at the castle provisions yard.",
+      "first_lead": "Gareth inspected the damaged store. Check his report, then make a supply crate at the workbench.",
+      "result_news": "Sven’s castle provisions yard has a sound new storage crate.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Gareth",
+          "text": "Check Gareth’s report on the castle store.",
+          "action": "Check the damaged storage report",
+          "journal_note": "The provisions yard needs one sound supply crate. Craft one at the repair workbench using four timber and one metal fitting.",
+          "fact": "The crate at the castle provisions yard is damaged. Sven requested one new supply crate."
+        },
+        {
+          "kind": "handin",
+          "person": "Sven",
+          "item": "Supply crate",
+          "text": "Bring a crafted supply crate to Sven.",
+          "action": "Deliver the crafted supply crate",
+          "journal_note": "Sven has received the new crate. The repaired storage is in use beside the castle provisions yard.",
+          "fact": "The visitor must physically hand over a crafted supply crate before the store is repaired."
+        }
+      ]
+    },
+    {
+      "id": "castle_tools",
+      "requires": [
+        "castle_store"
+      ],
+      "title": "Tools for the castle workshop",
+      "giver": "Sven",
+      "reward": 22,
+      "item_reward": "Castle workshop pass",
+      "summary": "With the store repaired, Sven can reopen a work corner if Bram’s worn tools are refurbished.",
+      "first_lead": "Ask Bram which tools can be restored.",
+      "result_news": "The castle workshop has a refurbished set of tools.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Bram",
+          "text": "Check Bram’s tool list.",
+          "action": "Check the worn tool list",
+          "journal_note": "Refurbish a tool set at the repair bench using two timber and two metal fittings, then bring it to Sven.",
+          "fact": "Sven needs one repaired tool set, made at the repair bench."
+        },
+        {
+          "kind": "handin",
+          "person": "Sven",
+          "item": "Repaired tools",
+          "text": "Deliver the refurbished tools to Sven.",
+          "action": "Hand over the refurbished tools",
+          "journal_note": "The castle workshop now has its refurbished tools and can resume repair work.",
+          "fact": "A repaired tool set is needed for the castle workshop."
+        }
+      ]
+    },
+    {
+      "id": "industrial_bench",
+      "title": "A place for the new crew",
+      "giver": "Alec",
+      "reward": 24,
+      "item_reward": "Workshop supplier badge",
+      "summary": "Alec’s crew needs a sturdy table for sorting deliveries in the industrial yard.",
+      "first_lead": "Finn can explain the joinery requirements.",
+      "result_news": "Alec’s industrial crew has a new sorting table in the yard.",
+      "steps": [
+        {
+          "kind": "talk",
+          "person": "Finn",
+          "text": "Check Finn’s requirements for a sorting table.",
+          "action": "Check the table measurements",
+          "journal_note": "The crew needs one crafted table. Reach Carpentry level one, then use six timber and two metal fittings at the repair bench.",
+          "fact": "The new industrial crew needs one table for sorting deliveries."
+        },
+        {
+          "kind": "handin",
+          "person": "Alec",
+          "item": "Crafted table",
+          "text": "Deliver the crafted table to Alec.",
+          "action": "Deliver the sorting table",
+          "journal_note": "Alec has received the table. The industrial crew’s sorting area is now furnished.",
+          "fact": "A crafted table must be delivered before the sorting area is furnished."
+        }
+      ]
+    }
+  ]
 }

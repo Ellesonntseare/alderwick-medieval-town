@@ -1,0 +1,7 @@
+Qwen is licensed under the Qwen RESEARCH LICENSE AGREEMENT, Copyright (c) Alibaba Cloud. All Rights Reserved.
+
+The original model file is used without modification. Its model card and license are included in this directory.
+The Alderwick character backgrounds, conversation bridge and Godot integration are separate local project code.
+
+llama.cpp is distributed under the MIT license retained in LLAMA-LICENSE.txt.
+LLVM OpenMP's notice is retained in the runtime archive and extracted runtime directory.

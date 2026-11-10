@@ -83,7 +83,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:open()
 		get_viewport().set_input_as_handled()
 
-func visible() -> bool:return panel and panel.visible
+func visible() -> bool:
+	var journal: Node=sim.town.get("interface_ui")
+	if journal and journal.ready_for_use:return journal.book.visible and journal.opened_page=="My Life"
+	return panel and panel.visible
 
 func refresh_people() -> void:
 	names.assign(sim.people.keys());names.sort()
@@ -95,6 +98,9 @@ func recipe_name() -> String:return recipe_choice.get_item_text(recipe_choice.se
 
 func open() -> void:
 	if not sim.bound:return
+	var journal: Node=sim.town.get("interface_ui")
+	if journal and journal.ready_for_use:
+		journal.open_page("My Life");return
 	if sim.town.life.active:
 		var name: String=sim.town.life.active.person_name
 		if names.has(name):people_choice.select(names.find(name));tabs.current_tab=2

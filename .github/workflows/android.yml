@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['game/**', 'tools/prepare_android.py', 'tools/mobile_textures.py', '.github/workflows/android.yml']
+    paths: ['game/**', 'tools/prepare_android.py', 'tools/mobile_textures.py', 'tools/android_texture_imports.py', '.github/workflows/android.yml']
 permissions:
   contents: read
 jobs:
@@ -65,6 +65,9 @@ jobs:
         shell: bash
         run: |
           "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --editor --path mobile-build/game --import --quit
+          python3 tools/android_texture_imports.py
+          "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --editor --path mobile-build/game --import --quit
+          python3 tools/android_texture_imports.py --verify
           "$HOME/godot/Godot_v4.7.2-stable_linux.x86_64" --headless --path mobile-build/game --export-debug Android "$GITHUB_WORKSPACE/builds/android/Alderwick-Android.apk"
           test -s builds/android/Alderwick-Android.apk
       - uses: actions/upload-artifact@v4

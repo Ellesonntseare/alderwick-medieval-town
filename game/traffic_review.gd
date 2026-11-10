@@ -57,6 +57,13 @@ func run() -> void:
 	fixture.people.assign(agents)
 	var traffic := preload("res://street_traffic.gd").new()
 	traffic.life=fixture
+	for index in range(100):
+		var distant:=Agent.new()
+		stage.add_child(distant)
+		distant.position=Vector3(100+index*5,0,100)
+		fixture.people.append(distant)
+	check(traffic.nearby_people(agents[0],1.5).size()==2,"Distant districts must not participate in a local crowd check")
+	check(traffic.people_near(agents[0].position,12.0).size()==2,"Conversation searches reuse nearby cells and exclude distant districts")
 	var minimum := INF
 	var done := false
 	for frame in range(900):

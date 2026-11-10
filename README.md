@@ -1,3 +1,5 @@
+> Current status, 5 November 2026. Character AI dialogue and neural voices are disabled at the user's request. Opening the game no longer starts or polls local AI/voice services. The phone connection UI is removed. The Llama runtimes, Qwen model, partial model files and runtime archives have been removed from this project into the Windows Recycle Bin. The notes below describe the earlier implementation.
+
 # Alderwick — Medieval Town Simulator
 
 Working Godot project: `game/project.godot`. Launch with **Play Town.cmd**; **Open in Godot.cmd** opens the editor. The working source and the earlier `live-preview` snapshot are separate so editing does not require closing the preview.
@@ -17,9 +19,9 @@ Working Godot project: `game/project.godot`. Launch with **Play Town.cmd**; **Op
 
 ## Current world
 
-The source assembles 49 named locations: the original 32 locations, ten downloaded buildings, the western village, four additional western homes, and two château ruin districts. The additional architecture includes Feira Castle, Castle XIX, Viking buildings, a forge, a watchtower, a fortress, and Burg Arnstein outside the old town. A shared one-kilometre ground body extends beneath the districts so they can be reached on foot.
+The connected world includes the original town, downloaded buildings, and the western village with its additional homes. The additional architecture includes Feira Castle, Castle XIX, Viking buildings, a forge, a watchtower, a fortress, and Burg Arnstein outside the old town. A shared ground body extends beneath the districts so they can be reached on foot.
 
-Fère-en-Tardenois and Montfaucon are connected exploration sites, available from **Visit a place**. The actual scanned entrances and courtyards are accessible at adult scale. The Fère moat remains below ground level; perimeter gaps receive ground backing. These are open ruins rather than complete furnished interiors. See `CHATEAU-ASSET-CREDITS.md` for attribution, modifications, and the embedded noncommercial licenses.
+The two scanned château ruins were removed from the project at user request on 4 November 2026. The main castle district and Burg Arnstein remain. Ada’s delivery and Ansel’s survey now use the western market and western gatehouse.
 
 The fourteen added enterable buildings use physical interiors in their actual world positions. Walkable variants of the imported meshes have real doorway openings; the castles use their stone courtyards/keep space. The earlier underground copied rooms and doorway teleportation are no longer used. The forge retains its original workshop geometry and equipment, with an extra outdoor workbench for the downloaded tools. The original 13 modular houses also use detailed Quaternius furniture. Upper floors of the original houses and the closed facades in the scanned western village are not accessible; the four added western homes are enterable.
 

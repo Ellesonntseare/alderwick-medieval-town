@@ -30,7 +30,7 @@ func news() -> Array[String]:
 	var events: Array[String]=[]
 	for mission in town.adventures.definitions:
 		if town.adventures.progress[mission.id].status!="complete":continue
-		var line: String={"missing_delivery":"Ada's misplaced greens have reached the square market.","wagon_fittings":"Oren's supply wagon has its replacement fittings.","overdue_surveyor":"Ansel has checked in safely from Montfaucon."}[mission.id]
+		var line: String={"missing_delivery":"Ada's misplaced greens have reached the square market.","wagon_fittings":"Oren's supply wagon has its replacement fittings.","overdue_surveyor":"Ansel has checked in safely from the western gatehouse."}.get(mission.id,mission.get("result_news",mission.summary))
 		events.append(line)
 	return events
 

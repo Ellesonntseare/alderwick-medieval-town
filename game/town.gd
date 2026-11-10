@@ -4,13 +4,15 @@ const ASSETS := "res://assets/quaternius/"
 var library: Dictionary = {}
 var colour_checks: Dictionary={}
 var colour_materials: Dictionary={}
+var collision_shapes: Dictionary={}
 var player: CharacterBody3D
 var overview: Camera3D
 var music: AudioStreamPlayer
 var walking := false
 var orbit := 0.72
-var distance := 230.0
+var distance := 75.0
 var dragging := false
+var overview_focus := Vector3.ZERO
 var status: Label
 var music_button: Button
 var view_button: Button
@@ -23,7 +25,6 @@ var expansion: Node3D
 var jobs: Node3D
 var speech: Node
 var character_directory: Node
-var chateaux: Node3D
 var families: Node
 var adventures: Node
 var builder: Node
@@ -32,13 +33,13 @@ var weather: Node3D
 var discoveries: Node3D
 var player_home: Node
 var home_district: Node3D
-var industrial_workforce: Node3D
 var character_life: Node
 var cooking: Node3D
 var physical_gameplay: Node3D
 var challenges: Node
 var town_map: CanvasLayer
 var loading_screen: CanvasLayer
+var join_started := -1
 var interior_activities: Node
 var economy: Node
 var routines: Node
@@ -47,33 +48,45 @@ var menu_body: VBoxContainer
 var menu_panel: PanelContainer
 var menu_toggle: Button
 var menu_collapsed := false
+var interface_ui: CanvasLayer
+var festival: Node3D
+var inventory_ui: Node
+var crafting: Node
+var session: Node
 var menu_scroll: ScrollContainer
 var locations: Array[Dictionary] = []
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
-	if preload("res://mobile_runtime.gd").enabled():
-		set_meta("world_loading",true);loading_screen=load("res://town_loading.gd").new();add_child(loading_screen)
-		await get_tree().process_frame
+	var tree := get_tree()
+	join_started = int(tree.get_meta("alderwick_join_started", -1))
+	if join_started >= 0:tree.remove_meta("alderwick_join_started")
+	if join_started >= 0 or preload("res://mobile_runtime.gd").enabled():
+		set_meta("world_loading", true)
+		loading_screen = load("res://town_loading.gd").new()
+		add_child(loading_screen)
+		await tree.process_frame
+		await tree.process_frame
 	if DisplayServer.get_name()!="headless":Engine.max_fps=45
-	get_window().title="Alderwick — 53 Residents · Jobs & Voices"
+	get_window().title="Alderwick — 75 Residents · Jobs & Voices"
 	rng.seed = 41729
 	print("TOWN_BUILD_WORLD")
 	world()
+	if loading_screen:
+		loading_screen.stage("Opening the town centre…", 12)
+		await get_tree().process_frame
 	print("TOWN_BUILD_CENTRE")
-	town()
+	await town()
 	if loading_screen:
 		loading_screen.stage("Opening the surrounding districts…",20);await get_tree().process_frame
 	print("TOWN_BUILD_DISTRICTS")
 	expansion=Node3D.new()
 	expansion.set_script(load("res://native_districts.gd"))
 	add_child(expansion)
-	chateaux=load("res://chateau_districts.gd").new()
-	add_child(chateaux)
+	while not expansion.prepared:await tree.process_frame
+	expansion.road([Vector3(0,0,61),Vector3(0,0,132)],6.0)
 	if loading_screen:
 		loading_screen.stage("Preparing roads and woodland…",40);await get_tree().process_frame
-	var neighbouring_town: Node3D=load("res://neighbouring_town.gd").new()
-	add_child(neighbouring_town)
 	var woodlands: Node3D=load("res://forest_districts.gd").new()
 	add_child(woodlands)
 	if loading_screen:
@@ -92,19 +105,14 @@ func _ready() -> void:
 	overview.far = 800
 	overview.fov = 48
 	add_child(overview)
-	overview.current = true
 	music = AudioStreamPlayer.new()
-	var stream := load("res://audio/village.mp3") as AudioStreamMP3
-	stream.loop = true
-	music.stream = stream
 	music.volume_db = -80.0
 	add_child(music)
 	interface()
 	economy=Node.new()
 	economy.set_script(load("res://town_economy.gd"))
 	add_child(economy)
-	update_camera()
-	set_view(1)
+	set_view(0 if loading_screen else 1)
 	life=Node.new()
 	life.set_script(load("res://village_life.gd"))
 	add_child(life)
@@ -149,8 +157,7 @@ func _ready() -> void:
 	add_child(physical_gameplay)
 	challenges=load("res://town_challenges.gd").new();add_child(challenges)
 	town_map=load("res://town_map.gd").new();add_child(town_map)
-	industrial_workforce=load("res://industrial_workforce.gd").new()
-	add_child(industrial_workforce)
+	festival=load("res://town_festival.gd").new();add_child(festival)
 	var performance: Node=load("res://town_performance.gd").new()
 	add_child(performance)
 	var cycle_check := CheckBox.new()
@@ -168,7 +175,13 @@ func _ready() -> void:
 	var clock_text := Label.new()
 	view_selector.get_parent().add_child(clock_text)
 	day_night.clock_label=clock_text
-	if loading_screen:loading_screen.stage("Preparing residents and walking routes…",65)
+	crafting=load("res://town_crafting.gd").new();add_child(crafting)
+	inventory_ui=load("res://town_inventory.gd").new();add_child(inventory_ui)
+	var projects: Node3D=load("res://district_projects.gd").new();add_child(projects)
+	interface_ui=load("res://town_interface.gd").new();add_child(interface_ui)
+	session=load("res://town_session.gd").new();add_child(session)
+	session.register_extension("shop",inventory_ui.shop.snapshot,inventory_ui.shop.restore)
+	if loading_screen:loading_screen.stage("Preparing walking routes…",65)
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--capture"):get_viewport().gui_disable_input=true
 	if "--capture" in OS.get_cmdline_user_args(): capture.call_deferred()
@@ -353,6 +366,7 @@ func box(parent: Node3D, size: Vector3, pos: Vector3, color: Color, solid := fal
 func model(parent: Node3D, asset: String, pos: Vector3, angle: float = 0.0, solid := false) -> Node3D:
 	if not library.has(asset): library[asset] = load(ASSETS + asset + ".gltf")
 	var instance: Node3D = library[asset].instantiate()
+	instance.set_meta("static_asset",asset)
 	parent.add_child(instance)
 	restore_vertex_colours(instance)
 	instance.position = pos
@@ -379,12 +393,24 @@ func restore_vertex_colours(node: Node3D) -> void:
 				colour_materials[material_key]=tinted
 			mesh.set_surface_override_material(surface,colour_materials[material_key])
 
-func collisions(node: Node) -> void:
+func collisions(node: Node, backfaces := false) -> void:
 	if node.is_in_group("doors"):return
 	if node is MeshInstance3D and not node.visible:return
-	if node is MeshInstance3D: node.create_trimesh_collision()
+	if node is MeshInstance3D and node.mesh:
+		var key:=str(node.mesh.get_instance_id())+":"+str(backfaces)
+		if not collision_shapes.has(key):
+			var shared_shape: ConcavePolygonShape3D=node.mesh.create_trimesh_shape()
+			if shared_shape:shared_shape.backface_collision=backfaces
+			collision_shapes[key]=shared_shape
+		var shape: ConcavePolygonShape3D=collision_shapes[key]
+		if shape:
+			var body:=StaticBody3D.new()
+			var collider:=CollisionShape3D.new()
+			collider.shape=shape
+			body.add_child(collider)
+			node.add_child(body)
 	for child in node.get_children():
-		if not child is StaticBody3D: collisions(child)
+		if not child is StaticBody3D:collisions(child,backfaces)
 
 func material_name(mat: Material) -> String:
 	return "" if mat==null else mat.resource_name+" "+mat.resource_path
@@ -461,6 +487,20 @@ func prepare_doors(structure: Node3D,title: String) -> void:
 
 func _process(delta: float) -> void:
 	if windmill_sails:windmill_sails.rotate_object_local(Vector3(0,0,1),delta*0.65)
+	if view_mode!=1 or not overview or (town_map and town_map.opened) or (builder and builder.active):return
+	if character_directory and character_directory.is_open():return
+	if life and life.active:return
+	var direction:=Vector2.ZERO
+	if preload("res://mobile_runtime.gd").enabled():
+		direction=preload("res://mobile_runtime.gd").move_axis
+	elif get_viewport().gui_get_focus_owner() is not LineEdit:
+		direction=Vector2(
+			float(Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_RIGHT))-float(Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_LEFT)),
+			float(Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN))-float(Input.is_physical_key_pressed(KEY_W) or Input.is_physical_key_pressed(KEY_UP)))
+	if not direction.is_zero_approx():
+		var pan_speed:=clampf(distance*.9,12,130)
+		if Input.is_physical_key_pressed(KEY_SHIFT):pan_speed*=3
+		pan_overview(direction.limit_length()*pan_speed*delta)
 
 func world() -> void:
 	var environment := WorldEnvironment.new()
@@ -548,19 +588,23 @@ func tree(pos: Vector3, size: float) -> void:
 		crown.position.y = 2.8+j*1.15
 
 func town() -> void:
-	building("The Copper Stag · Tavern",Vector3(-16,0,10),6,8,2,PI/2)
-	building("Bramble Bakery",Vector3(15,0,10),6,6,1,-PI/2)
-	building("Forge & Anvil",Vector3(15,0,-10),6,8,1,-PI/2,true)
-	building("Alderwick Town Hall",Vector3(0,0,-19),8,10,2,PI)
-	building("Herbalist",Vector3(-15,0,-10),6,6,1,PI/2)
-	building("Weaver's House",Vector3(-30,0,10),6,8,2,0)
-	building("Carpenter",Vector3(30,0,10),6,8,1,0)
-	building("Brew House",Vector3(-29,0,-10),6,8,1,PI)
-	building("Granary",Vector3(29,0,-10),6,8,2,PI)
-	building("Hearth House",Vector3(-14,0,27),6,6,1,0)
-	building("Willow House",Vector3(14,0,27),6,8,2,0)
-	building("North Cottage",Vector3(-17,0,-34),6,6,1,PI)
-	building("Orchard Cottage",Vector3(17,0,-34),6,6,1,PI)
+	for entry in [
+		["The Copper Stag · Tavern",Vector3(-16,0,10),6,8,2,PI/2],
+		["Bramble Bakery",Vector3(15,0,10),6,6,1,-PI/2],
+		["Forge & Anvil",Vector3(15,0,-10),6,8,1,-PI/2],
+		["Alderwick Town Hall",Vector3(0,0,-19),8,10,2,PI],
+		["Herbalist",Vector3(-15,0,-10),6,6,1,PI/2],
+		["Weaver's House",Vector3(-30,0,10),6,8,2,0],
+		["Carpenter",Vector3(30,0,10),6,8,1,0],
+		["Brew House",Vector3(-29,0,-10),6,8,1,PI],
+		["Granary",Vector3(29,0,-10),6,8,2,PI],
+		["Hearth House",Vector3(-14,0,27),6,6,1,0],
+		["Willow House",Vector3(14,0,27),6,8,2,0],
+		["North Cottage",Vector3(-17,0,-34),6,6,1,PI],
+		["Orchard Cottage",Vector3(17,0,-34),6,6,1,PI],
+	]:
+		building(entry[0],entry[1],entry[2],entry[3],entry[4],entry[5],entry[0] == "Forge & Anvil")
+		if loading_screen:await get_tree().process_frame
 	for entry in [["Chapel",Vector3(-31,0,-34),0.0],["Windmill",Vector3(32,0,-34),0.0],["GuardTower",Vector3(8,0,60),0.0],
 		["Barn",Vector3(-52,0,-38),0.0],["Stable",Vector3(51,0,26),0.0],["Brewery",Vector3(-52,0,10),0.0],
 		["Inn",Vector3(-52,0,-12),0.0],["Apiary",Vector3(-34,0,51),0.0],["Pigsty",Vector3(27,0,51),0.0],
@@ -583,6 +627,7 @@ func town() -> void:
 					windmill_sails=node
 					break
 			locations.append({"name":entry[0],"position":[structure.position.x,0,structure.position.z]})
+		if loading_screen:await get_tree().process_frame
 	# A quiet river and two timber bridges connect the eastern lane.
 	box(self,Vector3(7,0.04,148),Vector3(64,-0.015,0),Color("527d82"))
 	for bridge_z in [0.0,48.0]:
@@ -715,6 +760,7 @@ func detailed_prop(asset: String,parent: Node3D,pos: Vector3,size: Vector3,solid
 		print("FURNITURE_LOAD ",asset)
 		library[path]=load(path)
 	var node: Node3D=library[path].instantiate()
+	node.set_meta("static_asset",asset)
 	parent.add_child(node)
 	restore_vertex_colours(node)
 	var combined := AABB()
@@ -806,18 +852,24 @@ func clear_doorway_collisions(structure: Node3D) -> void:
 	var doors: Array=[]
 	for node in structure.find_children("*","Node3D",true,false):
 		if node.is_in_group("doors"):doors.append(node)
+	if doors.is_empty():return
 	for mesh_node: MeshInstance3D in structure.find_children("*","MeshInstance3D",true,false):
 		if mesh_node.get_parent().is_in_group("doors"):continue
 		for body in mesh_node.get_children():
 			if not body is StaticBody3D:continue
 			for collider in body.get_children():
 				if not collider is CollisionShape3D or not collider.shape is ConcavePolygonShape3D:continue
-				var faces: PackedVector3Array=collider.shape.get_faces()
+				var faces := PackedVector3Array()
+				var processed := false
 				for door: Node3D in doors:
 					var to_door: Transform3D=door.global_transform.affine_inverse()*mesh_node.global_transform
+					var box_bounds := AABB(Vector3(-0.08,-0.8,-0.85),Vector3(door.width+0.16,door.height+0.84,2.45))
+					if not (to_door * mesh_node.get_aabb()).grow(.001).intersects(box_bounds):continue
+					if not processed:
+						faces = collider.shape.get_faces()
+						processed = true
 					var from_door := to_door.affine_inverse()
 					var carved := PackedVector3Array()
-					var box_bounds := AABB(Vector3(-0.08,-0.8,-0.85),Vector3(door.width+0.16,door.height+0.84,2.45))
 					for i in range(0,faces.size(),3):
 						var triangle: Array=[to_door*faces[i],to_door*faces[i+1],to_door*faces[i+2]]
 						var bounds := AABB(triangle[0],Vector3.ZERO).expand(triangle[1]).expand(triangle[2])
@@ -830,6 +882,7 @@ func clear_doorway_collisions(structure: Node3D) -> void:
 								carved.append(from_door*polygon[k])
 								carved.append(from_door*polygon[k+1])
 					faces=carved
+				if not processed:continue
 				var shape := ConcavePolygonShape3D.new()
 				shape.set_faces(faces)
 				collider.shape=shape
@@ -987,10 +1040,6 @@ func interface() -> void:
 		places.add_item(portal.label)
 		approaches.append(portal.position+Vector3(0,0.15,0))
 		sights.append(portal.inside)
-	for portal in chateaux.entrances:
-		places.add_item(portal.label)
-		approaches.append(portal.position)
-		sights.append(portal.inside)
 	places.add_item("Western Village")
 	approaches.append(Vector3(-90,0.2,100))
 	sights.append(Vector3(-170,1,95))
@@ -998,14 +1047,14 @@ func interface() -> void:
 		["Carpenter workyard",Vector3(34,0.3,23),Vector3(35,1,12)],
 		["Farm deliveries",Vector3(-30,0.3,34),Vector3(-37,1,38)],
 		["Western market",Vector3(-90,0.3,103),Vector3(-101,1,103)],
-		["Forest trail",Vector3(0,0.3,120),Vector3(0,1,160)],
-		["Industrial town — north gate",Vector3(0,0.3,252),Vector3(0,1,280)]]:
+		["Forest trail",Vector3(0,0.3,120),Vector3(0,1,160)]]:
 		places.add_item(stop[0])
 		approaches.append(stop[1])
 		sights.append(stop[2])
 	places.item_selected.connect(func(index: int):
 		if index==0:return
 		if not player.resting.is_empty():player.stand_from_furniture(true)
+		if home_district and home_district.inside:home_district.set_inside(false)
 		player.global_position=approaches[index]
 		var facing: Vector3=sights[index]-approaches[index]
 		player.rotation.y=atan2(-facing.x,-facing.z)
@@ -1025,8 +1074,13 @@ func interface() -> void:
 	hint.add_theme_constant_override("shadow_offset_x",2)
 	hint.add_theme_constant_override("shadow_offset_y",2)
 	layer.add_child(hint)
+	hint.hide();menu_panel.hide();menu_collapsed=true
 
 func _input(event: InputEvent) -> void:
+	if loading_screen:
+		get_viewport().set_input_as_handled()
+		return
+	if interface_ui and interface_ui.active:return
 	if town_map and town_map.opened:
 		if event is InputEventKey:
 			if event.pressed and not event.echo and event.physical_keycode in [KEY_ESCAPE,KEY_K]:town_map.close()
@@ -1052,46 +1106,52 @@ func _input(event: InputEvent) -> void:
 		match event.physical_keycode:
 			KEY_TAB: toggle_view()
 			KEY_ESCAPE: Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			KEY_M: toggle_music()
 			KEY_N: day_night.set_enabled(not day_night.enabled)
 			KEY_H: toggle_menu()
 			KEY_R:
 				if home_district and home_district.inside:player.position=home_district.safe_spawn();player.velocity=Vector3.ZERO
 				else:player.position=Vector3(0,2,23)
-		if event.physical_keycode in [KEY_TAB,KEY_ESCAPE,KEY_M,KEY_N,KEY_R,KEY_H]:
+		if event.physical_keycode in [KEY_TAB,KEY_ESCAPE,KEY_N,KEY_R,KEY_H]:
 			get_viewport().set_input_as_handled()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not walking:
+	if view_mode==1 and (not town_map or not town_map.opened):
 		if event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_LEFT: dragging = event.pressed
-			if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP: distance = maxf(28,distance-4)
-			if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN: distance = minf(450,distance+4)
-		if event is InputEventMouseMotion and dragging: orbit -= event.relative.x*0.005
+			if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_UP: distance = maxf(9,distance*.85)
+			if event.pressed and event.button_index == MOUSE_BUTTON_WHEEL_DOWN: distance = minf(450,distance/.85)
+		if event is InputEventMouseMotion:
+			if event.button_mask&MOUSE_BUTTON_MASK_RIGHT:orbit -= event.relative.x*.005
+			elif dragging and event.button_mask&MOUSE_BUTTON_MASK_LEFT:
+				pan_overview(-event.relative*distance*.0018)
 		update_camera()
 
+func pan_overview(offset: Vector2) -> void:
+	var right:=Vector3(cos(orbit),0,-sin(orbit))
+	var back:=Vector3(sin(orbit),0,cos(orbit))
+	overview_focus+=right*offset.x+back*offset.y
+	update_camera()
+
 func update_camera() -> void:
-	if home_district and home_district.inside:
-		var focus: Vector3=home_district.room_origin+Vector3(2,1,0)
-		overview.position=focus+Vector3(sin(orbit)*15,13,cos(orbit)*15)
-		overview.look_at(focus)
-		return
-	overview.position = Vector3(sin(orbit)*distance,distance*0.72,cos(orbit)*distance)
-	overview.look_at(Vector3(0,1,0))
+	overview.position=overview_focus+Vector3(sin(orbit)*distance*.65,distance,cos(orbit)*distance*.65)
+	overview.look_at(overview_focus+Vector3.UP)
 
 func toggle_view() -> void:
 	set_view((view_mode+1)%3)
 
 func set_view(mode: int) -> void:
 	if life and life.active:life.close_dialog()
+	if mode==1 and view_mode!=1:
+		overview_focus=home_district.porch if home_district and home_district.inside else player.global_position
+		overview_focus.y=0
 	view_mode=mode
 	walking = mode!=1
 	dragging = false
 	player.set_view(mode)
 	overview.current = mode==1
 	if mode==1:update_camera()
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if walking else Input.MOUSE_MODE_VISIBLE
-	status.text = "First person · F talks · E uses items · Esc frees mouse" if mode==0 else "Third person · F talks · E uses items · Esc frees mouse" if mode==2 else "Overview · Drag to orbit · Scroll to zoom"
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if walking and not loading_screen else Input.MOUSE_MODE_VISIBLE
+	status.text = "First person · F talks · E uses items · Esc frees mouse" if mode==0 else "Third person · F talks · E uses items · Esc frees mouse" if mode==2 else "Overview · WASD / arrows / drag to pan · Shift moves faster · Right drag rotates · Wheel zooms"
 	view_button.text = "Change view [Tab]"
 	view_selector.select(mode)
 
@@ -1100,6 +1160,11 @@ func toggle_music() -> void:
 		music.stop()
 		music.volume_db=-80
 	else:
+		if music.stream == null:
+			var song := load("res://audio/village.mp3") as AudioStreamMP3
+			if song == null:return
+			song.loop = true
+			music.stream = song
 		music.volume_db=-34
 		music.play()
 	music_button.text = "Music: soft [M]" if music.playing else "Music: off [M]"
@@ -1114,6 +1179,8 @@ func fit_menu() -> void:
 	menu_panel.reset_size()
 
 func toggle_menu() -> void:
+	if interface_ui:
+		interface_ui.toggle_pause();return
 	menu_collapsed=not menu_collapsed
 	menu_body.visible=not menu_collapsed
 	if menu_scroll:menu_scroll.visible=not menu_collapsed

@@ -9,6 +9,16 @@ func _ready() -> void:
 	name="WalkableWoodlands"
 	layout=JSON.parse_string(FileAccess.get_file_as_string("res://downloaded/forest/layout.json"))
 	var source: PackedScene=load("res://downloaded/forest/woodland_patch.glb")
+	# Patches rotate the same woodland model. Their immutable shapes and materials can be shared.
+	var ground_shapes: Dictionary = {}
+	var ground_materials: Dictionary = {}
+	var leaf_materials: Dictionary = {}
+	var trunk_shapes: Array[CylinderShape3D] = []
+	for tree in layout.trunks:
+		var shape := CylinderShape3D.new()
+		shape.radius = tree.radius
+		shape.height = maxf(.3,tree.height)
+		trunk_shapes.append(shape)
 	var positions := [Vector3(-100,0,-145),Vector3(-64,0,-145),Vector3(-28,0,-145),Vector3(8,0,-145),Vector3(44,0,-145),
 		Vector3(155,0,-145),Vector3(191,0,-145),Vector3(227,0,-145),Vector3(263,0,-145),Vector3(299,0,-145),
 		Vector3(335,0,-109),Vector3(335,0,-73),Vector3(335,0,-37),Vector3(335,0,-1),Vector3(335,0,35),Vector3(335,0,71),Vector3(335,0,107),
@@ -16,11 +26,6 @@ func _ready() -> void:
 		Vector3(-20,0,120),Vector3(20,0,120),Vector3(-56,0,120),Vector3(56,0,120),Vector3(-20,0,156),Vector3(20,0,156),Vector3(-56,0,192),Vector3(56,0,192),
 		Vector3(-300,0,74),Vector3(-300,0,110),Vector3(-264,0,210),Vector3(-228,0,210),Vector3(-192,0,210),Vector3(-156,0,210),Vector3(-120,0,210)]
 	for index in range(positions.size()):
-		var rectangle := Rect2(Vector2(positions[index].x-16,positions[index].z-16),Vector2(32,32))
-		var protected := false
-		for site in get_parent().chateaux.sites:
-			if rectangle.intersects(site.rect.grow(5)):protected=true;break
-		if protected:continue
 		var patch := Node3D.new()
 		patch.name="Woodland_"+str(index+1)
 		patch.position=positions[index]
@@ -34,32 +39,45 @@ func _ready() -> void:
 			mesh.visibility_range_end_margin=25
 			mesh.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			if String(mesh.name).begins_with("ForestGround"):
-				mesh.create_trimesh_collision()
+				if not ground_shapes.has(mesh.mesh):
+					ground_shapes[mesh.mesh] = mesh.mesh.create_trimesh_shape()
+				var body := StaticBody3D.new()
+				var collider := CollisionShape3D.new()
+				collider.shape = ground_shapes[mesh.mesh]
+				mesh.add_child(body)
+				body.add_child(collider)
 				var original := mesh.get_active_material(0) as StandardMaterial3D
 				if original and original.albedo_texture:
+					if ground_materials.has(original):
+						mesh.material_override = ground_materials[original]
+						continue
 					var earth := ShaderMaterial.new()
 					earth.shader=preload("res://forest_ground.gdshader")
 					earth.set_shader_parameter("ground_texture",original.albedo_texture)
 					earth.set_shader_parameter("ground_tint",original.albedo_color)
 					earth.set_shader_parameter("half_size",Vector2(layout.width/2,layout.depth/2))
 					mesh.material_override=earth
+					ground_materials[original] = earth
 			if not String(mesh.name).begins_with("ForestFoliage") and not String(mesh.name).begins_with("ForestUnderstory"):continue
 			for surface in range(mesh.mesh.get_surface_count()):
 				var original := mesh.get_active_material(surface) as StandardMaterial3D
 				if not original:continue
+				if leaf_materials.has(original):
+					mesh.set_surface_override_material(surface,leaf_materials[original])
+					continue
 				var material := original.duplicate() as StandardMaterial3D
 				material.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
 				material.alpha_scissor_threshold=.35
 				material.cull_mode=BaseMaterial3D.CULL_DISABLED
 				material.roughness=1
 				mesh.set_surface_override_material(surface,material)
+				leaf_materials[original] = material
 		var trunks := StaticBody3D.new()
 		patch.add_child(trunks)
-		for tree in layout.trunks:
+		for index_in_patch in range(trunk_shapes.size()):
+			var tree: Dictionary = layout.trunks[index_in_patch]
 			var collision := CollisionShape3D.new()
-			var shape := CylinderShape3D.new()
-			shape.radius=tree.radius
-			shape.height=maxf(.3,tree.height)
+			var shape := trunk_shapes[index_in_patch]
 			collision.shape=shape
 			collision.position=Vector3(tree.x,tree.y+shape.height/2,tree.z)
 			trunks.add_child(collision)

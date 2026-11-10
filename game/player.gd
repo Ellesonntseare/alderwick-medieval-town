@@ -21,6 +21,10 @@ var getting_up := 0.0
 var rest_tween: Tween
 var standing_avatar := Transform3D.IDENTITY
 var skin_id := "medieval"
+var body_shape: CollisionShape3D
+var appearance_height := 1.0
+var sprinting := false
+var tired_breath := 0.0
 
 func _ready() -> void:
 	var shape := CollisionShape3D.new()
@@ -30,6 +34,7 @@ func _ready() -> void:
 	shape.shape = capsule
 	shape.position.y = 0.9
 	add_child(shape)
+	body_shape=shape
 	camera = Camera3D.new()
 	camera.position.y = 1.65
 	camera.fov = 76
@@ -78,69 +83,50 @@ func set_skin(id: String,persist := true) -> bool:
 		if skin.id==id:fitter.person_name=String(skin.portrait);break
 	fitter.apply_appearance()
 	fitter.mount_rigid_equipment()
-	camera.position.y=1.65*fitter.appearance_height
+	appearance_height=fitter.appearance_height
+	var capsule:=body_shape.shape as CapsuleShape3D
+	capsule.radius=0.32*minf(fitter.appearance_build,1.0)
+	capsule.height=1.8*appearance_height
+	body_shape.position.y=capsule.height*0.5
+	camera.position.y=1.65*appearance_height
+	arm.position.y=1.55*appearance_height
 	fitter.free()
 	standing_avatar=avatar.transform
 	avatar.visible=view_mode==2
 	animator=find_animation(avatar)
 	if animator:
-		var library:=animator.get_animation_library("").duplicate() as AnimationLibrary
+		var source_library := animator.get_animation_library("")
+		var library := AnimationLibrary.new()
+		for clip_name in source_library.get_animation_list():
+			var clip := source_library.get_animation(clip_name).duplicate() as Animation
+			clip.loop_mode = Animation.LOOP_LINEAR
+			library.add_animation(clip_name,clip)
 		animator.remove_animation_library("")
 		animator.add_animation_library("",library)
-		for clip in animator.get_animation_list():animator.get_animation(clip).loop_mode=Animation.LOOP_LINEAR
-		load_runner_motion()
-		load_neutral_stance()
-		preload("res://motion_library.gd").attach(avatar,animator)
+		preload("res://motion_library.gd").attach(avatar,animator,true)
+		var standing_name := "BasicIdle" if id=="erika_archer" else "Idle"
+		var standing: Animation = animator.get_animation(standing_name).duplicate()
+		standing.loop_mode = Animation.LOOP_LINEAR
+		if animator.has_animation("PlayerIdle"):animator.get_animation_library("").remove_animation("PlayerIdle")
+		animator.get_animation_library("").add_animation("PlayerIdle",standing)
+		install_tired_idle()
 		animator.play("PlayerIdle" if animator.has_animation("PlayerIdle") else "Idle")
+	var skeleton: Skeleton3D = avatar.find_children("*","Skeleton3D",true,false)[0]
+	var attached := preload("res://feet_attachment.gd").new()
+	attached.name = "AttachedFeet"
+	attached.model = avatar
+	skeleton.add_child(attached)
 	var grounding := SkeletonModifier3D.new()
 	grounding.set_script(load("res://foot_grounding.gd"))
 	grounding.name="GroundedFeet"
 	grounding.resident=self
 	grounding.model=avatar
-	avatar.find_children("*","Skeleton3D",true,false)[0].add_child(grounding)
+	skeleton.add_child(grounding)
 	skin_id=id
 	if persist:
 		var file:=FileAccess.open("user://player-appearance.json",FileAccess.WRITE)
 		file.store_string(JSON.stringify({"skin":id}))
 	return true
-
-func load_neutral_stance() -> void:
-	var resource := load("res://characters/neutral_motion.glb") as PackedScene
-	if not resource:return
-	var source := resource.instantiate()
-	var source_animator := find_animation(source)
-	var skeletons := avatar.find_children("*","Skeleton3D",true,false)
-	if source_animator and source_animator.has_animation("Idle_Neutral") and not skeletons.is_empty():
-		var clip: Animation=source_animator.get_animation("Idle_Neutral").duplicate()
-		var root := animator.get_node(animator.root_node)
-		var target_path := String(root.get_path_to(skeletons[0]))
-		for track in range(clip.get_track_count()):
-			var path := clip.track_get_path(track)
-			if path.get_subname_count()>0:clip.track_set_path(track,NodePath(target_path+":"+String(path.get_subname(0))))
-		clip.loop_mode=Animation.LOOP_LINEAR
-		animator.get_animation_library("").add_animation("PlayerIdle",clip)
-		animator.play("PlayerIdle")
-	source.free()
-
-func load_runner_motion() -> void:
-	var source_scene := load("res://characters/runner_motion.glb") as PackedScene
-	if not source_scene:return
-	var source := source_scene.instantiate()
-	var source_player := find_animation(source)
-	var skeletons := avatar.find_children("*","Skeleton3D",true,false)
-	if source_player and not skeletons.is_empty():
-		var root := animator.get_node(animator.root_node)
-		var target_path := String(root.get_path_to(skeletons[0]))
-		var library := animator.get_animation_library("")
-		for clip_name in ["RunnerRun","RunnerJump"]:
-			if not source_player.has_animation(clip_name):continue
-			var clip := source_player.get_animation(clip_name).duplicate() as Animation
-			clip.loop_mode=Animation.LOOP_LINEAR if clip_name=="RunnerRun" else Animation.LOOP_NONE
-			for track in range(clip.get_track_count()):
-				var path := clip.track_get_path(track)
-				if path.get_subname_count()>0:clip.track_set_path(track,NodePath(target_path+":"+String(path.get_subname(0))))
-			library.add_animation(clip_name,clip)
-	source.free()
 
 func find_animation(node: Node) -> AnimationPlayer:
 	if node is AnimationPlayer: return node
@@ -169,7 +155,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _physics_process(delta: float) -> void:
-	if not enabled:
+	sprinting = false
+	if not enabled or get_parent().get_meta("world_loading", false):
 		return
 	if getting_up>0:
 		getting_up-=delta
@@ -196,7 +183,7 @@ func _physics_process(delta: float) -> void:
 	var speed := 6.5 if Input.is_physical_key_pressed(KEY_SHIFT) else 3.5
 	if Phone.enabled() and Phone.running:speed=6.5
 	if physical:
-		if physical.stamina<8:speed=minf(speed,3.5)
+		if physical.winded:speed=minf(speed,3.5)
 		if physical.carried or physical.pushing:speed=minf(speed,2.2)
 		if physical.crouching:speed=1.7
 	velocity.x = move_toward(velocity.x, direction.x * speed, delta * 22)
@@ -208,18 +195,59 @@ func _physics_process(delta: float) -> void:
 		if animator.has_animation("RunnerJump"):animator.play("RunnerJump",0.08,1.5)
 	jump_requested=false
 	move_with_steps(delta)
+	var horizontal_speed := Vector2(velocity.x, velocity.z).length()
+	sprinting = speed > 4.0 and direction.length_squared() > .01 and horizontal_speed > 4.0 and not (physical and physical.mounted)
+	var idle := direction.length_squared() < .01
+	var tired: bool = idle and horizontal_speed < .25 and is_on_floor() and physical and physical.winded and not (physical.carried or physical.pushing or physical.mounted or physical.crouching)
 	if animator:
 		if jump_active and is_on_floor():jump_active=false
 		if not jump_active:
-			var clip := ("PlayerIdle" if animator.has_animation("PlayerIdle") else "Idle") if direction.length()<0.1 else ("RunnerRun" if speed>4 and animator.has_animation("RunnerRun") else "Run" if speed>4 else "Walk")
-			if animator.current_animation != clip: animator.play(clip,0.2)
-	if is_on_floor() and direction.length() > 0.1: bob += delta * speed * 2
-	camera.position.y = 1.65 + sin(bob) * 0.025
-	if physical and physical.crouching:camera.position.y=1.0
+			var clip := "Walk"
+			if idle:
+				clip = "TiredIdle" if tired and animator.has_animation("TiredIdle") else "PlayerIdle"
+			elif speed > 4:
+				clip = "RunnerRun" if animator.has_animation("RunnerRun") else "Run"
+			if animator.current_animation != clip:animator.play(clip,.2)
+	if is_on_floor() and not idle:bob += delta * speed * 2
+	tired_breath = move_toward(tired_breath, 1.0 if tired else 0.0, delta * 4.0)
+	var breath := tired_breath * (-.065 + sin(Time.get_ticks_msec() * .004) * .012)
+	camera.position.y = (1.65 + breath)*appearance_height + sin(bob)*.025
+	if physical and physical.crouching:camera.position.y=appearance_height
 	if physical and physical.mounted:
 		camera.position.y=2.5
 		avatar.position.y+=.9
 	if position.y < -150: position = Vector3(0, 2, 23)
+
+func install_tired_idle() -> void:
+	if not animator.has_animation("Defeated"):return
+	var source := animator.get_animation("Defeated")
+	var standing := animator.get_animation("PlayerIdle")
+	var breathing := Animation.new()
+	breathing.length = .8
+	breathing.loop_mode = Animation.LOOP_PINGPONG
+	# Use the fitted torso movement on top of a grounded standing pose.
+	for track in range(standing.get_track_count()):
+		var type := standing.track_get_type(track)
+		if type not in [Animation.TYPE_POSITION_3D, Animation.TYPE_ROTATION_3D, Animation.TYPE_SCALE_3D]:continue
+		if not standing.track_is_enabled(track) or standing.track_get_key_count(track) == 0:continue
+		var path := standing.track_get_path(track)
+		var target := breathing.add_track(type)
+		breathing.track_set_path(target, path)
+		var lean_track := -1
+		if type == Animation.TYPE_ROTATION_3D and path.get_subname_count() == 1:
+			if path.get_subname(0) in [&"Abdomen", &"Torso", &"Chest", &"Neck", &"Head"]:
+				lean_track = source.find_track(path, type)
+		for frame in range(5):
+			var time := frame * .2
+			match type:
+				Animation.TYPE_POSITION_3D:breathing.position_track_insert_key(target, time, standing.position_track_interpolate(track, time))
+				Animation.TYPE_ROTATION_3D:
+					var pose := standing.rotation_track_interpolate(track, time)
+					if lean_track >= 0:
+						pose = pose.slerp(source.rotation_track_interpolate(lean_track, 1.75 + frame * .075), .85)
+					breathing.rotation_track_insert_key(target, time, pose)
+				Animation.TYPE_SCALE_3D:breathing.scale_track_insert_key(target, time, standing.scale_track_interpolate(track, time))
+	animator.get_animation_library("").add_animation("TiredIdle", breathing)
 
 func move_with_steps(delta: float) -> void:
 	var horizontal := Vector3(velocity.x,0,velocity.z)*delta
@@ -248,10 +276,10 @@ func use_furniture(anchor: Node3D,kind: String) -> bool:
 	rotation.y=anchor.global_rotation.y
 	avatar.rotation.y=0
 	if kind=="sitting":
-		avatar.global_position=anchor.global_position-Vector3(0,1.03,0)
+		avatar.global_position=anchor.global_position-Vector3(0,1.03*appearance_height,0)
 		animator.play("SitEnter",0.1)
-		camera.position.y=0.82
-		arm.position.y=0.75
+		camera.position.y=0.82*appearance_height
+		arm.position.y=0.75*appearance_height
 	else:
 		animator.play("SleepExit")
 		animator.advance(0)
@@ -276,9 +304,9 @@ func stand_from_furniture(immediate := false) -> void:
 	resting=""
 	global_transform=stand_transform
 	avatar.global_transform=current_visual
-	camera.position.y=1.65
+	camera.position.y=1.65*appearance_height
 	camera.rotation.x=0
-	arm.position.y=1.55
+	arm.position.y=1.55*appearance_height
 	var skeleton := avatar.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
 	skeleton.reset_bone_poses()
 	animator.play("SitExit" if was_sitting else "SleepExit",0.1)

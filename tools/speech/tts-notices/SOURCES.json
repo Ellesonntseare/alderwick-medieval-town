@@ -1,0 +1,36 @@
+[
+  {
+    "name": "piper-tts",
+    "version": "1.8.0",
+    "file": "piper_tts-1.8.0-cp39-abi3-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/12/9c/c736d1961cf9ce0655278731b9430df41892ca2ded7b09dabcb340612158/piper_tts-1.8.0-cp39-abi3-win_amd64.whl",
+    "sha256": "5da9bfdb05dfe15da3536859d422e605483ffa6d2b3ec2c5b9593bae6b5aa6a4"
+  },
+  {
+    "name": "Piper corresponding source",
+    "url": "https://files.pythonhosted.org/packages/02/cc/95b18b58d9c235d8e0bcece7321b7a7347873c14f9fea2c734b31ef04ff2/piper_tts-1.8.0.tar.gz",
+    "sha256": "830588aded347df579c91a32703e0fc2a3685d84f1e3533b14f2de69135d4904"
+  },
+  {
+    "name": "pathvalidate",
+    "version": "3.3.1",
+    "file": "pathvalidate-3.3.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/9a/70/875f4a23bfc4731703a5835487d0d2fb999031bd415e7d17c0ae615c18b7/pathvalidate-3.3.1-py3-none-any.whl",
+    "sha256": "5263baab691f8e1af96092fa5137ee17df5bdfbd6cff1fcac4d6ef4bc2e1735f"
+  },
+  {
+    "name": "en_GB-vctk-medium.onnx",
+    "url": "https://huggingface.co/rhasspy/piper-voices/resolve/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/en/en_GB/vctk/medium/en_GB-vctk-medium.onnx",
+    "sha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6"
+  },
+  {
+    "name": "en_GB-vctk-medium.onnx.json",
+    "url": "https://huggingface.co/rhasspy/piper-voices/resolve/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/en/en_GB/vctk/medium/en_GB-vctk-medium.onnx.json",
+    "sha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8"
+  },
+  {
+    "name": "MODEL_CARD",
+    "url": "https://huggingface.co/rhasspy/piper-voices/resolve/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/en/en_GB/vctk/medium/MODEL_CARD",
+    "sha256": "53ec6b1fd90d9125d5bebac55261efd27f7e8d6dc962f605a5b5f796df2ec7fb"
+  }
+]

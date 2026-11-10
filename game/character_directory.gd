@@ -43,11 +43,12 @@ func bind() -> void:
 		entries.append({"person":person,"name":person.person_name,"role":person.occupation,"district":district_name(person)})
 	entries.sort_custom(func(a: Dictionary,b: Dictionary):return a.name.naturalnocasecmp_to(b.name)<0)
 	bound=true
-	refresh()
-	print("CHARACTER_DIRECTORY_READY residents=",entries.size()," actual_face_files=",portraits.size())
+	if is_open():refresh()
+	print("CHARACTER_DIRECTORY_READY residents=",entries.size())
 
 func district_name(person: Node) -> String:
-	return {"city":"Alderwick","west":"Western village","castle":"Castle districts"}.get(String(person.get_meta("district")),"Alderwick")
+	if person.get_meta("industrial_worker",false):return "Industrial town"
+	return {"city":"Alderwick","west":"Western village","castle":"Castle districts","industrial":"Industrial town"}.get(String(person.get_meta("district")),"Alderwick")
 
 func build() -> void:
 	panel=PanelContainer.new()

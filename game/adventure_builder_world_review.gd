@@ -50,18 +50,18 @@ func run() -> void:
 		check(first.to_lower().contains("corvin"),"Ada gives the actual first lead")
 		var clue:=await talk("Corvin","Ada asked me to check her missing greens. Where did the destination label send the crate?")
 		check(story.progress.missing_delivery.step==1,"Asking Corvin unlocks the physical recovery step")
-		check(clue.to_lower().contains("fère") or clue.to_lower().contains("fere") or clue.to_lower().contains("tardenois"),"The generated clue names the correct ruin")
+		check(clue.to_lower().contains("western") and clue.to_lower().contains("market"),"The generated clue names the western market")
 		town.player.enabled=false
 		town.player.position=story.step_position(story.find_mission("missing_delivery").steps[1])
 		check(story.use_task("missing_delivery"),"The real world crate can be picked up only nearby")
 		var coins: int=town.economy.player_coins
 		var stock: int=town.jobs.markets.city.stock
-		await talk("Ada","I found your labelled vegetable crate at Fère-en-Tardenois and brought it back. Here it is.")
+		await talk("Ada","I found your labelled vegetable crate at the western market and brought it back. Here it is.")
 		check(story.progress.missing_delivery.status=="complete","Free-form return dialogue completes the real delivery")
 		check(town.economy.player_coins==coins+12,"The real purse receives twelve coins")
 		check(town.jobs.markets.city.stock==stock+12,"The actual market receives twelve vegetable portions")
 		check(not story.inventory.has("Ada's vegetable crate"),"The returned crate leaves the player's inventory")
-		await talk("Ansel","Greta was worried when you missed your check-in. Are you safe here at Montfaucon?")
+		await talk("Ansel","Greta was worried when you missed your check-in. Are you safe here at the western gatehouse?")
 	# The other mission paths use the same reply hook already exercised above.
 	story.meet("Oren");story.accept("wagon_fittings")
 	story.after_reply(person_named("Bram"),"Are Oren's wagon fittings ready?")

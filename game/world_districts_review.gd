@@ -2,10 +2,7 @@ extends SceneTree
 
 var town: Node3D
 var failures: Array[String]=[]
-class Sites extends Node3D:
-	var sites: Array=[]
 class ForestTown extends Node3D:
-	var chateaux: Node3D
 	var player: CharacterBody3D
 func _initialize() -> void:run.call_deferred()
 func check(ok: bool,message: String) -> void:
@@ -25,39 +22,29 @@ func run() -> void:
 	town.day_night.set_enabled(false)
 	town.speech.set_enabled(false)
 	town.player.enabled=false;town.player.set_physics_process(false)
-	var next: Node3D=town.get_node("NeighbouringIndustrialTown")
 	var woods: Node3D=town.get_node("WalkableWoodlands")
-	check(next.layout.reference_human_door_height>=2.1 and next.layout.reference_human_door_height<=2.5,"New town fits 1.8m residents")
-	check(next.doors.size()==10,"Original industrial town doors are interactive")
 	check(woods.patches.size()>=25 and woods.tree_count>2000,"Downloaded forest is spread around city and castles")
 	check(town.life.people.size()==53,"Map additions preserve the 53-resident cast")
 	var space := town.get_world_3d().direct_space_state
 	var capsule := CapsuleShape3D.new();capsule.radius=.32;capsule.height=1.8
 	var query := PhysicsShapeQueryParameters3D.new();query.shape=capsule;query.collision_mask=1;query.exclude=[town.player.get_rid()]
 	var blocked: Array[Vector3]=[]
-	for z in range(64,ceili(next.entry.z)+5):
+	for z in range(64,121):
 		var point := Vector3(0,0,z)
 		var floor := floor_at(point)
 		if floor.is_empty():blocked.append(point);continue
 		point.y=floor.position.y
 		query.transform=Transform3D(Basis.IDENTITY,point+Vector3.UP*.93)
 		if not space.intersect_shape(query,1).is_empty():blocked.append(point)
-	check(blocked.is_empty(),"The southern road and new town boundary opening must be clear")
+	check(blocked.is_empty(),"The southern road to the woodland trail must be clear")
 	print("SOUTHERN_ROAD_CHECK blocked=",blocked)
-	for door in next.doors:
-		check(door.height>=1.85,"Native map door clears a character")
-		door.toggle(door.global_position+Vector3(0,0,-3))
-	await create_timer(.55).timeout
-	for door in next.doors:check(door.is_open and door.collider.disabled,"Each native industrial door opens")
 	await walk_woods(woods,query)
 	if DisplayServer.get_name()!="headless":
 		town.player.hide();town.set_view(1)
 		town.menu_body.hide();town.life.hint.hide();town.life.talk_button.hide()
 		town.overview.position=Vector3(155,140,100);town.overview.look_at(Vector3(25,0,90))
 		await capture("forest-city-preview.png")
-		town.overview.position=Vector3(195,145,625);town.overview.look_at(Vector3(0,0,410))
-		await capture("neighbouring-town-preview.png")
-	print("WORLD_DISTRICTS_REVIEW_COMPLETE failures=",failures," patches=",woods.patches.size()," trees=",woods.tree_count," scale=",next.layout.scale)
+	print("WORLD_DISTRICTS_REVIEW_COMPLETE failures=",failures," patches=",woods.patches.size()," trees=",woods.tree_count)
 	quit(0 if failures.is_empty() else 1)
 
 func capture(path: String) -> void:
@@ -116,7 +103,6 @@ func walk_woods(woods: Node3D,query: PhysicsShapeQueryParameters3D) -> void:
 
 func forest_only() -> void:
 	town=ForestTown.new();root.add_child(town)
-	town.chateaux=Sites.new();town.add_child(town.chateaux)
 	var ground := StaticBody3D.new();town.add_child(ground)
 	var floor_shape := CollisionShape3D.new();var box := BoxShape3D.new();box.size=Vector3(1000,2,1000);floor_shape.shape=box;floor_shape.position.y= -1.05;ground.add_child(floor_shape)
 	town.player=load("res://player.gd").new();town.add_child(town.player);town.player.enabled=false;town.player.set_physics_process(false)

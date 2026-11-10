@@ -49,8 +49,11 @@ func load_state() -> void:
 
 func save_state() -> void:
 	if unit_test:return
+	var trace := preload("res://frame_costs.gd").begin()
 	var file:=FileAccess.open(save_path,FileAccess.WRITE)
 	if file:file.store_string(JSON.stringify({"version":1,"progress":progress,"relationships":relationships,"inventory":inventory,"memories":memories}))
+	if file:file.close()
+	preload("res://frame_costs.gd").finish("adventures.save_state",trace)
 
 func relationship(name: String) -> Dictionary:
 	if not relationships.has(name):relationships[name]={"trust":0,"events":[],"promises":{},"trade_count":0}
@@ -78,12 +81,12 @@ func find_mission(id: String) -> Dictionary:
 func meet(name: String) -> void:
 	var changed:=false
 	for mission in definitions:
-		if mission.giver==name and progress[mission.id].status=="unmet":progress[mission.id].status="offered";changed=true
+		if mission.giver==name and progress[mission.id].status=="unmet" and unlocked(mission):progress[mission.id].status="offered";changed=true
 	if changed:save_state()
 
 func accept(id: String) -> bool:
 	var mission:=find_mission(id)
-	if mission.is_empty() or progress[id].status!="offered":return false
+	if mission.is_empty() or progress[id].status!="offered" or not unlocked(mission):return false
 	progress[id].status="active";progress[id].step=0
 	if not unit_test and town.events:
 		var origin:=Vector3.ZERO
@@ -95,12 +98,18 @@ func accept(id: String) -> bool:
 	if not unit_test:town.economy.announce("You offered to help "+mission.giver+". Your journal has the next lead.")
 	update_markers();refresh_journal();return true
 
+func unlocked(mission: Dictionary) -> bool:
+	for id in mission.get("requires",[]):
+		if not progress.has(id) or progress[id].status!="complete":return false
+	return true
+
 func abandon(id: String) -> void:
 	if progress[id].status!="active":return
 	var mission:=find_mission(id)
 	progress[id].status="offered";progress[id].step=0
+	progress[id].erase("notes")
 	for step in mission.steps:
-		if step.has("item"):inventory.erase(step.item)
+		if step.has("item") and (step.kind in ["collect","work"] or step.item=="Repaired wagon fittings"):inventory.erase(step.item)
 	relationship(mission.giver).promises.erase(id)
 	remember(mission.giver,"abandoned_"+id,"The visitor told me they could not keep their offer to help.",-2)
 	update_markers();save_state();refresh_journal()
@@ -186,20 +195,17 @@ func advance(id: String) -> void:
 func apply_result(mission: Dictionary) -> void:
 	if unit_test:return
 	if town.events:
-		var results: Dictionary={"missing_delivery":"The visitor returned Ada's misplaced greens. The square market received twelve vegetable portions.","wagon_fittings":"The visitor helped fit Oren's replacement wagon parts. His repaired wagon is ready in the workyard.","overdue_surveyor":"The visitor personally found Ansel safe at Montfaucon and brought Greta his check-in."}
+		var results: Dictionary={"missing_delivery":"The visitor returned Ada's misplaced greens. The square market received twelve vegetable portions.","wagon_fittings":"The visitor helped fit Oren's replacement wagon parts. His repaired wagon is ready in the workyard.","overdue_surveyor":"The visitor personally found Ansel safe at the western gatehouse and brought Greta his check-in."}
 		var origin:=Vector3.ZERO
 		for person in town.life.people:
 			if person.person_name==mission.giver:origin=person.position;break
-		town.events.publish("resolved_"+mission.id,results[mission.id],[mission.giver],origin)
+		town.events.publish("resolved_"+mission.id,String(mission.get("result_news",results.get(mission.id,mission.summary))),[mission.giver],origin)
 	if town.economy.award_story(mission.id,mission.reward) and mission.id=="missing_delivery":
 		town.jobs.markets.city.stock+=12;town.jobs.markets.city.received+=12
 		town.jobs.update_market("city")
 	if mission.id=="wagon_fittings" and repaired_cart:repaired_cart.show()
 
 func step_position(step: Dictionary) -> Vector3:
-	if step.has("site"):
-		for site in town.chateaux.sites:
-			if site.id==step.site:return site.inside+Vector3(.5,.03,0)
 	var p: Array=step.get("position",[0,0,0])
 	return Vector3(p[0],p[1],p[2])
 
@@ -226,10 +232,10 @@ func setup_world() -> void:
 
 func spawn_visitor() -> void:
 	visitor=load("res://mission_visitor.gd").new()
-	visitor.person_name="Ansel";visitor.occupation="Visiting surveyor";visitor.home="Montfaucon survey camp"
+	visitor.person_name="Ansel";visitor.occupation="Visiting surveyor";visitor.home="Western survey camp"
 	visitor.life=town.life;visitor.style="adventurer"
-	visitor.set_meta("district","castle")
-	visitor.position=step_position({"site":"montfaucon_chateau"})+Vector3(0,.05,1.2)
+	visitor.set_meta("district","west")
+	visitor.position=step_position(find_mission("overdue_surveyor").steps[2])+Vector3(0,.05,1.2)
 	town.add_child(visitor)
 	visitor.activity="Recording the old masonry"
 	visitor.survey_origin=visitor.position;visitor.survey_target=visitor.position
@@ -272,7 +278,11 @@ func _process(delta: float) -> void:
 		refresh_clock=0;refresh_conversation_action()
 	if journal.visible or town.life.active or (town.builder and town.builder.active):prompt.hide();return
 	var id:=nearby_task()
-	prompt.visible=not id.is_empty()
+	var focused:=preload("res://interaction_target.gd").uses_focus(town)
+	if focused:
+		var target: Dictionary=town.life.hud_target
+		if not preload("res://interaction_target.gd").gameplay_visible(town) or target.get("kind","")!="task" or target.get("id","")!=id:id=""
+	prompt.visible=not focused and not id.is_empty()
 	if id.is_empty():stop_work();return
 	var step: Dictionary=find_mission(id).steps[int(progress[id].step)]
 	if step.kind=="collect":prompt.text="E · Pick up "+step.item
@@ -301,6 +311,7 @@ func handle_input(event: InputEvent) -> bool:
 	if town.life.active:return false
 	if event.physical_keycode==KEY_J:toggle_journal();return true
 	if town.view_mode==1:return false
+	if preload("res://interaction_target.gd").uses_focus(town):return false
 	if event.physical_keycode==KEY_E:
 		var id:=nearby_task()
 		if not id.is_empty():use_task(id);return true
@@ -331,21 +342,78 @@ func make_interface() -> void:
 	conversation_action.hide()
 	conversation_action.pressed.connect(func():
 		if not town.life.active:return
-		for mission in definitions:
-			if mission.giver==town.life.active.person_name and progress[mission.id].status=="offered":accept(mission.id);break
+		var person: CharacterBody3D=town.life.active
+		var action:=resident_action(person)
+		if action.is_empty():return
+		var step_index:=int(action.step)
+		if step_index>=0 and not String(action.get("item","")).is_empty() and town.get("physical_gameplay"):
+			var commit:=func() -> bool:
+				var completed:=perform_resident_action(person,action.id,step_index)
+				refresh_conversation_action()
+				return completed
+			if not town.physical_gameplay.animate_inventory_handover(person,action.item,commit):
+				town.economy.announce("Stand close to the resident with your hands free to deliver the item.")
+		else:perform_resident_action(person,action.id,step_index)
 		refresh_conversation_action())
+
+func resident_action(person: Node) -> Dictionary:
+	# Physical mission interactions work independently of dialogue generation.
+	if not is_instance_valid(person):return {}
+	for mission in definitions:
+		var state: Dictionary=progress[mission.id]
+		if state.status!="active":continue
+		var step: Dictionary=mission.steps[int(state.step)]
+		if step.get("person","")!=person.person_name or step.kind not in ["talk","handin"]:continue
+		var missing: bool=step.has("item") and int(inventory.get(step.item,0))<1
+		return {"id":mission.id,"step":int(state.step),"text":String(step.get("action","Check the lead" if step.kind=="talk" else "Finish the delivery")),"missing":missing,"item":step.get("item","")}
+	for mission in definitions:
+		if mission.giver==person.person_name and progress[mission.id].status=="offered":return {"id":mission.id,"step":-1,"text":"Offer to help · "+mission.title,"missing":false}
+	return {}
+
+func perform_resident_action(person: Node,id: String,expected_step: int) -> bool:
+	if not is_instance_valid(person) or not progress.has(id):return false
+	if not unit_test:
+		if person!=town.life.active or town.player.global_position.distance_to(person.global_position)>5:return false
+		if person.posture=="sleeping":return false
+	var mission:=find_mission(id)
+	var state: Dictionary=progress[id]
+	if expected_step==-1:
+		if mission.giver!=person.person_name or state.status!="offered" or not accept(id):return false
+		if not unit_test:town.life.transcript.text=mission.summary+"\n\n"+String(mission.get("first_lead",""))
+		return true
+	if state.status!="active" or int(state.step)!=expected_step:return false
+	var step: Dictionary=mission.steps[expected_step]
+	if step.get("person","")!=person.person_name or step.kind not in ["talk","handin"]:return false
+	if step.has("item"):
+		if int(inventory.get(step.item,0))<1:return false
+		inventory[step.item]=int(inventory[step.item])-1
+		if inventory[step.item]<=0:inventory.erase(step.item)
+	if not state.has("notes"):state["notes"]=[]
+	var note: String=String(step.get("journal_note",step.text))
+	state.notes.append({"person":person.person_name,"text":note})
+	advance(id)
+	if not unit_test:
+		town.life.transcript.text="Journal updated\n\n"+note
+		town.economy.announce("Updated · "+mission.title)
+	return true
 
 func refresh_conversation_action() -> void:
 	if not conversation_action:return
 	conversation_action.hide()
 	if not town.life.active:return
 	meet(town.life.active.person_name)
-	for mission in definitions:
-		if mission.giver==town.life.active.person_name and progress[mission.id].status=="offered":
-			conversation_action.text="Offer to help · "+mission.title
-			conversation_action.show();break
+	var action:=resident_action(town.life.active)
+	if not action.is_empty():
+		conversation_action.text="Bring "+String(action.item) if action.missing else action.text
+		conversation_action.disabled=action.missing
+		conversation_action.show()
 
 func toggle_journal() -> void:
+	var book_ui: Node=town.get("interface_ui")
+	if book_ui and book_ui.ready_for_use:
+		if book_ui.active and book_ui.opened_page=="Journal":book_ui.close()
+		else:book_ui.open_page("Journal")
+		return
 	stop_work()
 	if journal.visible:
 		journal.hide();town.player.enabled=previous_enabled
@@ -366,6 +434,9 @@ func refresh_journal() -> void:
 	for child in content.get_children():content.remove_child(child);child.queue_free()
 	for mission in definitions:
 		var state: Dictionary=progress[mission.id]
+		if not unlocked(mission):
+			text_line(mission.title+" · Complete "+String(find_mission(mission.requires[0]).get("title","the preceding request"))+" first.")
+			continue
 		var status: String={"unmet":"Ask "+mission.giver,"offered":"Available","active":"In progress","complete":"Completed"}.get(state.status,"Available")
 		text_line(mission.title+" · "+status+" · %d coins"%int(mission.reward))
 		text_line(mission.summary)
@@ -374,6 +445,7 @@ func refresh_journal() -> void:
 			text_line("Next: "+mission.steps[int(state.step)].text)
 			var button:=Button.new();button.text="Tell "+mission.giver+" I can no longer help"
 			button.pressed.connect(abandon.bind(mission.id));content.add_child(button)
+		for note in state.get("notes",[]):text_line(String(note.person)+" · "+String(note.text))
 		content.add_child(HSeparator.new())
 	var belongings: Array[String]=[]
 	for item in inventory:belongings.append(str(inventory[item])+" × "+item)

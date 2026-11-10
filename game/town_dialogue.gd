@@ -1,6 +1,7 @@
 extends Node
 
 const Phone=preload("res://mobile_runtime.gd")
+const Features=preload("res://dialogue_features.gd")
 
 var URL := "http://127.0.0.1:34320"
 var life: Node
@@ -42,15 +43,18 @@ func _ready() -> void:
 	camera.fov=54
 	camera.near=0.06
 	town.add_child(camera)
-	if "--no-ai" not in OS.get_cmdline_user_args():check_health()
+	if Features.ENABLED and "--no-ai" not in OS.get_cmdline_user_args():check_health()
+	if not Features.ENABLED:set_process(false)
 
 func check_health() -> void:
+	if not Features.ENABLED:return
 	if health_pending:return
 	health_pending=true
 	var error:=health.request(URL+"/health?pid="+str(OS.get_process_id()))
 	if error!=OK:health_pending=false
 
 func health_result(_result: int,code: int,_headers: PackedStringArray,body: PackedByteArray) -> void:
+	if not Features.ENABLED:return
 	health_pending=false
 	var data=JSON.parse_string(body.get_string_from_utf8()) if code==200 else null
 	available=data is Dictionary and data.get("ready",false)==true
@@ -87,6 +91,12 @@ func context(person: Node) -> Dictionary:
 	return result
 
 func open(person: CharacterBody3D) -> void:
+	if not Features.ENABLED:
+		life.transcript.text="Character dialogue is paused while we work on the town."
+		status.text=""
+		focus_character(person)
+		settle_layout.call_deferred()
+		return
 	generation+=1
 	waiting=false
 	if voice_input:voice_input.cancel()
@@ -118,6 +128,7 @@ func render_history(name: String) -> void:
 	life.transcript.text=text
 
 func send(text: String) -> void:
+	if not Features.ENABLED:return
 	if not life.active or waiting or text.strip_edges().is_empty():return
 	if voice_input and (voice_input.recording or voice_input.recognizing):voice_input.cancel()
 	if not group_members.is_empty():send_group(text);return
@@ -217,6 +228,10 @@ func settle_layout() -> void:
 	if life.dialog.visible:layout()
 
 func tick_social(person: CharacterBody3D,chat: Dictionary,delta: float) -> void:
+	if not Features.ENABLED:
+		chat.elapsed+=delta
+		if chat.elapsed>=8:person.end_social()
+		return
 	chat.elapsed+=delta
 	# Keep the pair together while inference/audio is pending; an old short
 	# social timer must not make them leave before the generated voice arrives.
@@ -270,6 +285,7 @@ func is_group_member(person: Node) -> bool:
 	return group_members.has(person) and person.talking and life.active!=null
 
 func begin_group(first: CharacterBody3D,second: CharacterBody3D,overheard: Array[Dictionary]) -> void:
+	if not Features.ENABLED:return
 	focused_person=first
 	group_members.assign([first,second])
 	group_turns=overheard.duplicate(true)
@@ -277,7 +293,6 @@ func begin_group(first: CharacterBody3D,second: CharacterBody3D,overheard: Array
 	for person in group_members:
 		person.stand_up()
 		person.talking=true
-		person.label.hide()
 		if town.speech:town.speech.stop(person)
 	life.heading.text=first.person_name+" & "+second.person_name
 	group_target.clear()
@@ -294,6 +309,7 @@ func render_group() -> void:
 	life.transcript.text=text
 
 func send_group(text: String) -> void:
+	if not Features.ENABLED:return
 	if not available:status.text="Conversations are still loading. Please try again shortly.";check_health();return
 	var index := group_index%group_members.size() if group_target.selected==0 else group_target.selected-1
 	if group_target.selected==0:

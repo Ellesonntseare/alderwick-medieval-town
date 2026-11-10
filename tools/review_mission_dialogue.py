@@ -16,13 +16,13 @@ while time.monotonic()-started<120:
  time.sleep(3)
 else:raise RuntimeError('Local AI did not become ready')
 missions=json.loads((ROOT/'game/story_missions.json').read_text())['missions']
-checks=[('Corvin','Where did the destination label send Ada\'s missing vegetable crate?',missions[0]['steps'][0]['fact']),('Ansel','Greta was worried about your check-in. Are you safe at Montfaucon?',missions[2]['steps'][2]['fact'])]
+checks=[('Corvin','Where did the destination label send Ada\'s missing vegetable crate?',missions[0]['steps'][0]['fact']),('Ansel','Greta was worried about your check-in. Are you safe at the western gatehouse?',missions[2]['steps'][2]['fact'])]
 for name,message,fact in checks:
  payload={'name':name,'message':message,'scope':'review','pid':os.getpid(),'context':{'name':name,'player_story_state':{'trust_score':0,'mission_facts_you_know':[{'known_fact':fact}],'instruction':'Share these real known facts when asked. Do not invent theft, combat, or completed deliveries.'}}}
  with urlopen(Request(URL+'/chat',json.dumps(payload).encode(),{'Content-Type':'application/json'}),timeout=160) as response:result=json.load(response)
  assert result.get('generated') and result.get('reply'),result
  if name=='Corvin':
-  assert any(word in result['reply'].lower() for word in ['fère','fere','tardenois']),result
+  assert any(word in result['reply'].lower() for word in ['western','market']),result
   assert not any(word in result['reply'].lower() for word in ['alden','not where','elsewhere','misprint for']),result
  if name=='Ansel':assert not any(word in result['reply'].lower() for word in ['yes, greta','hello greta','dear greta']),result
  print('MISSION_GENERATED_REPLY',json.dumps(result),flush=True)

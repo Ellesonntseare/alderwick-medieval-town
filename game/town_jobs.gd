@@ -64,7 +64,7 @@ func make_market(district: String,point: Vector3,display: Vector3,title: String,
 
 func update_market(district: String) -> void:
 	var market: Dictionary=markets[district]
-	market.label.text=market.title+"\nVegetables: "+str(market.stock)+" portions · 2 coins"
+	market.label.text=market.title+"\nShop · Food, tools & home goods\nVegetables: "+str(market.stock)+" portions"
 	var count := mini(ceili(float(market.stock)/6.0),6)
 	while market.root.get_child_count()-1>count:
 		var extra: Node=market.root.get_child(market.root.get_child_count()-1)
@@ -90,7 +90,7 @@ func bind(residents: Node) -> void:
 	var model_jobs: Dictionary={}
 	for person in life.people:
 		var district: String=person.get_meta("district")
-		if person.style in ["knight","viking","saxon"] or (person.occupation=="Guard" and district=="castle"):
+		if is_guard_role(person,district):
 			var posts: Array=city_posts if district=="city" else west_posts if district=="west" else castle_posts
 			var post: Array=posts[indexes[district]%posts.size()]
 			indexes[district]+=1
@@ -181,6 +181,9 @@ func record(person: CharacterBody3D,kind: String,text: String) -> void:
 	if town.economy:town.economy.pay(person,kind)
 	if town.character_life:town.character_life.worked(person,kind)
 
+func is_guard_role(person: CharacterBody3D,district: String) -> bool:
+	return person.style in ["knight","viking","saxon"] or (person.occupation=="Guard" and (district=="castle" or person.style=="erika_archer"))
+
 func set_target(person: CharacterBody3D,target: Vector3,stage: String) -> void:
 	var route: PackedVector3Array=life.route_to_point(person,target)
 	if route.is_empty():
@@ -206,6 +209,7 @@ func release_bench(person: CharacterBody3D) -> void:
 		if bench.owner==person:bench.owner=null
 
 func suspend(person: CharacterBody3D) -> void:
+	if town.routines:town.routines.actions.clear_work(person)
 	release_bench(person)
 	person.set_carry("")
 	if not person.guard_label.is_empty():person.job.was_away=true
@@ -213,11 +217,6 @@ func suspend(person: CharacterBody3D) -> void:
 
 func tick(person: CharacterBody3D,delta: float) -> void:
 	var job: Dictionary=person.job
-	if job.kind=="industrial":
-		# The corridor manager owns these shifts; normal routines still run
-		# during breaks and the existing night system owns sleeping.
-		person.rest(delta);person.animate("Idle")
-		return
 	if job.kind=="guard":
 		var difference: Vector3=person.guard_post-person.position
 		difference.y=0
@@ -233,13 +232,19 @@ func tick(person: CharacterBody3D,delta: float) -> void:
 				job.was_away=false
 			person.rest(delta)
 			person.visual.rotation.y=lerp_angle(person.visual.rotation.y,person.guard_facing,delta*8)
-			person.animate("Idle")
+			person.animate(guard_animation(person, delta))
 			person.activity="Guarding "+person.guard_label
 		return
 	if job.get("timer",0)>0:
 		job.timer-=delta
 		person.rest(delta)
-		person.animate(person.work_animation() if job.stage in ["harvesting","crafting"] else "Idle")
+		if job.stage=="planting":
+			person.animate("DigPlant")
+		elif job.stage=="harvesting":
+			animate_harvest(person)
+		else:
+			person.animate(person.work_animation() if job.stage=="crafting" else "Idle")
+		if job.stage=="crafting" and town.routines:town.routines.actions.work_tick(person,delta)
 		return
 	var district: String=job.district
 	match String(job.stage):
@@ -277,11 +282,15 @@ func tick(person: CharacterBody3D,delta: float) -> void:
 				person.visual.rotation.y=PI
 				person.activity="Making furniture at the workbench"
 			elif job.kind=="farm":
-				job.stage="harvesting"
-				job.timer=5.0*(town.character_life.work_duration(person,"Farming") if town.character_life else 1.0)
 				person.visual.rotation.y=0
-				person.activity="Harvesting fresh carrots"
+				if int(job.completed)%3==0 and person.animator and person.animator.has_animation("DigPlant"):
+					job.stage="planting"
+					job.timer=person.animator.get_animation("DigPlant").length
+					person.activity="Digging and planting a new row"
+				else:
+					start_harvest(person)
 			else:load_delivery(person)
+		"planting":start_harvest(person)
 		"harvesting":load_delivery(person)
 		"crafting":
 			var bench: Dictionary=job.bench
@@ -295,6 +304,49 @@ func tick(person: CharacterBody3D,delta: float) -> void:
 			job.timer=5.0
 			person.activity="Finished a stool; taking a short break"
 		"break":job.stage="start"
+
+func start_harvest(person: CharacterBody3D) -> void:
+	person.job.stage="harvesting"
+	person.job.timer=5.0*(town.character_life.work_duration(person,"Farming") if town.character_life else 1.0)
+	person.job.harvest_duration=person.job.timer
+	person.activity="Harvesting fresh carrots"
+	animate_harvest(person,true)
+
+func animate_harvest(person: CharacterBody3D, starting := false) -> void:
+	var animator: AnimationPlayer=person.animator
+	if not animator or not animator.has_animation("PullPlant"):
+		person.animate("WorkHarvest")
+		return
+	if not starting and animator.assigned_animation=="PullPlant":
+		return
+	var length := animator.get_animation("PullPlant").length
+	var duration: float=person.job.harvest_duration
+	animator.speed_scale=1.0
+	animator.play("PullPlant",.15,length/duration)
+	if not starting:
+		animator.seek(length*clampf(1.0-person.job.timer/duration,0,1),true)
+
+func guard_animation(person: CharacterBody3D, delta: float) -> String:
+	var animator: AnimationPlayer=person.animator
+	if not animator:
+		return "Idle"
+	var job: Dictionary=person.job
+	var time: float=float(job.get("watch_elapsed",posmod(person.person_name.hash(),28)))+delta
+	job.watch_elapsed=time
+	var phase := fmod(time,28.0)
+	if phase<5.0 and animator.has_animation("Examine") and not person.equipment_nodes.is_empty():
+		return "Examine"
+	# These styles hold their shield on the left, which matches this clip.
+	if person.style in ["knight","saxon","erika_archer"] and not person.equipment_nodes.is_empty() and animator.has_animation("ShieldIdle"):
+		if person.watch_shield_anchor and animator.has_animation("ShieldBlock") and animator.has_animation("ShieldBlockHold"):
+			var drill_time := phase-6.0
+			var raise_time := animator.get_animation("ShieldBlock").length
+			if drill_time>=0.0 and drill_time<raise_time:
+				return "ShieldBlock"
+			if drill_time>=raise_time and drill_time<raise_time+1.0:
+				return "ShieldBlockHold"
+		return "ShieldIdle"
+	return "Idle"
 
 func supply_target(district: String) -> Vector3:
 	for bench in benches:

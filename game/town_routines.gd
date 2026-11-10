@@ -9,9 +9,14 @@ var tavern_visits := 0
 var breaks_taken := 0
 var friendships_made := 0
 var paused := false
+var actions: Node3D
 
 func _ready() -> void:
 	town=get_parent()
+	if town.expansion:
+		town.expansion.road([Vector3(26,0,20),Vector3(26,0,36),Vector3(47,0,36)],2.6)
+	actions=preload("res://resident_actions.gd").new()
+	add_child(actions)
 	# Open-air resting places are built before the street grid is sampled.
 	for point: Vector3 in [Vector3(14,0,19),Vector3(17,0,19),Vector3(-18,0,4),Vector3(-20,0,4),Vector3(-89,0,101),Vector3(-89,0,104),Vector3(124,0,111),Vector3(127,0,111)]:
 		town.interior_stool(town.jobs,point)
@@ -19,11 +24,17 @@ func _ready() -> void:
 		seat.add_to_group("public_seats")
 
 func bind() -> void:
+	actions.school.bind()
 	for person in town.life.people:
 		person.set_meta("next_break",18.0+posmod(person.person_name.hash(),55))
 		person.set_meta("next_tavern",35.0+posmod(person.person_name.hash(),90))
 
 func _process(delta: float) -> void:
+	var trace:=preload("res://frame_costs.gd").begin()
+	_process_traced(delta)
+	preload("res://frame_costs.gd").finish("town_routines._process",trace,"")
+
+func _process_traced(delta: float) -> void:
 	if paused or not town.life.navigation_ready:return
 	elapsed+=delta
 	clock+=delta
@@ -56,6 +67,7 @@ func _process(delta: float) -> void:
 		if person.hunger>=0.9:
 			if person.food>0 and begin_break(person,true):continue
 			if begin_shopping(person):continue
+		if actions.consider(person,elapsed):continue
 		if elapsed>float(person.get_meta("next_tavern",1000)) and person.get_meta("district")=="city":
 			if begin_tavern(person):continue
 		if elapsed>float(person.get_meta("next_break",1000)):begin_break(person)
@@ -196,6 +208,9 @@ func tick(person: CharacterBody3D,delta: float) -> bool:
 		if routine.timeout<0:cancel(person);person.plan();return false
 	if town.events and town.events.tick_routine(person,delta):return true
 	if town.character_life and town.character_life.tick_routine(person,delta):return true
+	var dance: Node=town.get("festival")
+	if dance and dance.tick(person,delta):return true
+	if actions.tick(person,delta):return true
 	if routine.kind=="shopping":
 		var seller: CharacterBody3D=routine.seller
 		if not town.economy.open_for_trade(seller):cancel(person);person.plan();return false
@@ -248,6 +263,9 @@ func finish(person: CharacterBody3D) -> void:
 	person.plan()
 
 func cancel(person: CharacterBody3D) -> void:
+	var dance: Node=town.get("festival")
+	if dance:dance.cleanup(person)
+	actions.cleanup(person)
 	for line in lines.values():line.erase(person)
 	var seat: Node3D=person.routine.get("seat")
 	if seat and seat.get_meta("occupant","")==person.person_name:seat.remove_meta("occupant")

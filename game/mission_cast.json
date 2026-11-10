@@ -1,3 +1,16 @@
 {
- "Ansel":{"name":"Ansel","past":"A travelling surveyor recording surviving stonework around Alderwick.","want":"Finish useful maps of the two ruins and leave clear records for the town.","problem":"Ansel becomes absorbed in sketches and missed a promised check-in with Greta.","connections":{"Greta":"asked for a check-in before dusk","Nils":"lent a survey sketch","Rowan":"served breakfast before the trip"},"story":"The overdue surveyor mission establishes what the visitor actually finds. Ansel is safe at Montfaucon, not imprisoned or attacked.","private_fact":"Ansel redraws neat maps from very untidy field notes.","voice":"Curious, mild, slightly absent-minded and quick to admit a mistake."}
+  "Ansel": {
+    "name": "Ansel",
+    "past": "A travelling surveyor recording surviving stonework around Alderwick.",
+    "want": "Finish useful maps of the western gatehouse and leave clear records for the town.",
+    "problem": "Ansel becomes absorbed in sketches and missed a promised check-in with Greta.",
+    "connections": {
+      "Greta": "asked for a check-in before dusk",
+      "Nils": "lent a survey sketch",
+      "Rowan": "served breakfast before the trip"
+    },
+    "story": "The overdue surveyor mission establishes what the visitor actually finds. Ansel is safe at the western gatehouse, not imprisoned or attacked.",
+    "private_fact": "Ansel redraws neat maps from very untidy field notes.",
+    "voice": "Curious, mild, slightly absent-minded and quick to admit a mistake."
+  }
 }

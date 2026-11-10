@@ -6,6 +6,46 @@ var door_owners: Dictionary={}
 var yields := 0
 var crossings := 0
 var max_queue := 0
+var spatial_cells: Dictionary={}
+var spatial_frame := -1
+var spatial_count := -1
+var escape_retry: Dictionary={}
+const SPATIAL_CELL := 4.0
+
+func claim_escape(person: CharacterBody3D) -> bool:
+	var frame:=Engine.get_physics_frames()
+	var id:=person.get_instance_id()
+	if frame<int(escape_retry.get(id,0)):return false
+	# A blocked pedestrian safely yields between probes. Different retry
+	# intervals spread crowded-corner probes over subsequent physics ticks.
+	escape_retry[id]=frame+4+posmod(id,3)
+	if escape_retry.size()>256:
+		for old in escape_retry.keys():
+			if int(escape_retry[old])<frame:escape_retry.erase(old)
+	return true
+
+func nearby_people(person: CharacterBody3D,speed: float) -> Array:
+	return people_near(person.position,maxf(3.8,speed*.8))
+
+func people_near(point: Vector3,distance: float) -> Array:
+	var frame:=Engine.get_physics_frames()
+	if spatial_frame!=frame or spatial_count!=life.people.size():
+		spatial_cells.clear()
+		for resident in life.people:
+			if not is_instance_valid(resident):continue
+			var cell:=Vector2i(floori(resident.position.x/SPATIAL_CELL),floori(resident.position.z/SPATIAL_CELL))
+			if not spatial_cells.has(cell):spatial_cells[cell]=[]
+			spatial_cells[cell].append(resident)
+		spatial_frame=frame
+		spatial_count=life.people.size()
+	var center:=Vector2i(floori(point.x/SPATIAL_CELL),floori(point.z/SPATIAL_CELL))
+	# Include an extra metre for residents crossing a cell during this tick.
+	var radius:=ceili((distance+1.0)/SPATIAL_CELL)
+	var neighbours: Array=[]
+	for x in range(center.x-radius,center.x+radius+1):
+		for z in range(center.y-radius,center.y+radius+1):
+			neighbours.append_array(spatial_cells.get(Vector2i(x,z),[]))
+	return neighbours
 
 func radius(person: CharacterBody3D) -> float:
 	return 0.3*person.appearance_build
@@ -18,10 +58,11 @@ func steer(person: CharacterBody3D,direction: Vector3,speed: float,delta: float)
 	var side := Vector3.UP.cross(direction).normalized()
 	var adjustment := Vector3.ZERO
 	var slow := 1.0
+	var neighbours:=nearby_people(person,speed)
 	var line_target=person.get("queue_target")
 	var in_line: bool=line_target is Vector3 and line_target.is_finite()
 	var single_file: bool=person.get("night_schedule")==true and person.get("home_door")!=null and (person.position.distance_to(person.home_door.global_position)<3.0 or in_line)
-	for other in life.people:
+	for other in neighbours:
 		if other==person or other.posture!="standing":continue
 		var gap: Vector3=other.position-person.position
 		gap.y=0
@@ -46,11 +87,11 @@ func steer(person: CharacterBody3D,direction: Vector3,speed: float,delta: float)
 	var proposal := (desired+adjustment).normalized()*speed*slow
 	var probe := person.global_transform
 	probe.origin.y+=0.12
-	if person.test_move(probe,proposal.normalized()*maxf(0.25,speed*delta)):
+	if adjustment.length_squared()>.0001 and person.test_move(probe,proposal.normalized()*maxf(0.25,speed*delta)):
 		proposal=desired*slow
 	# A final distance check prevents walking through a person even when
 	# there is no safe space for the preferred passing manoeuvre.
-	for other in life.people:
+	for other in neighbours:
 		if other==person or other.posture!="standing":continue
 		if absf(other.position.y-person.position.y)>1.0:continue
 		var future := person.position+proposal*delta
@@ -60,12 +101,12 @@ func steer(person: CharacterBody3D,direction: Vector3,speed: float,delta: float)
 		var after := Vector2(future.x-other.position.x,future.z-other.position.z).length()
 		if after<minimum and after<now:
 			proposal=Vector3.ZERO
-			if not single_file:
+			if not single_file and claim_escape(person):
 				var away := side if (other.position-person.position).dot(side)<=0 else -side
 				for escape: Vector3 in [away*minf(speed,1.2),-away*minf(speed,1.2)]:
 					if person.test_move(probe,escape.normalized()*0.20):continue
 					var clear := true
-					for neighbour in life.people:
+					for neighbour in neighbours:
 						if neighbour==person or neighbour.posture!="standing":continue
 						var before_gap := Vector2(person.position.x-neighbour.position.x,person.position.z-neighbour.position.z).length()
 						var next := person.position+escape*delta

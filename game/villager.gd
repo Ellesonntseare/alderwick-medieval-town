@@ -11,12 +11,12 @@ var path := PackedVector3Array()
 var path_index := 0
 var wait_time := 0.0
 var talking := false
+var dialogue_was_speaking := false
 var visits := 0
 var travelled := 0.0
 var activity := "Enjoying the town"
 var visual: Node3D
 var animator: AnimationPlayer
-var label: Label3D
 var speed := 1.25
 var work_timer := 0.0
 var social_partner: CharacterBody3D
@@ -67,6 +67,8 @@ var posture_time := 0.0
 var getting_up := 0.0
 var posture_tween: Tween
 var equipment_nodes: Array[Node3D]=[]
+var watch_shield_anchor: Node3D
+var watch_shield_rest := Basis.IDENTITY
 var job: Dictionary={}
 var guard_post := Vector3.INF
 var guard_facing := 0.0
@@ -81,6 +83,8 @@ var chat_id := 0
 var social_speaking := false
 var carry_pose_updates := 0
 var carry_hand_error := 0.0
+var received_object: Node3D
+var prop_action:=preload("res://prop_action.gd").new()
 var coins := 20
 var food := 0
 var hunger := 0.0
@@ -93,6 +97,11 @@ var sleep_after_exit := false
 var is_child := false
 var walking_policy := "open"
 var route_unavailable := false
+var simulation_elapsed := 0.0
+var rest_ground_check := 0.0
+var rest_ground_position := Vector3.INF
+var movement_step_probes := 0
+var movement_rest_skips := 0
 
 func _ready() -> void:
 	add_to_group("villagers")
@@ -116,23 +125,19 @@ func _ready() -> void:
 	if animator:
 		preload("res://motion_library.gd").attach(visual,animator)
 		for clip in animator.get_animation_list():
-			if clip not in ["SitEnter","SitExit","SleepExit"]:animator.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
+			if clip in ["Idle","Walk","Run","Interact","Wave","WorkTable","WorkHarvest","SitIdle"]:animator.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 		animate("Idle")
 	var skeleton := visual.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
+	var attached_feet:=preload("res://feet_attachment.gd").new()
+	attached_feet.model=visual
+	attached_feet.name="AttachedFeet"
+	skeleton.add_child(attached_feet)
 	var grounding := SkeletonModifier3D.new()
 	grounding.name="GroundedFeet"
 	grounding.set_script(load("res://foot_grounding.gd"))
 	grounding.resident=self
 	grounding.model=visual
 	skeleton.add_child(grounding)
-	label = Label3D.new()
-	label.text = person_name+" · "+occupation
-	label.position.y = 2.05*appearance_height
-	label.font_size = 18
-	label.pixel_size = 0.0045
-	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	label.outline_size = 4
-	add_child(label)
 	decision_rng.seed=hash(person_name)
 	sociability=decision_rng.randf_range(0.3,0.9)
 	social_cooldown=decision_rng.randf_range(0,5)
@@ -176,6 +181,7 @@ func find_animator(node: Node) -> AnimationPlayer:
 	return null
 
 func animate(clip: String) -> void:
+	if prop_action.active and clip!=prop_action.clip:return
 	if animator and clip not in ["Walk","Run"]:animator.speed_scale=1.0
 	if animator and animator.current_animation != clip and animator.has_animation(clip): animator.play(clip,0.18)
 
@@ -215,6 +221,7 @@ func choose_next() -> void:
 	plan()
 
 func begin_social(other: CharacterBody3D,duration: float,lines: Array[String]) -> void:
+	if life.town.routines:life.town.routines.actions.clear_work(self)
 	social_partner=other
 	social_time=duration
 	social_elapsed=0
@@ -287,15 +294,23 @@ func rest(delta: float) -> void:
 		position=guard_post
 		velocity=Vector3.ZERO
 		return
+	# Stationary residents retain floor contact; periodically recheck for removed
+	# support. Moving platforms and displaced bodies always run physics normally.
+	rest_ground_check-=delta
+	if is_on_floor() and get_platform_velocity().length_squared()<.0001 and position.distance_squared_to(rest_ground_position)<.000004 and rest_ground_check>0:
+		velocity=Vector3.ZERO;movement_rest_skips+=1;return
 	velocity=Vector3(0,-2,0)
 	move_with_steps(delta)
+	rest_ground_position=position
+	rest_ground_check=.2+float(posmod(person_name.hash(),7))*.01
 
 func _physics_process(delta: float) -> void:
-	var camera := get_viewport().get_camera_3d()
-	label.visible = not talking and posture!="sleeping" and camera != null and camera.global_position.distance_to(global_position)<15
-	label.text=person_name+" · "+occupation+"\n"+activity
-	if has_meta("mood_label") and String(get_meta("mood_label"))!="Content":label.text+=" · "+String(get_meta("mood_label"))
+	simulation_elapsed+=delta
+	if simulation_elapsed<float(get_meta("simulation_interval",0.0)):return
+	delta=simulation_elapsed
+	simulation_elapsed=0.0
 	social_cooldown=maxf(0,social_cooldown-delta)
+	if tick_prop_action(delta):rest(delta);return
 	if social_partner and not has_conversation_partner():end_social()
 	if not social_partner:bubble.hide()
 	if social_partner and not talking:
@@ -308,18 +323,35 @@ func _physics_process(delta: float) -> void:
 			var facing: Vector3=social_partner.position-position
 			visual.rotation.y=lerp_angle(visual.rotation.y,atan2(facing.x,facing.z),delta*6)
 			life.tick_chat(self,delta)
-			animate("Interact" if social_speaking else "Idle")
-			bubble.visible=social_speaking and label.visible and has_conversation_partner()
+			# A paired, quiet exchange still has body language while generated
+			# dialogue is postponed. Never gesture at an absent partner.
+			var gesture: String="HeadShakeNo" if not social_speaking and social_elapsed>2 and social_elapsed<5 and person_name.hash()%2==0 and animator and animator.has_animation("HeadShakeNo") else "Interact" if social_speaking else "Idle"
+			animate(gesture)
+			var camera := get_viewport().get_camera_3d()
+			bubble.visible=social_speaking and posture!="sleeping" and camera!=null and camera.global_position.distance_to(global_position)<15 and has_conversation_partner()
 			if social_time<=0:end_social()
 			return
 	if meeting_partner and not talking:
 		process_meeting(delta)
 		return
 	if talking:
-		rest(delta)
-		animate("Wave" if work_timer<1.5 else "Idle")
+		var speech: Node=life.town.get("speech")
+		var speaking: bool=speech!=null and speech.busy(self)
+		if posture=="sitting":
+			if speaking and not dialogue_was_speaking:
+				animate(conversation_animation(true))
+			elif animator and animator.current_animation not in ["SitEnter","SitPoint"]:
+				animate("SitIdle")
+		else:
+			rest(delta)
+			if work_timer==0:
+				animate("WaveGesture" if animator and animator.has_animation("WaveGesture") else "Wave")
+			elif work_timer>=1.5:
+				animate(conversation_animation(speaking))
+		dialogue_was_speaking=speaking
 		work_timer += delta
 		return
+	dialogue_was_speaking=false
 	if posture=="sleeping":return
 	if posture=="sitting":
 		posture_time+=delta
@@ -335,7 +367,6 @@ func _physics_process(delta: float) -> void:
 		getting_up-=delta
 		rest(delta)
 		return
-	if life.town.get("industrial_workforce") and life.town.industrial_workforce.tick(self,delta):return
 	if night_schedule:
 		process_night(delta)
 		return
@@ -356,6 +387,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector3(0,-2,0)
 		move_with_steps(delta)
 		animate(work_animation() if destination==0 and not route_unavailable else "Idle")
+		if destination==0 and not route_unavailable and life.town.routines:life.town.routines.actions.work_tick(self,delta)
 		if wait_time<=0:
 			choose_next()
 		return
@@ -390,9 +422,17 @@ func work_description() -> String:
 		_:return "Tending to work"
 
 func work_animation() -> String:
+	if occupation=="Village child" and not indoor_house and animator and animator.has_animation("RunnerDance"):
+		return "RunnerDance"
 	if occupation=="Farmer":return "WorkHarvest"
 	if occupation in ["Baker","Blacksmith","Brewer","Carpenter","Weaver","Herbalist","Merchant","Town clerk","Archivist","Castle caretaker"]:return "WorkTable"
 	return "Interact"
+
+func conversation_animation(speaking: bool) -> String:
+	if posture=="sitting":
+		if speaking and animator and animator.has_animation("SitPoint"):return "SitPoint"
+		return "SitIdle"
+	return "Interact" if speaking else "Idle"
 
 func move_direction(direction: Vector3,pace: float,delta: float) -> void:
 	if life and life.get("town") and life.town.get("character_life")!=null and life.town.character_life.bound:pace*=life.town.character_life.walking_pace(self)
@@ -401,8 +441,11 @@ func move_direction(direction: Vector3,pace: float,delta: float) -> void:
 	move_with_steps(delta)
 	if desired.length()>0.05:
 		visual.rotation.y=lerp_angle(visual.rotation.y,atan2(desired.x,desired.z),delta*8)
-		animate("Run" if pace>2.2 else "Walk")
-		animator.speed_scale=clampf(desired.length()/(4.5 if pace>2.2 else 1.45),0.55,1.7)
+		# Use the resident's regular gait while the hand modifier holds the crate.
+		# This preserves the resident's visible stride at delivery speed.
+		var running := carry_kind.is_empty() and pace>2.2
+		animate("Run" if running else "Walk")
+		animator.speed_scale=clampf(desired.length()/(4.5 if running else 1.45),0.55,1.7)
 	else:animate("Idle")
 
 func follow_path(delta: float,pace: float) -> bool:
@@ -415,7 +458,7 @@ func follow_path(delta: float,pace: float) -> bool:
 		move_direction(difference.normalized(),minf(pace,difference.length()/delta),delta)
 		travelled+=position.distance_to(before)
 		stuck_time=stuck_time+delta if position.distance_to(before)<0.005 else 0.0
-		if stuck_time>1.4:
+		if stuck_time>1.4 and (not life.walking_routes or life.walking_routes.claim_replan()):
 			blocked_steps+=1
 			if life.walking_routes:life.walking_routes.avoid(self,path[path_index])
 			path=life.route_to_point(self,path[-1],true)
@@ -439,7 +482,35 @@ func can_skip_to(target: Vector3) -> bool:
 	collision_mask=mask
 	return not blocked
 
-func set_carry(kind: String) -> void:
+func prop_action_busy() -> bool:return prop_action.active
+
+func tick_prop_action(delta: float) -> bool:
+	if not prop_action.active:return false
+	if night_schedule or posture!="standing" or (talking and prop_action.kind!="handover"):prop_action.cancel();return false
+	prop_action.tick(delta)
+	if prop_action.active and is_instance_valid(carry_root) and prop_action.kind in ["pickup","place"]:
+		var fraction:=clampf((prop_action.ratio()-prop_action.contact)/(1-prop_action.contact),0,1) if prop_action.kind=="pickup" else clampf(1-prop_action.ratio()/prop_action.contact,0,1)
+		carry_root.position=Vector3(0,.18,.45).lerp(Vector3(0,.96,.4),fraction)
+	return prop_action.active
+
+func finish_prop_action() -> void:
+	if is_instance_valid(carry_root):carry_root.position=Vector3(0,.96,.4)
+	if animator and animator.has_animation("Idle"):animator.speed_scale=1;animator.play("Idle",.18)
+
+func begin_prop_gesture() -> bool:
+	if prop_action.active:return false
+	return prop_action.begin(animator,"handover",func():return true,finish_prop_action)
+
+func set_carry(kind: String,animated:=true) -> void:
+	if not prop_action.active and carry_kind==kind and (kind.is_empty() or is_instance_valid(carry_root)):return
+	prop_action.cancel()
+	if carry_kind==kind and (kind.is_empty() or is_instance_valid(carry_root)):return
+	if animated and is_physics_processing() and life and life.get("navigation_ready")==true and posture=="standing" and not night_schedule:
+		if prop_action.begin(animator,"place" if kind.is_empty() else "pickup",func():apply_carry(kind);return true,finish_prop_action):
+			return
+	apply_carry(kind)
+
+func apply_carry(kind: String) -> void:
 	carry_kind=kind
 	if carry_root:carry_root.queue_free();carry_root=null
 	if kind.is_empty():return
@@ -448,6 +519,9 @@ func set_carry(kind: String) -> void:
 	carry_root.name="CarriedGoods"
 	carry_root.position=Vector3(0,0.96,0.40)
 	life.town.detailed_prop("FarmCrate_Carrot" if kind=="carrots" else "Crate_Wooden",carry_root,Vector3.ZERO,Vector3(0.55,0.3,0.36),false)
+	ensure_carry_modifier()
+
+func ensure_carry_modifier() -> void:
 	var skeleton := visual.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
 	if not skeleton.has_node("CarryHands"):
 		var modifier := SkeletonModifier3D.new()
@@ -459,6 +533,7 @@ func set_carry(kind: String) -> void:
 func head_home(door: Node3D,planned := PackedVector3Array()) -> void:
 	if planned.is_empty():planned=life.route_to_door(self,door)
 	if planned.is_empty():return
+	prop_action.cancel();apply_carry("")
 	life.traffic.release_door(self)
 	life.town.jobs.suspend(self)
 	if meeting_partner:life.cancel_meeting(self)
@@ -612,9 +687,9 @@ func process_night(delta: float) -> void:
 		night_index+=1
 		return
 	var direction := offset.normalized()
-	var night_speed := 6.5 if life.town.day_night.cycle_seconds<=60 else speed*1.35
+	var night_speed := minf(2.0,speed*1.15)
 	if day_visit:night_speed=1.65
-	if night_stage in ["to_bed","exit_walk","exit_approach","visit_walk"]:night_speed=3.5 if life.town.day_night.cycle_seconds<=60 else 2.0
+	if night_stage in ["to_bed","exit_walk","exit_approach","visit_walk"]:night_speed=1.6
 	if day_visit and night_stage=="visit_walk":night_speed=1.6
 	var before := position
 	move_direction(direction,minf(night_speed,offset.length()/delta),delta)
@@ -661,7 +736,6 @@ func sit_at(seat: Node3D) -> void:
 	animator.advance(0)
 	visual.global_position=seat.global_position-Vector3(0,1.03*appearance_height,0)
 	visual.global_rotation=Vector3(0,seat.global_rotation.y,0)
-	label.global_position=visual.global_position+Vector3(0,1.9*appearance_height,0)
 	for child in get_children():
 		if child is CollisionShape3D:child.set_deferred("disabled",true)
 
@@ -686,7 +760,6 @@ func sleep_at(bed: Node3D) -> void:
 		var hip_world: Vector3=skeleton.global_transform*skeleton.get_bone_global_pose(hips).origin
 		var target: Vector3=bed.global_position+bed.global_basis*Vector3(0,0.08,0.85)
 		visual.global_position+=target-hip_world
-	label.hide()
 	for child in get_children():
 		if child is CollisionShape3D:child.set_deferred("disabled",true)
 
@@ -698,31 +771,94 @@ func set_equipment_visible(value: bool) -> void:
 			if String(mesh.name).begins_with(part):mesh.visible=value
 
 func mount_rigid_equipment() -> void:
-	if style in ["saxon","cult_archer","bruce","armoured_assassin"]:
-		for mesh: MeshInstance3D in visual.find_children("*","MeshInstance3D",true,false):
-			if String(mesh.name).to_lower().contains("shield") or String(mesh.name).to_lower().contains("sword") or String(mesh.name).to_lower().contains("bow") or String(mesh.name).to_lower().contains("arrow") or String(mesh.name).to_lower().contains("equipment"):equipment_nodes.append(mesh)
-	if style not in ["knight","viking"]:return
-	var skeleton := visual.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
-	var pieces := [["polySurface55_lambert7_0","LowerArm.L",Vector3(0.20,0,0.16)],
-		["polySurface56_lambert8_0","Chest",Vector3(-0.08,0,-0.12)]]
-	if style=="viking":pieces=[["Equipment_Shield","LowerArm.R",Vector3(-0.10,0,0.10)]]
+	if style=="erika_archer" and occupation=="Guard" and life:
+		mount_watch_shield()
+		return
+	var shields: Array[MeshInstance3D] = []
 	for mesh: MeshInstance3D in visual.find_children("*","MeshInstance3D",true,false):
-		for spec in pieces:
-			if not String(mesh.name).begins_with(spec[0]):continue
-			var bone := skeleton.find_bone(spec[1])
-			var mount := BoneAttachment3D.new()
-			mount.name="EquipmentShield" if spec[1]=="LowerArm.L" else "EquipmentSpear" if spec[1]=="Chest" else "EquipmentAxe"
-			mount.bone_name=spec[1]
-			skeleton.add_child(mount)
-			var rigid := MeshInstance3D.new()
-			rigid.mesh=mesh.mesh
-			mount.add_child(rigid)
-			rigid.skeleton=NodePath("")
-			var relative: Transform3D=skeleton.global_transform.affine_inverse()*mesh.global_transform
-			relative.origin+=spec[2]
-			rigid.transform=skeleton.get_bone_global_rest(bone).affine_inverse()*relative
-			mesh.visible=false
-			equipment_nodes.append(mount)
+		var label := String(mesh.name).to_lower()
+		if label.contains("shield") or (style=="knight" and label.begins_with("polysurface55")):
+			shields.append(mesh)
+		elif style in ["saxon","cult_archer","bruce","armoured_assassin"] and (label.contains("sword") or label.contains("bow") or label.contains("arrow") or label.contains("equipment")):
+			equipment_nodes.append(mesh)
+	if not shields.is_empty():mount_carried_shield(shields,"L")
+	if style!="knight":return
+	var skeleton := visual.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
+	for mesh: MeshInstance3D in visual.find_children("*","MeshInstance3D",true,false):
+		if not String(mesh.name).begins_with("polySurface56"):continue
+		var mount := BoneAttachment3D.new()
+		mount.name="EquipmentSpear"
+		mount.bone_name="Chest"
+		skeleton.add_child(mount)
+		var rigid := MeshInstance3D.new()
+		rigid.mesh=mesh.mesh
+		mount.add_child(rigid)
+		rigid.skeleton=NodePath("")
+		var relative := skeleton.global_transform.affine_inverse()*mesh.global_transform
+		var centre := relative*mesh.get_aabb().get_center()
+		var chest := skeleton.get_bone_global_rest(skeleton.find_bone("Chest"))
+		relative.origin += Vector3(-.16,1.05,-.19)-centre
+		rigid.transform=chest.affine_inverse()*relative
+		mesh.visible=false
+		equipment_nodes.append(mount)
+
+func mount_carried_shield(meshes: Array[MeshInstance3D],side: String) -> void:
+	var skeleton := visual.find_children("*","Skeleton3D",true,false)[0] as Skeleton3D
+	var arm := skeleton.find_bone("LowerArm."+side)
+	var wrist := skeleton.find_bone("Wrist."+side)
+	if arm<0 or wrist<0:return
+	var bounds := AABB()
+	var transforms: Array[Transform3D] = []
+	for index in range(meshes.size()):
+		var relative := skeleton.global_transform.affine_inverse()*meshes[index].global_transform
+		transforms.append(relative)
+		var box := relative*meshes[index].get_aabb()
+		bounds=box if index==0 else bounds.merge(box)
+	var forearm := skeleton.get_bone_global_rest(arm)
+	var hand := skeleton.get_bone_global_rest(wrist).origin
+	# The rear surface rests against the forearm; the hand sits behind the centre.
+	var centre := forearm.origin.lerp(hand,.85)
+	centre.z += .055+bounds.size.z*.5
+	var mount := BoneAttachment3D.new()
+	mount.name="EquipmentShield"
+	mount.bone_name="LowerArm."+side
+	skeleton.add_child(mount)
+	var anchor := Node3D.new()
+	mount.add_child(anchor)
+	anchor.transform=forearm.affine_inverse()*Transform3D(Basis.IDENTITY,centre)
+	watch_shield_anchor=anchor
+	watch_shield_rest=anchor.basis
+	var brace := preload("res://shield_attachment.gd").new()
+	brace.anchor=anchor
+	brace.arm_bone=arm
+	brace.rest=anchor.transform
+	brace.animator=find_animator(visual)
+	brace.grip=forearm.affine_inverse()*(hand+forearm.basis.y.normalized()*.04)
+	brace.clearance=.11+bounds.size.z*.5
+	if style=="viking":brace.clearance=.22
+	skeleton.add_child(brace)
+	for index in range(meshes.size()):
+		var source := meshes[index]
+		var rigid := MeshInstance3D.new()
+		rigid.mesh=source.mesh
+		rigid.material_override=source.material_override
+		for surface in range(source.mesh.get_surface_count()):
+			rigid.set_surface_override_material(surface,source.get_surface_override_material(surface))
+		rigid.skeleton=NodePath("")
+		anchor.add_child(rigid)
+		rigid.transform=Transform3D(Basis.IDENTITY,-bounds.get_center())*transforms[index]
+		if style=="viking":rigid.transform=Transform3D(Basis(Vector3.UP,PI),Vector3.ZERO)*rigid.transform
+		source.visible=false
+	equipment_nodes.append(mount)
+
+func mount_watch_shield() -> void:
+	var source := Node3D.new()
+	visual.add_child(source)
+	life.town.detailed_prop("Shield_Wooden",source,Vector3.ZERO,Vector3(.48,.58,.10),false)
+	var meshes: Array[MeshInstance3D] = []
+	for mesh: MeshInstance3D in source.find_children("*","MeshInstance3D",true,false):meshes.append(mesh)
+	if not meshes.is_empty():mount_carried_shield(meshes,"L")
+	source.queue_free()
 
 func stand_up(immediate := false) -> void:
 	if posture=="standing":return
@@ -733,7 +869,6 @@ func stand_up(immediate := false) -> void:
 	resting_place=null
 	var target_visual := standing_visual
 	if posture_tween and posture_tween.is_running():posture_tween.kill()
-	label.position=Vector3(0,2.05,0)
 	var skeletons := visual.find_children("*","Skeleton3D",true,false)
 	if not skeletons.is_empty():skeletons[0].reset_bone_poses()
 	animator.play("SitExit" if previous_posture=="sitting" else "SleepExit",0.1)
@@ -758,8 +893,52 @@ func speak(text: String) -> String:
 
 func move_with_steps(delta: float) -> void:
 	var horizontal := Vector3(velocity.x,0,velocity.z)*delta
-	if horizontal.length()>0.001 and is_on_floor() and test_move(global_transform,horizontal):
-		var raised := global_transform
-		raised.origin.y+=0.32
-		if not test_move(global_transform,Vector3.UP*0.32) and not test_move(raised,horizontal.normalized()*0.4):global_position.y+=0.32
+	var before:=global_position
+	var grounded:=is_on_floor()
+	# Budgeted residents accumulate multiple engine ticks.
+	var tick_scale:=maxf(1.0,delta/maxf(get_physics_process_delta_time(),.000001))
+	velocity*=tick_scale
 	move_and_slide()
+	velocity/=tick_scale
+	# Clear flat roads need no speculative step probes. Try a step only after
+	# the normal collision sweep reports an obstruction and blocks progress.
+	var travelled_horizontal:=Vector3(global_position.x-before.x,0,global_position.z-before.z)
+	if not grounded or horizontal.length_squared()<.000001 or travelled_horizontal.dot(horizontal.normalized())>=horizontal.length()*.8:return
+	var wall:=false
+	var floor_only:=get_slide_collision_count()>0
+	for index in range(get_slide_collision_count()):
+		var hit:=get_slide_collision(index)
+		var body:=hit.get_collider() as CollisionObject3D
+		if hit.get_normal().y<.98:floor_only=false
+		if body and body.collision_layer & 1 and hit.get_normal().y<.98 and hit.get_normal().y>-.1:wall=true
+	var remaining:=horizontal-travelled_horizontal
+	if not wall:
+		if not floor_only:return
+		# Imported coplanar floor triangles can exhaust the slide iterations
+		# without a wall contact. Retry horizontally just above that floor seam.
+		var lifted:=global_transform;lifted.origin.y+=.03
+		movement_step_probes+=1
+		if test_move(lifted,remaining):
+			# A porch edge can report a floor normal as well. Try the ordinary
+			# stair-height rise, checking head clearance and the full forward path.
+			var porch:=global_transform;porch.origin.y+=.32
+			movement_step_probes+=2
+			if test_move(lifted,Vector3.UP*.29) or test_move(porch,remaining.normalized()*maxf(.4,remaining.length())):return
+			lifted=porch
+		global_transform=lifted
+		var saved_velocity:=velocity
+		var physics_delta:=maxf(get_physics_process_delta_time(),.000001)
+		velocity=Vector3(remaining.x/physics_delta,0,remaining.z/physics_delta)
+		move_and_slide()
+		velocity=saved_velocity
+		return
+	var raised:=global_transform;raised.origin.y+=.32
+	var clearance_start:=global_transform;clearance_start.origin.y+=.03
+	movement_step_probes+=2
+	if test_move(clearance_start,Vector3.UP*.29) or test_move(raised,remaining.normalized()*maxf(.4,remaining.length())):return
+	global_position.y+=.32
+	var previous_velocity:=velocity
+	var step_delta:=maxf(get_physics_process_delta_time(),.000001)
+	velocity=Vector3(remaining.x/step_delta,-2,remaining.z/step_delta)
+	move_and_slide()
+	velocity=previous_velocity
